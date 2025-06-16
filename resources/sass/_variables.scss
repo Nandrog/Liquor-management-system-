@@ -1,0 +1,21 @@
+// resources/sass/_variables.scss (Add to your existing variables)
+
+// Custom UI Colors from Welcome Page Design
+$welcome-banner-bg: #2E7D32; // Darker green for the banner
+$profile-card-border: #BBDEFB; // Light blue border for the user profile container
+$profile-card-shadow: rgba(0, 0, 0, 0.05); // Subtle shadow
+
+// Specific icon background colors (approximate, adjust from Figma)
+$finance-icon-bg: #4300FF;    // Deep Purple
+$supplier-icon-bg: #BB3E00;   // Orange Accent
+$manufacturer-icon-bg: #2E7D32; // Green (reusing primary if it matches)
+$vendor-icon-bg: #AEC8A4;     // Light Green
+$customer-icon-bg: #F3C623;   // Amber/Yellow
+$liquor-manager-icon-bg: #E89D6B; // Darker Orange
+$procurement-officer-icon-bg: #E89D6B; // Another Orange/Amber shade
+
+// Icon dimensions and spacing
+$profile-icon-size: 80px;
+$profile-icon-border-radius: 15px; // For the rounded squares
+
+

@@ -1,0 +1,96 @@
+// Import all of Bootstrap's CSS
+@import "variables";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+@import 'bootstrap/scss/bootstrap'; // Add this line
+@import 'bootstrap/scss/bootstrap';
+
+// Welcome Banner Styles
+.welcome-banner {
+    background-color: $welcome-banner-bg;
+    color: white;
+    padding: 3rem 0;
+    text-align: center;
+    margin-bottom: 3rem;
+    border-radius: 0.5rem; // Slightly rounded corners for the banner
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.welcome-banner h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.welcome-banner p {
+    font-size: 1.5rem;
+    opacity: 0.9;
+}
+
+// User Profile Selection Card
+.profile-selection-card {
+    background-color: white;
+    border: 1px solid $profile-card-border;
+    border-radius: 1rem; // More rounded corners for the main card
+    padding: 2rem;
+    box-shadow: 0 0.25rem 0.5rem $profile-card-shadow;
+}
+
+.profile-selection-card h2 {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: $dark;
+}
+
+// Individual User Profile Icon Styles
+.profile-icon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    text-decoration: none; // Remove underline from links
+    color: $body-color; // Default text color
+    margin-bottom: 1.5rem; // Space between rows
+
+    &:hover {
+        color: $primary; // Change text color on hover
+        .icon-wrapper {
+            transform: translateY(-5px); // Simple hover effect
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); // Enhance shadow
+        }
+    }
+}
+
+.icon-wrapper {
+    width: $profile-icon-size;
+    height: $profile-icon-size;
+    border-radius: $profile-icon-border-radius;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    transition: all 0.2s ease-in-out; // Smooth transition for hover effect
+    box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1); // Default shadow
+
+    // Apply specific background colors
+    &.finance-bg { background-color: $finance-icon-bg; }
+    &.supplier-bg { background-color: $supplier-icon-bg; }
+    &.manufacturer-bg { background-color: $manufacturer-icon-bg; }
+    &.vendor-bg { background-color: $vendor-icon-bg; }
+    &.customer-bg { background-color: $customer-icon-bg; }
+    &.liquor-manager-bg { background-color: $liquor-manager-icon-bg; }
+    &.procurement-officer-bg { background-color: $procurement-officer-icon-bg; }
+}
+
+.icon-wrapper i {
+    font-size: ($profile-icon-size / 2); // Icon size relative to wrapper
+    color: white; // White icons
+}
+
+.icon-label {
+    font-weight: 500;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
