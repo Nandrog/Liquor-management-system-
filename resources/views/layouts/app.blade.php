@@ -1,34 +1,41 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}"> {{-- Add this back for forms --}}
-    <title>{{ config('app.name', 'Liquor Management System') }} - @yield('title', 'Dashboard')</title> {{-- Use @yield('title') here --}}
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <!-- Fonts (Optional, as discussed previously) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Scripts and CSS -->
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
-</head>
-<body>
-    <div id="app" class="d-flex"> {{-- Use d-flex for sidebar layout --}}
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        {{-- Optional: Your sidebar partial (if uncommented) --}}
-        {{-- @include('layouts.partials.sidebar') --}}
+        <!-- Scripts -->
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    </head>
+    <body class="font-sans antialiased">
+        <div class="min-h-screen bg-gray-100">
+            @include('layouts.navigation')
 
-        <div class="main-content flex-grow-1"> {{-- This div usually wraps main content and header --}}
-            {{-- Optional: Your header/top-nav partial (if uncommented) --}}
-            {{-- @include('layouts.partials.header') --}}
+            <!-- Page Heading -->
+            @isset($header)
+                <header class="bg-white shadow">
+                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                        {{ $header }}
+                    </div>
+                </header>
+            @endisset
 
-            {{-- THIS IS WHERE YOUR <MAIN> TAG SHOULD GO --}}
-            <main class="container-fluid py-4"> {{-- Example Bootstrap classes --}}
-                @yield('content') {{-- Page-specific content injection point --}}
+            <!-- Page Content -->
+            <main>
+                {{ $slot }}
             </main>
         </div>
+<<<<<<< HEAD
     </div>
 </body>
+=======
+    </body>
+>>>>>>> 7073a76dd984be3089827987e87e8246f81892a1
 </html>

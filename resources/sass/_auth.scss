@@ -1,0 +1,114 @@
+// resources/sass/_auth.scss
+
+.auth-container {
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+.auth-image-panel {
+    width: 50%;
+    background-color: #343a40; // Dark gray
+    display: flex;
+    @media (max-width: 768px) {
+        display: none; // Hide on mobile
+    }
+}
+
+.auth-form-panel {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    @media (max-width: 768px) {
+        width: 100%;
+    }
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 700px;
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+
+    &.auth-card-green {
+        background-color: #C8E6C9; // Light green from design
+    }
+    &.auth-card-green-border {
+        border: 2px solid #4CAF50;
+        background-color: white;
+    }
+    &.auth-card-yellow-border {
+        border: 2px solid #FFC107;
+        background-color: white;
+    }
+}
+
+.auth-title {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 0.5rem;
+
+    &.text-green { color: #4CAF50; }
+    &.text-yellow { color: #FFC107; }
+}
+
+.auth-subtitle {
+    text-align: center;
+    color: #6c757d;
+    margin-bottom: 2rem;
+}
+
+.auth-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.auth-input {
+    border-radius: 50px !important; // Force fully rounded inputs
+    border: 1px solid #ced4da;
+    padding: 0.75rem 1.25rem;
+    background-color: #e9ecef;
+    &:focus {
+        background-color: white;
+        border-color: #80bdff;
+        box-shadow: none;
+    }
+}
+
+.auth-button {
+    width: 100%;
+    border-radius: 50px !important;
+    padding: 0.75rem;
+    font-weight: 600;
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+
+    &:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+    }
+}
+
+.auth-button-purple { background-color: #8E24AA; }
+.auth-button-green { background-color: #4CAF50; }
+.auth-button-yellow { background-color: #FFC107; }
+
+.auth-footer-link {
+    text-align: center;
+    margin-top: 1.5rem;
+
+    a {
+        font-weight: 600;
+        text-decoration: none;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
