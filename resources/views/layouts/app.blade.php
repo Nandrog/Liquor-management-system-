@@ -29,7 +29,6 @@
                 @yield('content') {{-- Page-specific content injection point --}}
             </main>
         </div>
-
     </div>
 </body>
 </html>
