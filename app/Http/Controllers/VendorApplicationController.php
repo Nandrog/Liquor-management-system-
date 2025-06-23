@@ -32,5 +32,5 @@ class VendorApplicationController extends Controller
         // Redirect back with a success message.
         // In a real app, an admin would review this and then invite the vendor to register.
         return redirect()->route('login')->with('status', 'Thank you! Your application has been submitted for review.');
-    }    
+    }
 }

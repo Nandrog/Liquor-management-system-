@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\VendorApplicationController;
 // KEEP ONLY THE NEW, MODULAR CONTROLLER IMPORT. Delete any other DashboardController import.
 use App\Modules\Dashboard\Http\Controllers\DashboardController;
@@ -11,6 +12,9 @@ use App\Modules\Dashboard\Http\Controllers\DashboardController;
 | Public Routes (No login required)
 |--------------------------------------------------------------------------
 */
+
+Route::middleware(['auth'])->post('/order', [OrderController::class, 'placeOrder']);
+
 
 Route::get('/', function () {
     return view('welcome');
