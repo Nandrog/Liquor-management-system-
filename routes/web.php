@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VendorApplicationController;
 // KEEP ONLY THE NEW, MODULAR CONTROLLER IMPORT. Delete any other DashboardController import.
 use App\Modules\Dashboard\Http\Controllers\DashboardController;
+use App\Modules\Communications\Http\Controllers\MessageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,5 +59,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Add other role-specific route groups here...
+
+    /*----------------------------------------------------
+    Communication routes
+    ------------------------------------------------------*/
+    Route::middleware(['auth'])->group(function(){
+    Route::get('/messages',[MessageController::class,'index'])->name('messages.index');//shoing view and messages
+    //sending a message
+    Route::get('/messages/{user}', [MessageController::class, 'show'])->name('messages.show');
+
+    Route::post('/messages',[MessageController::class,'store'])->name('messages.store');
+    Route::post('/messages/{id}/read',[MessageController::class,'markAsRead'])->name('messages.markAsRead');
+});
+
+
+        
+    
 
 });

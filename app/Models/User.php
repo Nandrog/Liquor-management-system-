@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class User extends Authenticatable
 {
@@ -26,6 +27,19 @@ class User extends Authenticatable
         'password',
         'employee_id', // Add this
     ];
+     /**
+     * Get the user's full name.
+     * This creates a "virtual" attribute called "name".
+     *
+     * @return \Illuminate\Database\Eloquent\Casts\Attribute
+     */
+   
+    protected function name(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->firstname . ' ' . $this->lastname,
+        );
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -53,5 +67,13 @@ class User extends Authenticatable
 public function orders()
 {
     return $this->hasMany(Order::class);
+}
+
+
+public function sentMessage(){
+    return $this->hasMany(Message::class,'sender_id');
+}
+public function receivedMessage(){
+    return $this->hasMany(Message::class,'receiver_id');
 }
 }
