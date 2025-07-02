@@ -17,6 +17,13 @@ class DatabaseSeeder extends Seeder
 
          $this->call([
         RoleSeeder::class,
+            
+            WarehouseSeeder::class,
+            FactorySeeder::class,
+            UserSeeder::class, // Creates your admin, customer, supplier users 
+            ProductSeeder::class,
+            StockLevelSeeder::class, // Sets the initial stock
+            
     ]);
 
         User::factory()->create([

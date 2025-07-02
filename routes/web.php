@@ -1,32 +1,11 @@
 <?php
 
+use App\Modules\Inventory\Http\Controllers\DashboardController as InventoryDashboardController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Modules\Orders\Http\Controllers\OrderController;
 use App\Http\Controllers\VendorApplicationController;
 // KEEP ONLY THE NEW, MODULAR CONTROLLER IMPORT. Delete any other DashboardController import.
 use App\Modules\Dashboard\Http\Controllers\DashboardController;
-use App\Modules\Payments\Http\Controllers\PaymentController;
-use App\Modules\Orders\Http\Controllers\ProductController;
-
-Route::get('/dashboard/pay', function () {
-    return view('payment.payment');
-})->name('payment.payment');
-
-Route::post('/stripe-charge', [PaymentController::class, 'charge'])->name('stripe.charge');
-
-
-// Routes for Stripe redirection
-Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
-Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
-
-// Route for Stripe Webhook
-// NOTE: This route should be handled by a separate controller if your logic grows.
-Route::post('/stripe/webhook', [PaymentController::class, 'handleWebhook'])->name('stripe.webhook');
-
-
-// ... other routes
-
 
 /*
 |--------------------------------------------------------------------------
@@ -34,7 +13,7 @@ Route::post('/stripe/webhook', [PaymentController::class, 'handleWebhook'])->nam
 |--------------------------------------------------------------------------
 */
 
-//Route::middleware(['auth'])->post('/order', [OrderController::class, 'placeOrder']);
+//Route::middleware(['auth'])->post('/order', [OrderController::class, 'index']);
 
 
 Route::get('/', function () {
@@ -60,6 +39,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Main dashboard entry point, correctly pointing to the 'index' method.
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/inventory', InventoryDashboardController::class)->name('inventory.dashboard');
 
     // Profile routes from Breeze, now inside the main auth group.
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -75,9 +55,47 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // All routes for a Liquor Manager's specific actions.
     Route::middleware(['role:Liquor Manager'])->prefix('manager')->name('manager.')->group(function () {
+
+        Route::get('/stock-levels', [LmStockLevelController::class, 'index'])->name('stock_levels.index');
+        Route::resource('items', LmItemController::class);
+    });
+
+        // All routes for a Finance's specific actions.
+    Route::middleware(['role:Finance'])->prefix('finance')->name('finance.')->group(function () {
+        Route::get('/items', [FiItemController::class, 'index'])->name('items.index');
+        Route::patch('/items/{product}', [FiItemController::class, 'updatePrice'])->name('items.update_price');
+    });
+
+        // All routes for a Customer's specific actions.
+    Route::middleware(['role:Customer'])->prefix('customer')->name('customer.')->group(function () {
         // ...
     });
 
-    // Add other role-specific route groups here...
+        // All routes for a manufacturer's specific actions.
+    Route::middleware(['role:Manufacturer'])->prefix('manufacturer')->name('manufacturer.')->group(function () {
+        Route::get('/stock-levels', [MaStockLevelController::class, 'index'])->name('stock_levels.index');
+        Route::get('/production', [ProductionController::class, 'index'])->name('production.index');
+        Route::post('/production', [ProductionController::class, 'store'])->name('production.store');
+    });
+
+        // All routes for a Procurement officer's specific actions.
+    Route::middleware(['role:Procurement Officer'])->prefix('officer')->name('officer.')->group(function () {
+       Route::get('/stock-movements', [PoStockMovementController::class, 'index'])->name('stock_movements.index');
+        Route::post('/stock-movements', [PoStockMovementController::class, 'store'])->name('stock_movements.store');
+        Route::get('/supplier-overview', [PoSupplierMgtController::class, 'index'])->name('supplier.overview');
+    });
+
+        // All routes for a Liquor Manager's specific actions.
+    Route::middleware(['role:Vendor'])->prefix('vendor')->name('vendor.')->group(function () {
+        // ...
+    });
+
+    Route::middleware(['can:view stock levels'])->group(function () {
+
+    // Now, any user whose role has the 'view stock levels' permission can access this.
+    Route::get('/stock-levels', [LmStockLevelController::class, 'index'])->name('manager.stock_levels.index');
+    Route::get('/stock-levels', [LmStockLevelController::class, 'index'])->name('officer.stock_levels.index');
+
+});
 
 });
