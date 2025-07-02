@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\Factory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 
 
@@ -60,10 +61,6 @@ public function orders()
     return $this->hasMany(Order::class);
 }
 
-public function supplierProfile()
-{
-    return $this->hasOne(Supplier::class);
-}
 
 public function customerProfile()
 {
@@ -74,6 +71,13 @@ public function productionPlant(): BelongsTo
 {
     return $this->belongsTo(Factory::class, 'factory_id');
 }
+
+/*public function suppliedPurchases(): HasMany
+{
+    // The foreign key on the 'purchases' table is 'supplier_id'.
+    // The local key on the 'users' table is 'id'.
+   // return $this->hasMany(Purchase::class, 'supplier_id', 'id');
+}*/
 }
 
 

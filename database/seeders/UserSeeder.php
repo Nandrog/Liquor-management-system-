@@ -38,12 +38,7 @@ class UserSeeder extends Seeder
             ]);
             $supplierUser->assignRole(Role::findByName('Supplier'));
             // Create the supplier's business profile
-            Supplier::create([
-                'user_id' => $supplierUser->id,
-                'company_name' => 'Tindyebwa Farms Ltd.',
-                'contact_person' => 'Amos Tindyebwa',
-                'phone_number' => '256777123456',
-            ]);
+
 
             $supplierUser2 = User::factory()->create([
     'firstname' => 'Maria',
@@ -52,12 +47,7 @@ class UserSeeder extends Seeder
     'email' => 'supplier2@example.com',
 ]);
 $supplierUser2->assignRole(Role::findByName('Supplier'));
-Supplier::create([
-    'user_id' => $supplierUser2->id,
-    'company_name' => 'Nankya Packaging Solutions',
-    'contact_person' => 'Maria Nankya',
-    'phone_number' => '256755987654',
-]);
+
 
             $vendorUser = User::factory()->create([
                 'firstname' => 'Amos',
@@ -67,12 +57,7 @@ Supplier::create([
             ]);     
             $vendorUser->assignRole(Role::findByName('Vendor'));
             // Create the supplier's business profile
-            Supplier::create([
-                'user_id' => $vendorUser->id,
-                'company_name' => 'Tindyebwa Retails Ltd.',
-                'contact_person' => 'Amos Tindbwa',
-                'phone_number' => '256777123456',
-            ]);
+            
 
             // --- Create Customer User and Profile ---
             $customerUser = User::factory()->create([
