@@ -35,4 +35,7 @@ return [
         ],
     ],
 
+    'vendor_validation' => [
+        'url' => env('VALIDATION_SERVER_URL'),
+    ],
 ];
