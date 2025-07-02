@@ -6,6 +6,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VendorApplicationController;
 // KEEP ONLY THE NEW, MODULAR CONTROLLER IMPORT. Delete any other DashboardController import.
 use App\Modules\Dashboard\Http\Controllers\DashboardController;
+use App\Modules\Inventory\Http\Controllers\LmStockLevelController;
+use App\Modules\Inventory\Http\Controllers\LmItemController;
+use App\Modules\Inventory\Http\Controllers\FiItemController;
+use App\Modules\Inventory\Http\Controllers\MaStockLevelController;
+use App\Modules\Inventory\Http\Controllers\PoStockMovementController;
+use App\Modules\Inventory\Http\Controllers\PoSupplierMgtController;
+use App\Modules\Production\Http\Controllers\Manufacturer\ProductionController;
 
 /*
 |--------------------------------------------------------------------------
