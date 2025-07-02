@@ -2,10 +2,31 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-//use App\Modules\Orders\Http\Controllers\OrderController;
+use App\Modules\Orders\Http\Controllers\OrderController;
 use App\Http\Controllers\VendorApplicationController;
 // KEEP ONLY THE NEW, MODULAR CONTROLLER IMPORT. Delete any other DashboardController import.
 use App\Modules\Dashboard\Http\Controllers\DashboardController;
+use App\Modules\Payments\Http\Controllers\PaymentController;
+use App\Modules\Orders\Http\Controllers\ProductController;
+
+Route::get('/dashboard/pay', function () {
+    return view('payment.payment');
+})->name('payment.payment');
+
+Route::post('/stripe-charge', [PaymentController::class, 'charge'])->name('stripe.charge');
+
+
+// Routes for Stripe redirection
+Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
+Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
+
+// Route for Stripe Webhook
+// NOTE: This route should be handled by a separate controller if your logic grows.
+Route::post('/stripe/webhook', [PaymentController::class, 'handleWebhook'])->name('stripe.webhook');
+
+
+// ... other routes
+
 
 /*
 |--------------------------------------------------------------------------
@@ -50,8 +71,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // All routes for a Supplier's specific actions (e.g., managing their inventory).
     Route::middleware(['role:Supplier'])->prefix('supplier')->name('supplier.')->group(function () {
         // Example: Route::get('/inventory', [InventoryStockController::class, 'index'])->name('inventory.index');
-    });
-    
+});
+
     // All routes for a Liquor Manager's specific actions.
     Route::middleware(['role:Liquor Manager'])->prefix('manager')->name('manager.')->group(function () {
         // ...
