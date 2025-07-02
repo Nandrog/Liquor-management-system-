@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Factory;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -19,7 +20,13 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+            // Fetch all factories from the database
+    $factories = Factory::orderBy('name')->get();
+
+    // Pass the factories to the view
+    return view('auth.register', [
+        'factories' => $factories,
+    ]);
     }
 
     /**
@@ -32,43 +39,47 @@ class RegisteredUserController extends Controller
         // Define which roles are considered 'employees' and require an employee_id
         $employeeRoles = ['manufacturer', 'procurement officer', 'liquor manager', 'finance'];
 
-        // Base validation rules for all users
-        $rules = [
-            'firstname' => ['required', 'string', 'max:255'],
-            'lastname' => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'string', 'exists:roles,name'], // Validate that the role exists in the 'roles' table
-        ];
 
-        // Add conditional validation for employee_id only if the selected role requires it
-        if (in_array($request->role, $employeeRoles)) {
-            $rules['employee_id'] = ['required', 'string', 'max:255', 'unique:'.User::class];
-        }
+    
+    // Base validation rules
+    $rules = [
+        'firstname' => ['required', 'string', 'max:255'],
+        'lastname' => ['required', 'string', 'max:255'],
+        'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
+        'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+        'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        'role' => ['required', 'string', 'exists:roles,name'],
+    ];
 
-        // Run the validation
-        $request->validate($rules);
+    // Conditional validation for employee_id
+    if (in_array($request->role, $employeeRoles)) {
+        $rules['employee_id'] = ['required', 'string', 'max:255', 'unique:'.User::class];
+    }
+    
+    // NEW: Conditional validation for factory_id
+    if ($request->role === 'manufacturer') {
+        $rules['factory_id'] = ['required', 'integer', 'exists:factories,id'];
+    }
 
-        // Create the user with the validated data
-        $user = User::create([
-            'firstname' => $request->firstname,
-            'lastname' => $request->lastname,
-            'username' => $request->username,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'employee_id' => $request->employee_id, // This will be null if not present in the request
-        ]);
+    $request->validate($rules);
 
-        // Find the role from the database and assign it to the newly created user
-        $role = Role::findByName($request->role);
-        $user->assignRole($role);
+    // Create the user, making sure to include the factory_id
+    $user = User::create([
+        'firstname' => $request->firstname,
+        'lastname' => $request->lastname,
+        'username' => $request->username,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'employee_id' => $request->employee_id,
+        'factory_id' => $request->factory_id, // This will be null if not present
+    ]);
 
-        // Fire the 'Registered' event for things like sending verification emails
-        event(new Registered($user));
+    // ... assign role and redirect ...
+    $role = Role::findByName($request->role);
+    $user->assignRole($role);
 
-        // As requested, redirect to the login page with a success message.
-        // We are NOT logging the user in automatically.
-        return redirect(route('login'))->with('status', 'Registration successful! Please log in.');
+    event(new Registered($user));
+
+    return redirect(route('login'))->with('status', 'Registration successful! Please log in.');
     }
 }

@@ -60,6 +60,22 @@
                             <x-input-error :messages="$errors->get('employee_id')" class="mt-2" />
                         </div>
                     @endif
+
+                    {{-- NEW: Factory Selection Dropdown (Conditional) --}}
+@if ($currentRole === 'manufacturer')
+    <div class="mt-4">
+        <x-input-label for="factory_id" value="Select Your Factory" />
+        <select id="factory_id" name="factory_id" class="block mt-1 w-full form-select auth-input" required>
+            <option value="">Please select a factory...</option>
+            @foreach ($factories as $factory)
+                <option value="{{ $factory->id }}" @selected(old('factory_id') == $factory->id)>
+                    {{ $factory->name }} ({{ $factory->location }})
+                </option>
+            @endforeach
+        </select>
+        <x-input-error :messages="$errors->get('factory_id')" class="mt-2" />
+    </div>
+@endif
                     
                     {{-- You can add the "Contact" field here if needed, I've omitted for brevity but it's simple to add --}}
 

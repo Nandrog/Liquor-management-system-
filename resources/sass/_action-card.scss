@@ -1,0 +1,49 @@
+
+
+.action-card {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: all 0.2s ease-in-out;
+    color: #333;
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        color: var(--bs-primary); // Use Bootstrap's primary color on hover
+    }
+}
+
+.action-card-icon {
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    margin-right: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f4f7;
+    border-radius: 50%; // Make it circular
+    font-size: 1.5rem;
+    color: #555;
+}
+
+.action-card-body {
+    flex-grow: 1;
+}
+
+.action-card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.action-card-description {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 0;
+}

@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use App\Models\Factory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+
 
 class User extends Authenticatable
 {
@@ -25,6 +29,7 @@ class User extends Authenticatable
         'email',
         'password',
         'employee_id', // Add this
+        'factory_id',
     ];
 
     /**
@@ -54,4 +59,21 @@ public function orders()
 {
     return $this->hasMany(Order::class);
 }
+
+public function supplierProfile()
+{
+    return $this->hasOne(Supplier::class);
 }
+
+public function customerProfile()
+{
+    return $this->hasOne(Customer::class);
+}
+
+public function productionPlant(): BelongsTo
+{
+    return $this->belongsTo(Factory::class, 'factory_id');
+}
+}
+
+
