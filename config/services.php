@@ -43,4 +43,7 @@ return [
             'tolerance' => env('STRIPE_WEBHOOK_TOLERANCE', 300),
         ],
     ],
+    'vendor_validation' => [
+        'url' => env('VALIDATION_SERVER_URL'),
+    ],
 ];
