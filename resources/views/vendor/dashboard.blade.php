@@ -8,7 +8,7 @@
 
     {{-- Dashboard Cards Grid --}}
     <div class="row">
-        <div class="col-md-4 mb-4">
+        {{--<div class="col-md-4 mb-4">
             <x-dashboard-card title="Chats" value="{{ $stats['newChats'] }}" description="New Chats" icon="bi-chat-dots" />
         </div>
         <div class="col-md-4 mb-4">
@@ -25,6 +25,6 @@
         </div>
         <div class="col-md-4 mb-4">
             <x-dashboard-card title="Trend Predictions" value="Rush hour" description="" icon="bi-wallet2" />
-        </div>
+        </div>--}}
     </div>
 </x-app-layout>

@@ -72,13 +72,13 @@ class DashboardController extends Controller
             
             // Items Card
             $itemCard = $masterActionList['items'];
-            $itemCard['route'] = route('supplier.items.index'); // Points to the SUPPLIER's item route
+            //$itemCard['route'] = route('supplier.items.index'); // Points to the SUPPLIER's item route
             $itemCard['description'] = 'Manage the products you supply to us.'; // Custom description
             $cardsForUser[] = $itemCard;
             
             // Stock Levels Card
             $stockCard = $masterActionList['stock_levels'];
-            $stockCard['route'] = route('supplier.stock_levels.index'); // Points to the SUPPLIER's stock level route
+           // $stockCard['route'] = route('supplier.stock_levels.index'); // Points to the SUPPLIER's stock level route
             $stockCard['description'] = 'View stock levels of your products at our warehouses.'; // Custom description
             $cardsForUser[] = $stockCard;
 
