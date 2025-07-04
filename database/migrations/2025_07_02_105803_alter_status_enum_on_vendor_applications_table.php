@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('slug');
-            $table->timestamps();
+        Schema::table('vendor_applications', function (Blueprint $table) {
+            DB::statement("ALTER TABLE vendor_applications MODIFY status ENUM('pending', 'approved', 'rejected', 'failed', 'passed') DEFAULT 'pending'");
         });
+
     }
 
     /**
@@ -24,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        //
     }
 };

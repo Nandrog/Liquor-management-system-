@@ -3,17 +3,17 @@
 use App\Modules\Inventory\Http\Controllers\DashboardController as InventoryDashboardController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-//use App\Modules\Orders\Http\Controllers\OrderController;
 use App\Http\Controllers\VendorApplicationController;
 // KEEP ONLY THE NEW, MODULAR CONTROLLER IMPORT. Delete any other DashboardController import.
 use App\Modules\Dashboard\Http\Controllers\DashboardController;
 use App\Modules\Inventory\Http\Controllers\LmStockLevelController;
 use App\Modules\Inventory\Http\Controllers\LmItemController;
+use App\Modules\Inventory\Http\Controllers\FiItemController;
+use App\Modules\Inventory\Http\Controllers\MaStockLevelController;
 use App\Modules\Inventory\Http\Controllers\PoStockMovementController;
 use App\Modules\Inventory\Http\Controllers\PoSupplierMgtController;
-use App\Modules\Inventory\Http\Controllers\MaStockLevelController;
 use App\Modules\Production\Http\Controllers\Manufacturer\ProductionController;
-use App\Modules\Inventory\Http\Controllers\FiItemController;
+
 /*
 |--------------------------------------------------------------------------
 | Public Routes (No login required)
@@ -58,11 +58,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // All routes for a Supplier's specific actions (e.g., managing their inventory).
     Route::middleware(['role:Supplier'])->prefix('supplier')->name('supplier.')->group(function () {
         // Example: Route::get('/inventory', [InventoryStockController::class, 'index'])->name('inventory.index');
-    });
-    
+});
+
     // All routes for a Liquor Manager's specific actions.
     Route::middleware(['role:Liquor Manager'])->prefix('manager')->name('manager.')->group(function () {
-        
+
         Route::get('/stock-levels', [LmStockLevelController::class, 'index'])->name('stock_levels.index');
         Route::resource('items', LmItemController::class);
     });
@@ -98,7 +98,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::middleware(['can:view stock levels'])->group(function () {
-    
+
     // Now, any user whose role has the 'view stock levels' permission can access this.
     Route::get('/stock-levels', [LmStockLevelController::class, 'index'])->name('manager.stock_levels.index');
     Route::get('/stock-levels', [LmStockLevelController::class, 'index'])->name('officer.stock_levels.index');

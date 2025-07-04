@@ -13,15 +13,16 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-             $table->string('name');
+            $table->string('name');
             $table->string('sku')->unique();
             $table->text('description')->nullable();
             $table->decimal('unit_price', 10, 2);
             $table->string('unit_of_measure');
             $table->integer('stock')->default(0);
-            $table->integer('reorder_level')->default(0);
-            $table->enum('type', ['finished_good', 'raw_material'])->default('finished_good');
-            $table->foreignId('supplier_id')->nullable()->constrained('users');
+            $table->unsignedBigInteger('category_id');
+            $table->foreign('category_id')->references('id')->on('categories')->nullable()->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('vendor_id');
+            $table->foreign('vendor_id')->references('id')->on('vendors')->nullable()->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
