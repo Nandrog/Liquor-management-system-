@@ -8,6 +8,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Models\Factory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+
 
 class User extends Authenticatable
 {
@@ -26,6 +31,7 @@ class User extends Authenticatable
         'email',
         'password',
         'employee_id', // Add this
+        'factory_id',
     ];
      /**
      * Get the user's full name.
@@ -76,4 +82,22 @@ public function sentMessage(){
 public function receivedMessage(){
     return $this->hasMany(Message::class,'receiver_id');
 }
+public function customerProfile()
+{
+    return $this->hasOne(Customer::class);
 }
+
+public function productionPlant(): BelongsTo
+{
+    return $this->belongsTo(Factory::class, 'factory_id');
+}
+
+/*public function suppliedPurchases(): HasMany
+{
+    // The foreign key on the 'purchases' table is 'supplier_id'.
+    // The local key on the 'users' table is 'id'.
+   // return $this->hasMany(Purchase::class, 'supplier_id', 'id');
+}*/
+}
+
+

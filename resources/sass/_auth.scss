@@ -32,8 +32,11 @@
     border-radius: 20px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 
+
     &.auth-card-green {
         background-color: #C8E6C9; // Light green from design
+        margin-top: 100px;
+        margin-left: 400px;
     }
     &.auth-card-green-border {
         border: 2px solid #4CAF50;

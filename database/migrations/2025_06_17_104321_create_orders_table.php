@@ -16,7 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->nullable()->constrained()->onDelete('cascade');
             $table->string('status');
-            $table->decimal('total-price', 10, 2)->default(0);
+            $table->decimal('total_amount', 10, 2)->default(0);
+            
             $table->timestamps();
         });
     }

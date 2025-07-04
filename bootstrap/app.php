@@ -28,3 +28,16 @@ return Application::configure(basePath: dirname(__DIR__))
         // If you create other modules in the future, add their providers here.
     ])
     ->create();
+    ->withMiddleware(function (Middleware $middleware) { // <-- The parameter name can be whatever you want, e.g., $middleware
+        
+        // This is the block you need to add to register the aliases.
+        $middleware->alias([
+            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+        ]);
+
+    })
+    ->withExceptions(function (Exceptions $exceptions) { // <-- Corrected the parameter name here too for consistency
+        //
+    })->create();

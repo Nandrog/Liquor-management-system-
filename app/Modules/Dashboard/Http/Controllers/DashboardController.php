@@ -23,6 +23,22 @@ class DashboardController extends Controller
         if ($user->hasRole('Liquor Manager')) {
             return $this->managerDashboard();
         }
+        if ($user->hasRole('Procurement Officer')) {
+            return $this->officerDashboard();
+        }
+        if ($user->hasRole('Vendor')) {
+            return $this->vendorDashboard();
+        }
+        if ($user->hasRole('Finance')) {
+            return $this->financeDashboard();
+        }
+        if ($user->hasRole('Manufacturer')) {
+            return $this->manufacturerDashboard();
+        }
+        if ($user->hasRole('Customer')) {
+            return $this->customerDashboard();
+        }
+        
 
         // ... other role checks here ...
 
@@ -65,4 +81,43 @@ class DashboardController extends Controller
     }
 
     // ... add other private methods for other roles (financeDashboard, etc.)
+    private function vendorDashboard()
+    {
+        // Fetch data specific to the Liquor Manager...
+        $stats = [ /* ... manager stats ... */ ];
+
+        return view('vendor.dashboard' /*,['stats' => $stats]*/);
+    }
+
+    private function customerDashboard()
+    {
+        // Fetch data specific to the Liquor Manager...
+        $stats = [ /* ... manager stats ... */ ];
+
+        return view('customer.dashboard' /*,['stats' => $stats]*/);
+    }
+
+    private function officerDashboard()
+    {
+        // Fetch data specific to the Liquor Manager...
+        $stats = [ /* ... manager stats ... */ ];
+
+        return view('officer.dashboard' /*,['stats' => $stats]*/);
+    }
+
+    private function manufacturerDashboard()
+    {
+        // Fetch data specific to the Liquor Manager...
+        $stats = [ /* ... manager stats ... */ ];
+
+        return view('manufacturer.dashboard' /*,['stats' => $stats]*/);
+    }
+
+    private function financeDashboard()
+    {
+        // Fetch data specific to the Liquor Manager...
+        //$stats = [ /* ... manager stats ... */ ];
+
+        return view('finance.dashboard' /*,['stats' => $stats]*/);
+    }
 }
