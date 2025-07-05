@@ -97,7 +97,7 @@ class DashboardController extends Controller
         }  elseif ($user->hasRole('Procurement Officer')) {
 
             
-            $procurementActions = ['stock_levels', 'stock_movements',/* 'warehouses', 'purchases', 'sales'*/];
+            $procurementActions = [ 'stock_movements',/* 'warehouses','stock_levels', 'purchases', 'sales'*/];
 
             foreach ($procurementActions as $action) {
                 $card = $masterActionList[$action];

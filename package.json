@@ -9,6 +9,7 @@
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",
         "@tailwindcss/vite": "^4.0.0",
+        "@vitejs/plugin-vue": "^6.0.0",
         "alpinejs": "^3.4.2",
         "autoprefixer": "^10.4.21",
         "axios": "^1.8.2",
@@ -22,7 +23,6 @@
     },
     "dependencies": {
         "@popperjs/core": "^2.11.8",
-        "@vitejs/plugin-vue": "^6.0.0",
         "bootstrap": "^5.3.6",
         "bootstrap-icons": "^1.13.1",
         "sass": "^1.89.2",
