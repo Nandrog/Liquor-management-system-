@@ -24,11 +24,11 @@ class Product extends Model
         'unit_price',
         'unit_of_measure',
         // 'stock', // REMOVED: Stock quantity is managed in the 'stock_levels' table.
-        'category', // Kept for simplicity, can be removed if relying only on category_id
+       // 'category', // Kept for simplicity, can be removed if relying only on category_id
         'reorder_level',
         'category_id', // ADDED: This is needed for mass assignment.
-        'vendor_id',   // ADDED: This is needed for mass assignment.
-        'supplier_id',
+        //'vendor_id',   // ADDED: This is needed for mass assignment.
+        //'supplier_id',
     ];
 
     /**
