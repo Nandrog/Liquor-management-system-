@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VendorApplicationController;
 // KEEP ONLY THE NEW, MODULAR CONTROLLER IMPORT. Delete any other DashboardController import.
 use App\Modules\Dashboard\Http\Controllers\DashboardController;
+use App\Modules\Communications\Http\Controllers\MessageController;
 use App\Modules\Inventory\Http\Controllers\LmStockLevelController;
 use App\Modules\Inventory\Http\Controllers\LmItemController;
 use App\Modules\Inventory\Http\Controllers\FiItemController;
@@ -85,6 +86,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/production', [ProductionController::class, 'store'])->name('production.store');
     });
 
+    /*----------------------------------------------------
+    Communication routes
+    ------------------------------------------------------*/
+    Route::middleware(['auth'])->group(function(){
+    Route::get('/messages',[MessageController::class,'index'])->name('messages.index');//shoing view and messages
+    //sending a message
+    Route::get('/messages/{user}', [MessageController::class, 'show'])->name('messages.show');
+
+    Route::post('/messages',[MessageController::class,'store'])->name('messages.store');
+    Route::post('/messages/{id}/read',[MessageController::class,'markAsRead'])->name('messages.markAsRead');
+});
+
+
+        
+    
+
+});
         // All routes for a Procurement officer's specific actions.
     Route::middleware(['role:Procurement Officer'])->prefix('officer')->name('officer.')->group(function () {
        Route::get('/stock-movements', [PoStockMovementController::class, 'index'])->name('stock_movements.index');

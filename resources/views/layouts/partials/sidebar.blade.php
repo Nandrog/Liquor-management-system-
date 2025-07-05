@@ -50,7 +50,9 @@
             
             
             {{-- Common Links at the bottom --}}
-            <li><a href="#" class="nav-link"><i class="bi bi-chat-dots me-2"></i> Chat</a></li>
+            
+            <li><a href="{{ route('messages.index') }} " class="nav-link"><i class="bi bi-chat-dots me-2"></i> Chat</a></li>
+             
         </ul>
     </nav>
 </aside>
