@@ -76,7 +76,30 @@
         <x-input-error :messages="$errors->get('factory_id')" class="mt-2" />
     </div>
 @endif
-                    
+
+@if ($currentRole === 'supplier')
+<!-- -->
+
+<!-- ...existing form fields... -->
+
+<!-- Add these fields for supplier registration -->
+<div class="mt-4">
+    <label for="location">Location</label>
+    <input class="auth-input" id="location" type="text" name="location" required class="block mt-1 w-full" value="{{ old('location') }}">
+</div>
+
+<div class="mt-4">
+    <label for="item_supplied">Item Supplied</label>
+    <input class="auth-input" id="item_supplied" type="text" name="item_supplied" required class="block mt-1 w-full" value="{{ old('item_supplied') }}">
+</div>
+
+<div class="mt-4">
+    <label for="phone">Phone</label>
+    <input class="auth-input" id="phone" type="text" name="phone" required class="block mt-1 w-full" value="{{ old('phone') }}">
+</div>
+<!-- ...existing form fields... -->
+@endif
+
                     {{-- You can add the "Contact" field here if needed, I've omitted for brevity but it's simple to add --}}
 
                     <!-- Password -->

@@ -4,6 +4,7 @@ use App\Modules\Inventory\Http\Controllers\DashboardController as InventoryDashb
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VendorApplicationController;
+use Illuminate\Support\Facades\Auth;
 // KEEP ONLY THE NEW, MODULAR CONTROLLER IMPORT. Delete any other DashboardController import.
 use App\Modules\Dashboard\Http\Controllers\DashboardController;
 use App\Modules\Inventory\Http\Controllers\LmStockLevelController;
@@ -13,6 +14,13 @@ use App\Modules\Inventory\Http\Controllers\MaStockLevelController;
 use App\Modules\Inventory\Http\Controllers\PoStockMovementController;
 use App\Modules\Inventory\Http\Controllers\PoSupplierMgtController;
 use App\Modules\Production\Http\Controllers\Manufacturer\ProductionController;
+use App\Modules\Product\Http\Controllers\ProductController;
+use App\Modules\Product\Http\Controllers\VendorProductController;
+use App\Modules\Orders\Http\Controllers\SupplierOrderController;
+use App\Modules\Orders\Http\Controllers\VendorOrderController;
+use App\Http\Controllers\ProcurementController;
+use App\Http\Controllers\ManufacturerController;
+use App\Modules\Orders\Http\Controllers\CustomerOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -87,7 +95,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // All routes for a Procurement officer's specific actions.
     Route::middleware(['role:Procurement Officer'])->prefix('officer')->name('officer.')->group(function () {
-       Route::get('/stock-movements', [PoStockMovementController::class, 'index'])->name('stock_movements.index');
+    Route::get('/stock-movements', [PoStockMovementController::class, 'index'])->name('stock_movements.index');
         Route::post('/stock-movements', [PoStockMovementController::class, 'store'])->name('stock_movements.store');
         Route::get('/supplier-overview', [PoSupplierMgtController::class, 'index'])->name('supplier.overview');
     });
@@ -105,4 +113,58 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 });
 
+});
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', function () {
+        // A simple dashboard router based on role
+        if (Auth::user() && Auth::user()->hasRole('Liquor Manager')) return redirect()->route('liquor-manager.products.index');
+        if (Auth::user() && Auth::user()->hasRole('Supplier')) return redirect()->route('supplier.orders.index');
+        // ... add other roles
+        return view('dashboard');
+    })->name('dashboard');
+
+    // 1. Liquor Manager Routes
+    Route::middleware('role:Liquor Manager')->prefix('liquor-manager')->name('liquor-manager.')->group(function () {
+        Route::resource('products', ProductController::class);
+    });
+
+    // 2. Supplier Routes
+    Route::middleware('role:Supplier')->prefix('supplier')->name('supplier.')->group(function () {
+        Route::resource('orders', SupplierOrderController::class)->only(['index', 'show', 'create', 'store']);
+        Route::get('orders', [SupplierOrderController::class, 'index'])->name('orders.index');
+    });
+
+    // 3. Manufacturer Routes
+    Route::middleware('role:Manufacturer')->prefix('manufacturer')->name('manufacturer.')->group(function () {
+        Route::get('orders', [ManufacturerController::class, 'index'])->name('manufacturer-index');
+        Route::get('orders/{order}', [ManufacturerController::class, 'show'])->name('orders.show');
+        Route::patch('orders/{order}', [ManufacturerController::class, 'update'])->name('orders.update');
+    });
+
+    // 4. Vendor Routes (Placing Orders)
+    Route::middleware('role:Vendor')->prefix('vendor')->name('vendor.')->group(function () {
+        // Placing new orders
+        Route::resource('orders', VendorOrderController::class)->only(['index', 'show', 'create', 'store']);
+        // Managing their product prices
+        Route::resource('products', VendorProductController::class)->only(['index', 'edit', 'update']);
+    });
+
+    // 5. Procurement Officer Routes
+    Route::middleware('role:Procurement Officer')->prefix('procurement')->name('procurement.')->group(function () {
+        Route::get('orders', [ProcurementController::class, 'index'])->name('orders.index');
+        Route::get('orders/{order}', [ProcurementController::class, 'show'])->name('orders.show');
+        Route::patch('orders/{order}', [ProcurementController::class, 'update'])->name('orders.update');
+    });
+
+    // 7. Customer Routes
+    Route::middleware('role:Customer')->prefix('customer')->name('customer.')->group(function () {
+        Route::get('browse/{vendor}', [CustomerOrderController::class, 'browse'])->name('browse');
+        Route::get('orders', [CustomerOrderController::class, 'index'])->name('orders.index');
+        Route::resource('orders', CustomerOrderController::class)->only(['index', 'show', 'create', 'store',]);
+    });
 });

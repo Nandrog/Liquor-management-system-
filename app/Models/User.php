@@ -56,10 +56,6 @@ class User extends Authenticatable
         ];
     }
 
-public function orders()
-{
-    return $this->hasMany(Order::class);
-}
 
 
 public function customerProfile()
@@ -78,6 +74,22 @@ public function productionPlant(): BelongsTo
     // The local key on the 'users' table is 'id'.
    // return $this->hasMany(Purchase::class, 'supplier_id', 'id');
 }*/
+  // ... existing properties
+
+    public function supplier()
+    {
+        return $this->hasOne(\App\Models\Supplier::class);
+    }
+
+    public function vendor()
+    {
+        return $this->belongsTo(Vendor::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'user_id');
+    }
 }
 
 

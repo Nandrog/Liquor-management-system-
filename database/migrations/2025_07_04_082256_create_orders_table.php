@@ -13,11 +13,15 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('supplier_id')->nullable();
+            $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('set null');
+            $table->string('type')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->nullable()->constrained()->onDelete('cascade');
             $table->string('status');
             $table->decimal('total_amount', 10, 2)->default(0);
-            
+            $table->string('payment_status')->default('pending'); // e.g., pending, paid, failed
+            $table->string('transaction_id')->nullable(); // To store the Stripe Payment Intent ID
             $table->timestamps();
         });
     }

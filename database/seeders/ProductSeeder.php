@@ -16,10 +16,16 @@ class ProductSeeder extends Seeder
         $supplier1 = User::where('email', 'supplier1@example.com')->first();
         $supplier2 = User::where('email', 'supplier2@example.com')->first();
         $vendor = Vendor::first();
-        
-        $spiritsCategory = Category::where('name', 'Spirits')->first();
-        $beersCategory = Category::where('name', 'Beers')->first();
-        $ingredientsCategory = Category::where('name', 'Raw Ingredients')->first();
+        if (!$vendor) {
+            $this->command->error('No vendor found. Please seed vendors first.');
+            return;
+        }
+
+        $category = Category::first();
+        if (!$category) {
+            $this->command->error('No category found. Please seed categories first.');
+            return;
+        }
 
         // --- Seed Finished Goods ---
         // These are sold by a vendor and belong to a finished goods category.
@@ -29,9 +35,8 @@ class ProductSeeder extends Seeder
             'type' => 'finished_good',
             'unit_price' => 25000,
             'unit_of_measure' => 'bottle',
-            //'category_id' => $spiritsCategory->id,
-            //'vendor_id' => $vendor->id,
-            'supplier_id' => null, // No direct supplier for a finished good
+            'category_id' => $category->id,
+            'vendor_id' => $vendor->id,
         ]);
 
         Product::factory()->create([
@@ -53,7 +58,7 @@ class ProductSeeder extends Seeder
             ['sku' => 'RM-BAN-01', 'name' => 'Bananas', 'price' => 1000, 'uom' => 'kg', 'supplier_id' => $supplier1->id],
             ['sku' => 'RM-CIT-P-01', 'name' => 'Citrus Peels', 'price' => 800, 'uom' => 'kg', 'supplier_id' => $supplier1->id],
             ['sku' => 'RM-JUN-B-01', 'name' => 'Juniper Berries', 'price' => 15000, 'uom' => 'kg', 'supplier_id' => $supplier1->id],
-            
+
             // Ingredients from Supplier 2 (Nankya Packaging)
             ['sku' => 'RM-YST-01', 'name' => 'Yeast', 'price' => 5000, 'uom' => 'kg', 'supplier_id' => $supplier2->id],
             ['sku' => 'RM-CHR-01', 'name' => 'Charcoal', 'price' => 2500, 'uom' => 'kg', 'supplier_id' => $supplier2->id],

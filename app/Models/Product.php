@@ -85,4 +85,13 @@ class Product extends Model
         // If not, you can remove this or specify SaleItem/PurchaseItem.
         return $this->hasMany(OrderItem::class);
     }
+
+    protected $casts = [
+        'type' => \App\Enums\ProductType::class,
+    ];
+
+    public function vendorProducts()
+    {
+        return $this->hasMany(VendorProduct::class);
+    }
 }
