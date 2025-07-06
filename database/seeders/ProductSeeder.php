@@ -13,7 +13,7 @@ class ProductSeeder extends Seeder
     public function run(): void
     {
         // 1. Get all the necessary dependencies that were created by previous seeders.
-        //$supplier1 = User::where('email', 'supplier1@example.com')->first();
+        $supplier1 = User::where('email', 'supplier1@example.com')->first();
         $supplier2 = User::where('email', 'supplier2@example.com')->first();
         $vendor = Vendor::first();
         if (!$vendor) {
@@ -45,7 +45,7 @@ class ProductSeeder extends Seeder
             'type' => 'finished_good',
             'unit_price' => 3500,
             'unit_of_measure' => 'bottle',
-            'category_id' => $beersCategory->id,
+            //'category_id' => $beersCategory->id,
             //'vendor_id' => $vendor->id,
             //'supplier_id' => null,
         ]);
@@ -53,7 +53,7 @@ class ProductSeeder extends Seeder
         // --- Seed Raw Materials ---
         // This array defines all your raw materials and which supplier provides them.
         $rawMaterials = [
-            // Ingredients from Supplier 1 (Tindyebwa Farms)
+            //Ingredients from Supplier 1 (Tindyebwa Farms)
             ['sku' => 'RM-MOL-01', 'name' => 'Molasses', 'price' => 2000, 'uom' => 'kg', 'supplier_id' => $supplier1->id],
             ['sku' => 'RM-BAN-01', 'name' => 'Bananas', 'price' => 1000, 'uom' => 'kg', 'supplier_id' => $supplier1->id],
             ['sku' => 'RM-CIT-P-01', 'name' => 'Citrus Peels', 'price' => 800, 'uom' => 'kg', 'supplier_id' => $supplier1->id],
