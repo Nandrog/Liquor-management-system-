@@ -15,6 +15,11 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+
+
+        <x-nav-link :href="route('messages.index')" :active="request()->routeIs('messages.index')">
+        {{ __('Messages') }}
+    </x-nav-link>
                 </div>
             </div>
 
@@ -93,6 +98,7 @@
                                         this.closest('form').submit();">
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>
+                    
                 </form>
             </div>
         </div>

@@ -3,6 +3,8 @@
 @section('title', 'Welcome')
 
 @section('content')
+
+<div  class="d-flex flex-column justify-content-center align-items-center min-vh-100">
 <div class="container py-5">
     <div class="welcome-banner">
         <h1>Welcome</h1>
@@ -40,5 +42,7 @@
         </div>
     @endforeach
 </div>
+</div>
+
 </div>
 @endsection

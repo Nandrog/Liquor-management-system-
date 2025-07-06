@@ -13,7 +13,7 @@ class ProductSeeder extends Seeder
     public function run(): void
     {
         // 1. Get all the necessary dependencies that were created by previous seeders.
-        $supplier1 = User::where('email', 'supplier1@example.com')->first();
+        //$supplier1 = User::where('email', 'supplier1@example.com')->first();
         $supplier2 = User::where('email', 'supplier2@example.com')->first();
         $vendor = Vendor::first();
         if (!$vendor) {
@@ -45,9 +45,9 @@ class ProductSeeder extends Seeder
             'type' => 'finished_good',
             'unit_price' => 3500,
             'unit_of_measure' => 'bottle',
-            //'category_id' => $beersCategory->id,
+            'category_id' => $beersCategory->id,
             //'vendor_id' => $vendor->id,
-            'supplier_id' => null,
+            //'supplier_id' => null,
         ]);
 
         // --- Seed Raw Materials ---
@@ -60,7 +60,7 @@ class ProductSeeder extends Seeder
             ['sku' => 'RM-JUN-B-01', 'name' => 'Juniper Berries', 'price' => 15000, 'uom' => 'kg', 'supplier_id' => $supplier1->id],
 
             // Ingredients from Supplier 2 (Nankya Packaging)
-            ['sku' => 'RM-YST-01', 'name' => 'Yeast', 'price' => 5000, 'uom' => 'kg', 'supplier_id' => $supplier2->id],
+            //['sku' => 'RM-YST-01', 'name' => 'Yeast', 'price' => 5000, 'uom' => 'kg', 'supplier_id' => $supplier2->id],
             ['sku' => 'RM-CHR-01', 'name' => 'Charcoal', 'price' => 2500, 'uom' => 'kg', 'supplier_id' => $supplier2->id],
             ['sku' => 'RM-CIT-A-01', 'name' => 'Citric Acid', 'price' => 6000, 'uom' => 'kg', 'supplier_id' => $supplier2->id],
             ['sku' => 'RM-BOT-750', 'name' => 'Glass Bottles 750ml', 'price' => 500, 'uom' => 'unit', 'supplier_id' => $supplier2->id],
@@ -77,7 +77,7 @@ class ProductSeeder extends Seeder
                 'unit_price' => $material['price'],
                 'unit_of_measure' => $material['uom'],
                 //'category_id' => $ingredientsCategory->id,
-                'supplier_id' => $material['supplier_id'],
+                //'supplier_id' => $material['supplier_id'],
                 //'vendor_id' => null, // Raw materials don't have a vendor
             ]);
         }

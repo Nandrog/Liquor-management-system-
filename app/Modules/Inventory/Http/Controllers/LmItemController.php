@@ -5,6 +5,7 @@ namespace App\Modules\Inventory\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Models\Category;
 use App\Models\User;
 use App\Models\Vendor;
@@ -56,6 +57,7 @@ class LmItemController extends Controller
         'categories' => Category::all(),
         'suppliers' => User::role('Supplier')->get(),
         'vendors' => Vendor::with('user')->get(),
+         'units_of_measure' => config('inventory.units_of_measure'), 
     ];
     
     return view('manager.items.create', $data);
@@ -64,7 +66,7 @@ class LmItemController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreItemRequest $request)
     {
             // The request is already validated by the StoreItemRequest class.
     // We can directly access the validated data.
@@ -93,6 +95,7 @@ class LmItemController extends Controller
         'categories' => Category::all(),
         'suppliers' => User::role('Supplier')->get(),
         'vendors' => Vendor::with('user')->get(),
+        'units_of_measure' => config('inventory.units_of_measure'), 
     ];
 
     return view('manager.items.edit', $data);

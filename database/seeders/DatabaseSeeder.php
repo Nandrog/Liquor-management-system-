@@ -20,7 +20,8 @@ class DatabaseSeeder extends Seeder
             
             WarehouseSeeder::class,
             FactorySeeder::class,
-            UserSeeder::class, // Creates your admin, customer, supplier users 
+            UserSeeder::class, // Creates your admin, customer, supplier users
+            CategorySeeder::class, 
             ProductSeeder::class,
             StockLevelSeeder::class, // Sets the initial stock
             
