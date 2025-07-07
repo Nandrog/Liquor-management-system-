@@ -59,16 +59,20 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-md-6 mb-3">
-        <label for="supplier_id" class="form-label">Supplier (for Raw Materials)</label>
-        <select class="form-select @error('supplier_id') is-invalid @enderror" id="supplier_id" name="supplier_id">
-            <option value="">None</option>
-            @foreach($suppliers as $supplier)
-                <option value="{{ $supplier->id }}" @selected(old('supplier_id', $item->supplier_id ?? '') == $supplier->id)>{{ $supplier->username }}</option>
-            @endforeach
-        </select>
-        <x-input-error :messages="$errors->get('supplier_id')" class="mt-2" />
-    </div>
+<div class="col-md-6 mb-3">
+    <label for="user_id" class="form-label">Supplier</label> 
+    
+    {{-- Change id and name from 'supplier_id' to 'user_id' --}}
+    <select class="form-select @error('user_id') is-invalid @enderror" id="user_id" name="user_id">
+        <option value="">None</option>
+        @foreach($suppliers as $supplier)
+            <option value="{{ $supplier->id }}" @selected(old('user_id', $item->user_id ?? '') == $supplier->id)>
+                {{ $supplier->username }}
+            </option>
+        @endforeach
+    </select>
+    <x-input-error :messages="$errors->get('user_id')" class="mt-2" /> {{-- Changed get() key --}}
+</div>
     <div class="col-md-6 mb-3">
         <label for="vendor_id" class="form-label">Vendor (for Finished Goods)</label>
         <select class="form-select @error('vendor_id') is-invalid @enderror" id="vendor_id" name="vendor_id">

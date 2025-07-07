@@ -28,7 +28,9 @@ class Product extends Model
        // 'category', // Kept for simplicity, can be removed if relying only on category_id
         'reorder_level',
         'category_id', // ADDED: This is needed for mass assignment.
+        'user_id',
         //'vendor_id',   // ADDED: This is needed for mass assignment.
+        
         
     ];
 
@@ -58,7 +60,7 @@ class Product extends Model
     public function supplier(): BelongsTo
     {
         // A product's 'supplier_id' column points to the 'id' on the 'users' table.
-        return $this->belongsTo(User::class, 'supplier_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**

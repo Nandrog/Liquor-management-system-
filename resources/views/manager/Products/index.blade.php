@@ -37,7 +37,7 @@
                                         <td class="px-6 py-4 whitespace-nowrap">{{ $product->name }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $product->type === 'raw_material' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800' }}">
-                                                {{ str_replace('_', ' ', $product->type->value) }}
+                                                {{ str_replace('_', ' ', $product->type) }}
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">${{ number_format($product->base_price, 2) }}</td>
