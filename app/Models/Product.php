@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Product extends Model
 {
@@ -28,7 +29,7 @@ class Product extends Model
         'reorder_level',
         'category_id', // ADDED: This is needed for mass assignment.
         //'vendor_id',   // ADDED: This is needed for mass assignment.
-        //'supplier_id',
+        
     ];
 
     /**
@@ -85,4 +86,15 @@ class Product extends Model
         // If not, you can remove this or specify SaleItem/PurchaseItem.
         return $this->hasMany(OrderItem::class);
     }
+
+    public function recipe(): HasOne
+{
+return $this->hasOne(Recipe::class, 'output_product_id');
+}
+
+public function usedInRecipes(): BelongsToMany
+{
+return $this->belongsToMany(Recipe::class, 'recipe_materials', 'material_product_id', 'recipe_id');
+}
+
 }

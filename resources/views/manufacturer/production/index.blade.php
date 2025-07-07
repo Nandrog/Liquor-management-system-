@@ -28,17 +28,26 @@
             <p>Enter the number of crates you wish to produce. One crate contains 24 bottles.</p>
             
             <form action="{{ route('manufacturer.production.store') }}" method="POST">
-                @csrf
-                <div class="row align-items-end">
-                    <div class="col-md-4">
-                        <label for="crates" class="form-label">Number of Crates</label>
-                        <input type="number" class="form-control" id="crates" name="crates" min="1" required>
-                    </div>
-                    <div class="col-md-4">
-                        <button type="submit" class="btn btn-primary">Start Production</button>
-                    </div>
-                </div>
-            </form>
+@csrf
+<div class="row align-items-end">
+<div class="col-md-4">
+<label for="product_id" class="form-label">Finished Good to Produce</label>
+<select class="form-select" id="product_id" name="product_id" required>
+<option value="">Choose item...</option>
+@foreach($producibleItems as $item)
+<option value="{{ $item->id }}">{{ $item->name }}</option>
+@endforeach
+</select>
+</div>
+<div class="col-md-3">
+<label for="crates" class="form-label">Number of Crates</label>
+<input type="number" class="form-control" id="crates" name="crates" min="1" required>
+</div>
+<div class="col-md-3">
+<button type="submit" class="btn btn-primary">Start Production</button>
+</div>
+</div>
+</form>
         </div>
     </div>
 
