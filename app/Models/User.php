@@ -39,7 +39,7 @@ class User extends Authenticatable
      *
      * @return \Illuminate\Database\Eloquent\Casts\Attribute
      */
-   
+
     protected function name(): Attribute
     {
         return Attribute::make(

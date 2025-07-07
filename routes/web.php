@@ -23,6 +23,7 @@ use App\Modules\Orders\Http\Controllers\VendorOrderController;
 use App\Http\Controllers\ProcurementController;
 use App\Http\Controllers\ManufacturerController;
 use App\Modules\Orders\Http\Controllers\CustomerOrderController;
+use App\Http\Controllers\SetPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -84,6 +85,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // All routes for a Liquor Manager's specific actions.
     Route::middleware(['role:Liquor Manager'])->prefix('manager')->name('manager.')->group(function () {
 
+
         Route::get('/stock-levels', [LmStockLevelController::class, 'index'])->name('stock_levels.index');
         Route::resource('items', LmItemController::class);
     });
@@ -113,12 +115,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/supplier-overview', [PoSupplierMgtController::class, 'index'])->name('supplier.overview');
     });
 
-        // All routes for a Liquor Manager's specific actions.
+        // All routes for a Vendor's specific actions.
     Route::middleware(['role:Vendor'])->prefix('vendor')->name('vendor.')->group(function () {
-        // ...
+        Route::get('/dashboard', function (){
+            $stats =[
+                'newChats' => 0,
+                'outOfStock' => 0,
+                'unfulfilledOrders' => 0,
+                'salesTotal' => 0,
+            ];
+            return view('vendor.dashboard', compact('stats'));
+        })->name('dashboard');
     });
 
     Route::middleware(['can:view stock levels'])->group(function () {
+
 
     // Now, any user whose role has the 'view stock levels' permission can access this.
     Route::get('/stock-levels', [LmStockLevelController::class, 'index'])->name('manager.stock_levels.index');
@@ -183,3 +194,10 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('orders', CustomerOrderController::class)->only(['index', 'show', 'create', 'store',]);
     });
 });
+
+Route::get('/set-password/{user}', [SetPasswordController::class, 'show'])
+    ->middleware(['signed'])//ensures link validity
+    ->name('password.set');
+
+Route::post('/set-password/{user}', [SetPasswordController::class, 'update'])
+    ->name('password.set.update');

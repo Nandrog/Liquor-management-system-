@@ -28,7 +28,21 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        //Dynamically redirect based on user role
+        $user = $request->user();
+
+        $redirect = match($user->role){
+            'Vendor' => route('vendor.dashboard'),
+            'Liquor Manager' => route('manager.stock_levels.index'),
+            'Finance' => route('finance.items.index'),
+            'Manufacturer' => route('manufacturer.stock_levels.index'),
+            'Procurement' => route('officer.stock_movements.index'),
+            'Supplier' => route('supplier.inventory.index'),
+            'Customer' => route('customer.dashboard', absolute: false),
+            default => route('dashboard'),
+        };
+
+        return redirect()->intended($redirect);
     }
 
     /**
