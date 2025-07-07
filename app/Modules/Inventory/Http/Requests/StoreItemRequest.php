@@ -37,7 +37,7 @@ class StoreItemRequest extends FormRequest
             'category_id' => ['required', 'integer', 'exists:categories,id'],
             
             // supplier_id is required only if the type is 'raw_material'
-            'supplier_id' => ['nullable', 'integer', 'exists:users,id'],
+            'user_id' => ['nullable', 'integer', 'exists:users,id'],
             'vendor_id' => ['nullable', 'integer', 'exists:vendors,id'],
         ];
     }
