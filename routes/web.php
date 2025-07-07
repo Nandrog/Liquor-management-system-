@@ -145,6 +145,7 @@ Route::middleware(['auth'])->group(function () {
     // 1. Liquor Manager Routes
     Route::middleware('role:Liquor Manager')->prefix('liquor-manager')->name('liquor-manager.')->group(function () {
         Route::resource('products', ProductController::class);
+        Route::get('products', [ProductController::class, 'index'])->name('products.index');
     });
 
     // 2. Supplier Routes

@@ -48,13 +48,14 @@
 
             @if(auth()->user()->hasRole('Liquor Manager'))
                 <li><a href="{{ route('inventory.dashboard') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Inventory</a></li>
+                <li><a href="{{ route('liquor-manager.products.create') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Products</a></li>
             @endif
 
 
             {{-- Common Links at the bottom --}}
-            
+
             <li><a href="{{ route('messages.index') }} " class="nav-link"><i class="bi bi-chat-dots me-2"></i> Chat</a></li>
-             
+
         </ul>
     </nav>
 </aside>
