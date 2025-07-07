@@ -40,7 +40,7 @@ class RegisteredUserController extends Controller
         $employeeRoles = ['manufacturer', 'procurement officer', 'liquor manager', 'finance'];
 
 
-    
+
     // Base validation rules
     $rules = [
         'firstname' => ['required', 'string', 'max:255'],
@@ -51,11 +51,20 @@ class RegisteredUserController extends Controller
         'role' => ['required', 'string', 'exists:roles,name'],
     ];
 
+        // Conditional validation for supplier fields
+if ($request->role === 'supplier') {
+    $rules['location'] = ['required', 'string', 'max:255'];
+    $rules['item_supplied'] = ['required', 'string', 'max:255'];
+    $rules['phone'] = ['required', 'string', 'max:20'];
+}
+
+// The supplier record will be created after the user is created
+
     // Conditional validation for employee_id
     if (in_array($request->role, $employeeRoles)) {
         $rules['employee_id'] = ['required', 'string', 'max:255', 'unique:'.User::class];
     }
-    
+
     // NEW: Conditional validation for factory_id
     if ($request->role === 'manufacturer') {
         $rules['factory_id'] = ['required', 'integer', 'exists:factories,id'];
@@ -74,12 +83,22 @@ class RegisteredUserController extends Controller
         'factory_id' => $request->factory_id, // This will be null if not present
     ]);
 
-    // ... assign role and redirect ...
-    $role = Role::findByName($request->role);
-    $user->assignRole($role);
+    // CREATE THE SUPPLIER RECORD IF ROLE IS SUPPLIER
+    if ($request->role === 'supplier') {
+        \App\Models\Supplier::create([
+            'user_id' => $user->id,
+            'location' => $request->input('location'),
+            'item-supplied' => $request->input('item_supplied'), // match your DB column name
+            'phone' => $request->input('phone'),
+        ]);
+    }
 
-    event(new Registered($user));
+// ... assign role and redirect ...
+$role = Role::findByName($request->role);
+$user->assignRole($role);
 
-    return redirect(route('login'))->with('status', 'Registration successful! Please log in.');
+event(new Registered($user));
+
+return redirect(route('login'))->with('status', 'Registration successful! Please log in.');
     }
 }

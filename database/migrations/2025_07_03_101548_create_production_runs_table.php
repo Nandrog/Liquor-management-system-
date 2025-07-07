@@ -19,7 +19,6 @@ return new class extends Migration
             $table->integer('quantity_produced'); // Number of bottles
             $table->decimal('cost_of_materials', 12, 2);
             $table->timestamp('completed_at');
-            $table->timestamps();
         });
     }
 
@@ -28,9 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::create('production_runs', function (Blueprint $table) {
-        $table->id();
-        $table->timestamps();
-    });
+        Schema::dropIfExists('production_runs');
     }
 };
