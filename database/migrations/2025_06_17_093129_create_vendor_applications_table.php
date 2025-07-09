@@ -16,7 +16,9 @@ return new class extends Migration
             $table->string('vendor_name');
             $table->string('contact_email')->unique();
             $table->string('pdf_path'); // To store the path of the uploaded PDF
-            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->enum('status', ['pending', 'approved', 'rejected', 'failed', 'passed'])->default('pending');
+            $table->timestamp('visit_scheduled_for')->nullable();
+            $table->text('validation_notes')->nullable();
             $table->timestamps();
         });
     }

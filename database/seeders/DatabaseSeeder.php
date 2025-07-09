@@ -12,18 +12,28 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->call([
+        // User::factory(10)->create();
+
+         $this->call([
+        RoleSeeder::class,
+            
             WarehouseSeeder::class,
-    
-            RoleSeeder::class,
-            EmployeeSeeder::class
-        ]);
+            FactorySeeder::class,
+            UserSeeder::class, // Creates your admin, customer, supplier users
+            CategorySeeder::class,
+            VendorSeeder::class, 
+            ProductSeeder::class,
+            RecipeSeeder::class,
+            StockLevelSeeder::class, // Sets the initial stock
+            
+    ]);
 
         User::factory()->create([
-            'firstname' => 'Test',
-            'lastname'  => 'User',
-            'username'  => 'testuser',
-            'email'     => 'test@example.com',
+        'firstname' => 'Test',
+        'lastname' => 'User',
+        'username' => 'testuser',
+        'email' => 'test@example.com',
         ]);
-    }
+   }
+
 }

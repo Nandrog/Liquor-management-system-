@@ -3,15 +3,24 @@
         <h2 class="auth-title text-yellow">Vendor Application</h2>
         <p class="auth-subtitle">Please submit your application for review.</p>
 
+        @if ($errors->any())
+            <div class="bg-red-100 text-red-700 p-4 rounded mb-4">
+                <ul class="list-disc pl-5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <form method="POST" action="{{ route('vendor.application.store') }}" enctype="multipart/form-data">
             @csrf
-            
+
             <!-- Vendor Name -->
             <div class="mt-4">
                 <x-input-label for="vendor_name" value="Your Company Name" />
                 <x-text-input id="vendor_name" class="block mt-1 w-full auth-input" type="text" name="vendor_name" :value="old('vendor_name')" required />
             </div>
-            
+
             <!-- Contact Email -->
             <div class="mt-4">
                 <x-input-label for="contact_email" value="Contact Email" />

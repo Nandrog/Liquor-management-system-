@@ -5,6 +5,9 @@
 @import 'bootstrap/scss/bootstrap';
 @import 'auth';
 @import 'layout';
+@import 'action-card';
+
+
 
 // Welcome Banner Styles
 .welcome-banner {
@@ -15,6 +18,7 @@
     margin-bottom: 3rem;
     border-radius: 0.5rem; // Slightly rounded corners for the banner
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    
 }
 
 .welcome-banner h1 {

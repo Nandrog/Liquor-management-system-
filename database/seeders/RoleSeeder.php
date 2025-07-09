@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
-use Spatie\Permission\PermissionRegistrar;
 
 class RoleSeeder extends Seeder
 {
@@ -14,24 +13,17 @@ class RoleSeeder extends Seeder
     public function run(): void
     {
         // Reset cached roles and permissions
-        app()[PermissionRegistrar::class]->forgetCachedPermissions();
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $roles = [
-            'Finance',
-            'Supplier',
-            'Manufacturer',
-            'Vendor',
-            'Customer',
-            'Liquor Manager',
-            'Procurement Officer',
-            'Admin', // Super-admin role
-        ];
-
-        foreach ($roles as $roleName) {
-            Role::firstOrCreate([
-                'name' => $roleName,
-                'guard_name' => 'web',
-            ]);
-        }
+    Role::create(['name' => 'Finance']);
+        Role::create(['name' => 'Supplier']);
+        Role::create(['name' => 'Manufacturer']);
+        Role::create(['name' => 'Vendor']);
+        Role::create(['name' => 'Customer']);
+        Role::create(['name' => 'Liquor Manager']);
+        Role::create(['name' => 'Procurement Officer']);
+        Role::create(['name' => 'Admin']); // It's good practice to have a super-admin role
     }
+
+    
 }
