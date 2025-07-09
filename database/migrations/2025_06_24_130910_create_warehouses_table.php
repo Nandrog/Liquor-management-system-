@@ -16,6 +16,10 @@ return new class extends Migration
             $table->string('name');
             $table->string('location');
             $table->integer('capacity')->nullable();
+            $table->string('manager_name')->nullable();
+            $table->string('contant_info')->nullable();
+
+    ;
         
             // This links to the user who is the manager.
             $table->foreignId('manager_id')->nullable()->constrained('users');            

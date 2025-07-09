@@ -12,7 +12,7 @@ class Warehouse extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'location', 'capacity', 'manager_id'];
+    protected $fillable = ['name', 'location', 'capacity', 'manager_id','contact_info','manager_name'];
 
     /**
      * The products that are in stock in this warehouse.
@@ -32,5 +32,10 @@ class Warehouse extends Model
     public function factory(): HasOne
   {
     return $this->hasOne(Factory::class);
+  }
+
+  public function employees(): HasMany
+  {
+    return $this->hasMany(related:Employee::class);
   }
 }

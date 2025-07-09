@@ -23,6 +23,7 @@ use App\Modules\Orders\Http\Controllers\VendorOrderController;
 use App\Http\Controllers\ProcurementController;
 use App\Http\Controllers\ManufacturerController;
 use App\Modules\Orders\Http\Controllers\CustomerOrderController;
+use App\Modules\Inventory\Http\Controllers\MaPurchaseOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -86,6 +87,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/stock-levels', [LmStockLevelController::class, 'index'])->name('stock_levels.index');
         Route::resource('items', LmItemController::class);
+        Route::get('/purchase-orders', [MaPurchaseOrderController::class, 'index'])->name('purchase_orders.index');
     });
 
         // All routes for a Finance's specific actions.

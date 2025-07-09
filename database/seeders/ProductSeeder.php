@@ -45,8 +45,8 @@ class ProductSeeder extends Seeder
             'type' => 'finished_good',
             'unit_price' => 3500,
             'unit_of_measure' => 'bottle',
-            //'category_id' => $beersCategory->id,
-            //'vendor_id' => $vendor->id,
+            'category_id' => $category->id,
+            'vendor_id' => $vendor->id,
             //'supplier_id' => null,
         ]);
 
@@ -76,7 +76,7 @@ class ProductSeeder extends Seeder
                 'type' => 'raw_material',
                 'unit_price' => $material['price'],
                 'unit_of_measure' => $material['uom'],
-                //'category_id' => $ingredientsCategory->id,
+                'category_id' => $category->id,
                 //'supplier_id' => $material['supplier_id'],
                 //'vendor_id' => null, // Raw materials don't have a vendor
             ]);
