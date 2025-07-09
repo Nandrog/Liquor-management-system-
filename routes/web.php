@@ -56,12 +56,6 @@ Route::prefix('work-distribution')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-//Route::middleware(['auth'])->post('/order', [OrderController::class, 'index']);
-
-Route:: get('/dashboard/order', [OrderController::class, 'index'])->name('order');
-Route:: get('/dashboard/payments', [PaymentsController::class, 'index'])->name('payments');
-Route:: get('/dashboard/orders', [OrderController::class, 'orders'])->name('orders');
-
 Route::get('/', function () {
     return view('welcome');
 });
@@ -156,8 +150,8 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-        
-    
+
+Route:: get('/dashboard/payments', [PaymentsController::class, 'index'])->name('payments');
 
 
         // All routes for a Procurement officer's specific actions.
@@ -191,7 +185,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
 
-  
+
 // Route to set initial password via signed link
 Route::get('/set-password/{user}', [SetPasswordController::class, 'show'])
     ->middleware(['signed']) // ensures link validity
