@@ -2,11 +2,34 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-//use App\Modules\Orders\Http\Controllers\OrderController;
+use App\Modules\Orders\Http\Controllers\OrderController;
 use App\Http\Controllers\VendorApplicationController;
 // KEEP ONLY THE NEW, MODULAR CONTROLLER IMPORT. Delete any other DashboardController import.
 use App\Modules\Dashboard\Http\Controllers\DashboardController;
+use App\Modules\Payments\Http\Controllers\PaymentsController;
+use App\Http\Controllers\WorkDistribution\TaskController;
+use App\Http\Controllers\WorkDistribution\ShiftController;
 
+Route::prefix('work-distribution')->group(function () {
+    // (Tasks above)
+     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+    Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
+    Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+
+    // Shifts
+     Route::get('/shifts', [ShiftController::class, 'index'])->name('shifts.index');
+    Route::get('/shifts/create', [ShiftController::class, 'create'])->name('shifts.create');
+    Route::post('/shifts', [ShiftController::class, 'store'])->name('shifts.store');
+});
+Route::prefix('work-distribution')->group(function () {
+
+    // Show the Task form
+    Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
+
+    // Save the Task (handle the form POST)
+    Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+
+});
 /*
 |--------------------------------------------------------------------------
 | Public Routes (No login required)
@@ -15,6 +38,9 @@ use App\Modules\Dashboard\Http\Controllers\DashboardController;
 
 //Route::middleware(['auth'])->post('/order', [OrderController::class, 'placeOrder']);
 
+Route:: get('/dashboard/order', [OrderController::class, 'index'])->name('order');
+Route:: get('/dashboard/payments', [PaymentsController::class, 'index'])->name('payments');
+Route:: get('/dashboard/orders', [OrderController::class, 'orders'])->name('orders');
 
 Route::get('/', function () {
     return view('welcome');
@@ -51,7 +77,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['role:Supplier'])->prefix('supplier')->name('supplier.')->group(function () {
         // Example: Route::get('/inventory', [InventoryStockController::class, 'index'])->name('inventory.index');
     });
-    
+
     // All routes for a Liquor Manager's specific actions.
     Route::middleware(['role:Liquor Manager'])->prefix('manager')->name('manager.')->group(function () {
         // ...

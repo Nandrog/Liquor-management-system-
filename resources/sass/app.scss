@@ -96,3 +96,108 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
+/* Workforce table styles */
+.workforce-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+
+  th {
+    background: #f0f0f0;
+  }
+}
+
+.workforce-title {
+  color: #333;
+  margin-bottom: 1rem;
+}
+/* Workforce forms */
+.workforce-form {
+  max-width: 600px;
+  margin: 0 auto;
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+
+  label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: bold;
+  }
+
+  input,
+  select {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+
+  button {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+      background: #0056b3;
+    }
+  }
+}
+
+.success-message {
+  color: green;
+  margin-bottom: 1rem;
+}
+
+.error-messages {
+  color: red;
+  margin-bottom: 1rem;
+  list-style: disc;
+  padding-left: 1.5rem;
+}
+/* Workforce table styling — for Task List & Shift List */
+.workforce-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  margin-top: 1rem;
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 0.75rem;
+    text-align: left;
+  }
+
+  th {
+    background: #f0f0f0;
+  }
+
+  tr:nth-child(even) {
+    background: #f9f9f9;
+  }
+}
+
+.workforce-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+/* Hide Workforce links by default */
+.workforce-links {
+  display: none;
+}
+
+/* Show links when the parent LI is hovered */
+.workforce-parent:hover .workforce-links {
+  display: block;
+}

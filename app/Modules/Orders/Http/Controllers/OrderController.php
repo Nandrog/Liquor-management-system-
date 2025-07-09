@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Modules\Orders\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Order;
@@ -8,6 +8,7 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
+use App\Http\Controllers\Controller;
 
 class OrderController extends Controller
 {
@@ -87,4 +88,9 @@ public function index()
     return view('orders.index', compact('orders'));
 }
 
+public function orders()
+{
+    //$orders = Order::with('user', 'orderItems.product')->latest()->get();
+    return view('orders.orders');
+}
 }
