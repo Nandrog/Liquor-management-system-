@@ -3,14 +3,13 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Database\Seeders\WarehouseSeeder;
+use Database\Seeders\RoleSeeder;
+use Database\Seeders\EmployeeSeeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
         // User::factory(10)->create();
@@ -21,7 +20,8 @@ class DatabaseSeeder extends Seeder
             WarehouseSeeder::class,
             FactorySeeder::class,
             UserSeeder::class, // Creates your admin, customer, supplier users
-            CategorySeeder::class, 
+            CategorySeeder::class,
+            VendorSeeder::class, 
             ProductSeeder::class,
             RecipeSeeder::class,
             StockLevelSeeder::class, // Sets the initial stock
@@ -34,8 +34,6 @@ class DatabaseSeeder extends Seeder
         'username' => 'testuser',
         'email' => 'test@example.com',
         ]);
+   }
 
-        
-    }
-    
 }

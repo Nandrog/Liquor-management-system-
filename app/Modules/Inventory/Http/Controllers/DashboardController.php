@@ -50,7 +50,7 @@ class DashboardController extends Controller
                 'icon' => 'bi-building',
                 'route' => '#',
             ],
-            'purchases' => [
+            'purchase_orders' => [
                 'title' => 'Purchase Orders',
                 'description' => 'Create and manage orders from suppliers.',
                 'icon' => 'bi-cart-plus',
@@ -86,13 +86,14 @@ class DashboardController extends Controller
             // --- Liquor Manager Cards ---
             // The manager gets access to everything, so we can use a loop for cleaner code.
 
-            $managerActions = ['items', 'stock_levels'/*, 'stock_movements', 'warehouses', 'purchases', 'sales'*/];
+            $managerActions = ['items', 'stock_levels', 'purchase_orders'/*, 'stock_movements', 'warehouses', 'sales'*/];
 
             foreach ($managerActions as $action) {
                 $card = $masterActionList[$action];
                 // Dynamically create the route name, e.g., 'manager.items.index', 'manager.stock_levels.index'
                 $card['route'] = route("manager.{$action}.index");
                 $cardsForUser[] = $card;
+        
             }
         }  elseif ($user->hasRole('Procurement Officer')) {
 

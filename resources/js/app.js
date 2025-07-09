@@ -1,4 +1,5 @@
 import './bootstrap';
+import '../css/app.css'; 
 
 import * as bootstrap from 'bootstrap';
 
@@ -15,7 +16,8 @@ import ChatApp from './components/ChatApp.vue';
 const app = createApp({});
 app.component('chat-app', ChatApp);
 app.mount('#app');
-window.dispatchEvent(new CustomEvent('vue-mounted'));
+
+
 
 
 

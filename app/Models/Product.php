@@ -29,7 +29,7 @@ class Product extends Model
         'reorder_level',
         'category_id', // ADDED: This is needed for mass assignment.
         'user_id',
-        //'vendor_id',   // ADDED: This is needed for mass assignment.
+        'vendor_id',   // ADDED: This is needed for mass assignment.
         
         
     ];

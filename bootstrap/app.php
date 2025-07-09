@@ -11,9 +11,8 @@ return Application::configure(basePath: dirname(__DIR__))
         channels: __DIR__.'/../routes/channels.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware) {
-        // --- THIS IS THE MERGED MIDDLEWARE CONFIGURATION ---
 
+    ->withMiddleware(function (Middleware $middleware) {
         // Register the route middleware aliases for the Spatie Permissions package.
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
@@ -22,20 +21,19 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         // You can add other global middleware or middleware groups here if needed.
-        // For example:
+        // Example:
         // $middleware->web(append: [
         //     \App\Http\Middleware\ExampleMiddleware::class,
         // ]);
     })
+
     ->withExceptions(function (Exceptions $exceptions) {
         // Configure your exception handling here.
     })
+
     ->withProviders([
-        // --- THIS IS WHERE YOU REGISTER YOUR CUSTOM SERVICE PROVIDERS ---
-        
-        // Example for a Communications module
-        // \App\Modules\Communications\Providers\CommunicationsServiceProvider::class,
-        
-        // If you create other modules in the future, add their providers here.
+        \App\Modules\Communications\Providers\CommunicationsServiceProvider::class,
+        // Add other module providers here if needed
     ])
+
     ->create(); // <-- The create() method MUST be the very last call.
