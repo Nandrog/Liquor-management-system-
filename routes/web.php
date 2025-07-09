@@ -163,6 +163,8 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('role:Supplier')->prefix('supplier')->name('supplier.')->group(function () {
         Route::resource('orders', SupplierOrderController::class)->only(['index', 'show', 'create', 'store']);
         Route::get('orders', [SupplierOrderController::class, 'index'])->name('orders.index');
+        Route::get('orders/{order}', [SupplierOrderController::class, 'show'])->name('orders.show');
+        Route::patch('orders/{order}', [SupplierOrderController::class, 'update'])->name('orders.update');
     });
 
     // 3. Manufacturer Routes

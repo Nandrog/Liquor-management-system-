@@ -43,11 +43,11 @@
                             <label for="base_price" class="block text-sm font-medium text-gray-700">Base Price</label>
                             <div class="mt-1 relative rounded-md shadow-sm">
                                 <div class="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center">
-                                    <span class="text-gray-500 sm:text-sm">$</span>
+                                    <span class="text-gray-500 sm:text-sm">UGX</span>
                                 </div>
-                                <input type="number" name="base_price" id="base_price" step="0.01" min="0" value="{{ old('base_price') }}" class="block w-full rounded-md border-gray-300 pl-7 pr-12 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="0.00" required>
+                                <input type="number" name="base_price" id="base_price" step="0.01" min="0" value="{{ old('unit_price') }}" class="block w-full rounded-md border-gray-300 pl-7 pr-12 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="0.00" required>
                             </div>
-                             @error('base_price') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                             @error('unit_price') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
 
                         <div class="flex items-center justify-end mt-4">
