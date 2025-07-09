@@ -25,45 +25,48 @@
             </div>
 
             <!-- PANEL 2: VUE CHAT WINDOW -->
-            <div class="w-2/3 bg-gray-50">
-                <chat-app 
-                :user-id="{{ auth()->id() }}" 
-                :initial-receiver-id="0"></chat-app>
-            </div>
+        <div class="w-2/3 bg-gray-50">
+         <div id="chat-app-mount">
+        <chat-app 
+            :user-id="{{ auth()->id() }}" 
+            :initial-receiver-id="0">
+        </chat-app>
+    </div>
+</div>
+
 
         </div>
     </div>
 
     
-    @push('scripts')
+@push('scripts')
 <script>
-    // Instead of waiting for the DOM, wait for our custom 'vue-mounted' event.
     window.addEventListener('vue-mounted', function () {
-        
-        console.log('--- "vue-mounted" event received! Initializing glue script. ---');
+        setTimeout(() => {
+            const chatAppComponent = document.querySelector('#chat-app-mount');
 
-        const chatAppComponent = document.querySelector('chat-app');
-        if (chatAppComponent) {
-            console.log('Successfully found the <chat-app> component.');
-        } else {
-            console.error('CRITICAL: Could not find the <chat-app> component.');
-            return;
-        }
+            if (chatAppComponent) {
+                console.log('✅ Found chat app mount point.');
 
-        const conversationLinks = document.querySelectorAll('.conversation-link');
-        console.log(`Found ${conversationLinks.length} conversation link(s).`);
-
-        conversationLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                e.preventDefault();
-                const receiverId = this.getAttribute('data-receiver-id');
-                console.log(`Link clicked! Receiver ID: ${receiverId}`);
-                chatAppComponent.setAttribute('initial-receiver-id', receiverId);
-            });
-        });
+                document.querySelectorAll('.conversation-link, .user-link').forEach(link => {
+                    link.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        const receiverId = this.getAttribute('data-receiver-id');
+                        console.log(`Dispatching start-chat with receiver ID: ${receiverId}`);
+                        window.dispatchEvent(new CustomEvent('start-chat', {
+                            detail: { receiverId: Number(receiverId) }
+                        }));
+                    });
+                });
+            } else {
+                console.error('❌ Could not find #chat-app-mount.');
+            }
+        }, 100);
     });
 </script>
 @endpush
+
+
    
 
 </x-app-layout>

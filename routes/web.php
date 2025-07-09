@@ -24,6 +24,7 @@ use App\Http\Controllers\ProcurementController;
 use App\Http\Controllers\ManufacturerController;
 use App\Modules\Orders\Http\Controllers\CustomerOrderController;
 use App\Modules\Inventory\Http\Controllers\MaPurchaseOrderController;
+use App\Http\Controllers\SetPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -85,6 +86,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // All routes for a Liquor Manager's specific actions.
     Route::middleware(['role:Liquor Manager'])->prefix('manager')->name('manager.')->group(function () {
 
+
         Route::get('/stock-levels', [LmStockLevelController::class, 'index'])->name('stock_levels.index');
         Route::resource('items', LmItemController::class);
         Route::get('/purchase-orders', [MaPurchaseOrderController::class, 'index'])->name('purchase_orders.index');
@@ -108,19 +110,49 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/production', [ProductionController::class, 'store'])->name('production.store');
     });
 
-      // All routes for a Procurement officer's specific actions.
+
+/*----------------------------------------------------
+Communication routes
+------------------------------------------------------*/
+Route::middleware(['auth'])->group(function () {
+    Route::get('/messages', [MessageController::class, 'index'])->name('messages.index'); // showing view and messages
+    Route::get('/messages/{user}', [MessageController::class, 'show'])->name('messages.show'); // single user messages
+    Route::post('/messages', [MessageController::class, 'store'])->name('messages.store'); // send message
+    Route::post('/messages/{id}/read', [MessageController::class, 'markAsRead'])->name('messages.markAsRead'); // mark as read
+    Route::delete('/messages/{id}', [MessageController::class, 'destroy'])->middleware('auth'); // delete message
+});
+
+// All routes for a Procurement officer's specific actions.
+
+
+
+        
+    
+
+});
+        // All routes for a Procurement officer's specific actions.
+
     Route::middleware(['role:Procurement Officer'])->prefix('officer')->name('officer.')->group(function () {
     Route::get('/stock-movements', [PoStockMovementController::class, 'index'])->name('stock_movements.index');
         Route::post('/stock-movements', [PoStockMovementController::class, 'store'])->name('stock_movements.store');
         Route::get('/supplier-overview', [PoSupplierMgtController::class, 'index'])->name('supplier.overview');
     });
 
-        // All routes for a Liquor Manager's specific actions.
+        // All routes for a Vendor's specific actions.
     Route::middleware(['role:Vendor'])->prefix('vendor')->name('vendor.')->group(function () {
-        // ...
+        Route::get('/dashboard', function (){
+            $stats =[
+                'newChats' => 0,
+                'outOfStock' => 0,
+                'unfulfilledOrders' => 0,
+                'salesTotal' => 0,
+            ];
+            return view('vendor.dashboard', compact('stats'));
+        })->name('dashboard');
     });
 
     Route::middleware(['can:view stock levels'])->group(function () {
+
 
     // Now, any user whose role has the 'view stock levels' permission can access this.
     Route::get('/stock-levels', [LmStockLevelController::class, 'index'])->name('manager.stock_levels.index');
@@ -128,19 +160,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     });
 
-});
 
+  
+// Route to set initial password via signed link
+Route::get('/set-password/{user}', [SetPasswordController::class, 'show'])
+    ->middleware(['signed']) // ensures link validity
+    ->name('password.set');
 
-//Route::get('/', function () {
-    //return view('welcome');
-//});
+Route::post('/set-password/{user}', [SetPasswordController::class, 'update'])
+    ->name('password.set.update');
 
+// Route for dashboard, redirects user based on their role
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
-        // A simple dashboard router based on role
         if (Auth::user() && Auth::user()->hasRole('Liquor Manager')) return redirect()->route('liquor-manager.products.index');
         if (Auth::user() && Auth::user()->hasRole('Supplier')) return redirect()->route('supplier.orders.index');
-        // ... add other roles
+        // ... add other roles here
         return view('dashboard');
     })->name('dashboard');
 
@@ -165,9 +200,7 @@ Route::middleware(['auth'])->group(function () {
 
     // 4. Vendor Routes (Placing Orders)
     Route::middleware('role:Vendor')->prefix('vendor')->name('vendor.')->group(function () {
-        // Placing new orders
         Route::resource('orders', VendorOrderController::class)->only(['index', 'show', 'create', 'store']);
-        // Managing their product prices
         Route::resource('products', VendorProductController::class)->only(['index', 'edit', 'update']);
     });
 
@@ -182,6 +215,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('role:Customer')->prefix('customer')->name('customer.')->group(function () {
         Route::get('browse/{vendor}', [CustomerOrderController::class, 'browse'])->name('browse');
         Route::get('orders', [CustomerOrderController::class, 'index'])->name('orders.index');
-        Route::resource('orders', CustomerOrderController::class)->only(['index', 'show', 'create', 'store',]);
+        Route::resource('orders', CustomerOrderController::class)->only(['index', 'show', 'create', 'store']);
     });
 });
+

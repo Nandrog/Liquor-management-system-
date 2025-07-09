@@ -98,4 +98,20 @@ public function show(User $user)
 
     return response()->json(['messages' => $messages]);
 }
+
+
+public function destroy($id)
+{
+    $message = Message::findOrFail($id);
+
+    // Optional: Only allow sender to delete their message
+   if ($message->sender_id !== Auth::id()) {
+        return response()->json(['error' => 'Unauthorized'], 403);
+    }
+
+    $message->delete();
+
+    return response()->json(['success' => true]);
+}
+
 }

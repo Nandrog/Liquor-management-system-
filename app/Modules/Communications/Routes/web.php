@@ -9,4 +9,6 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/messages/{user}', [MessageController::class, 'show'])->name('messages.show');
     Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
     Route::post('/messages/{id}/read', [MessageController::class, 'markAsRead'])->name('messages.markAsRead');
+    Route::delete('/messages/{id}', [MessageController::class, 'destroy'])->middleware('auth');
+
 });
