@@ -205,3 +205,12 @@
 .workforce-parent:hover .workforce-links {
   display: block;
 }
+/* Hide Workforce links by default */
+.workforce-links {
+  display: none;
+}
+
+/* Show links when the parent LI is hovered */
+.workforce-parent:hover .workforce-links {
+  display: block;
+}

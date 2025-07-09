@@ -18,13 +18,7 @@ return new class extends Migration
             $table->string('role');
             $table->string('email')->unique();
             $table->string('skillset');
-            $table->unsignedBigInteger('warehouse_id')->nullable();
-
-            // Properly defined foreign key constraint
-            $table->foreign('warehouse_id')
-                  ->references('warehouse_id')
-                  ->on('warehouses')
-                  ->onDelete('cascade');
+            $table->foreignId('warehouse_id')->nullable()->unique()->constrained('warehouses');
 
             $table->timestamps();
         });

@@ -159,7 +159,7 @@ Route::middleware(['auth'])->group(function () {
         
     
 
-});
+
         // All routes for a Procurement officer's specific actions.
 
     Route::middleware(['role:Procurement Officer'])->prefix('officer')->name('officer.')->group(function () {
@@ -249,4 +249,4 @@ Route::middleware(['auth'])->group(function () {
     });
 });
 
-});
+
