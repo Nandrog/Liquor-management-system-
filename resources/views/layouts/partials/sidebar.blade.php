@@ -18,6 +18,7 @@
                 <li><a href="#" class="nav-link"><i class="bi bi-wallet2 me-2"></i> Payments</a></li>
                 <li><a href="{{ route('inventory.dashboard') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Inventory</a></li>
                 <li><a href="{{route('supplier.orders.create')}}" class="nav-link"><i class="bi bi-truck me-2"></i> Orders</a></li>
+                <li><a href="{{route('supplier.orders.index')}}" class="nav-link"><i class="bi bi-truck me-2"></i> Orders view</a></li>
                 <li><a href="#" class="nav-link"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports</a></li>
                 <li><a href="#" class="nav-link"><i class="bi bi-graph-up me-2"></i> Analytics</a></li>
             @endif
@@ -54,7 +55,7 @@
             {{-- Customer --}}
             @if(auth()->user()->hasRole('Customer'))
                 {{-- Add specific Customer links here if needed --}}
-                 {{-- Manager-specific links --}}
+                {{-- Manager-specific links --}}
                 <li><a href="{{ route('customer.orders.index') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Order</a></li
             @endif
 
@@ -70,7 +71,6 @@
                     <a href="#" class="nav-link workforce-toggle">
                         <i class="bi bi-people-fill me-2"></i> Workforce
                     </a>
-
                     <ul class="workforce-links list-unstyled ps-4">
                         <li>
                             <a href="{{ route('tasks.index') }}" class="nav-link {{ request()->routeIs('tasks.*') ? 'active' : '' }}">

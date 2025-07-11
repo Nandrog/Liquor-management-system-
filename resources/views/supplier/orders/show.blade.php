@@ -105,6 +105,28 @@
                             </form>
                         </div>
                     @endif
+                    {{-- ... inside your view, where action buttons would go ... --}}
+
+                @if($order->status == \App\Enums\OrderStatus::CONFIRMED && $order->payment_status == 'paid')
+                    <div class="mt-6">
+                        <h3 class="text-lg font-semibold text-green-700">This order has been paid.</h3>
+                        <p class="text-gray-600 mb-4">Please prepare the items for delivery and mark the order as delivering once it has been shipped.</p>
+
+                        <form action="{{ route('supplier.orders.markAsDelivering', $order) }}" method="POST">
+                            @csrf
+                            @method('PATCH')
+                            <button type="submit" class="auth-button-blue auth-button">Mark as Delivering</button>
+                        </form>
+                    </div>
+                @elseif($order->status == \App\Enums\OrderStatus::DELIVERING)
+                    <div class="mt-6">
+                        <p class="text-blue-700 font-semibold">You have marked this order as delivering. Awaiting confirmation from the manufacturer.</p>
+                    </div>
+                @elseif($order->status == \App\Enums\OrderStatus::DELIVERED)
+                    <div class="mt-6">
+                        <p class="text-green-800 font-bold">This order has been successfully delivered and completed.</p>
+                    </div>
+                @endif
                 </div>
             </div>
         </div>

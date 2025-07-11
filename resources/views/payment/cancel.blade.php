@@ -1,5 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
+<!--<!DOCTYPE html>
+<html lang="en">-->
+    <x-app-layout>
 <head>
     <meta charset="UTF-8">
     <title>Payment Cancelled</title>
@@ -15,4 +16,5 @@
         </div>
     </div>
 </body>
-</html>
+{{--</html>--}}
+</x-app-layout>

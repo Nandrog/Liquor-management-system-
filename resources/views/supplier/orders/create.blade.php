@@ -20,7 +20,8 @@
             <input class="form-control" type="number" name="products[{{ $loop->index }}][quantity]" placeholder="Quantity" min="1">
             <br>
             <label>Price per unit</label>
-            <input class="form-control" type="number" name="products[{{ $loop->index }}][price]" placeholder="Price per unit" step="0.01" min="0">
+            <input class="form-control" type="number" name="products[{{ $loop->index }}][price]" placeholder="Price per unit" step="0.01" min="0"
+            type="number" value="{{ request('unit_price', 0) }}" readonly>
         </div>
         @endforeach
         <br>

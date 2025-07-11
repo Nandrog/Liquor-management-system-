@@ -8,7 +8,7 @@ use App\Http\Controllers\VendorApplicationController;
 use Illuminate\Support\Facades\Auth;
 // KEEP ONLY THE NEW, MODULAR CONTROLLER IMPORT. Delete any other DashboardController import.
 use App\Modules\Dashboard\Http\Controllers\DashboardController;
-use App\Modules\Payments\Http\Controllers\PaymentsController;
+use App\Modules\Payments\Http\Controllers\PaymentController;
 use App\Http\Controllers\WorkDistribution\TaskController;
 use App\Http\Controllers\WorkDistribution\ShiftController;
 use App\Modules\Communications\Http\Controllers\MessageController;
@@ -32,12 +32,12 @@ use App\Http\Controllers\SetPasswordController;
 
 Route::prefix('work-distribution')->group(function () {
     // (Tasks above)
-     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+    Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
     Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
     Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
 
     // Shifts
-     Route::get('/shifts', [ShiftController::class, 'index'])->name('shifts.index');
+    Route::get('/shifts', [ShiftController::class, 'index'])->name('shifts.index');
     Route::get('/shifts/create', [ShiftController::class, 'create'])->name('shifts.create');
     Route::post('/shifts', [ShiftController::class, 'store'])->name('shifts.store');
 });
@@ -151,7 +151,22 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-Route:: get('/dashboard/payments', [PaymentsController::class, 'index'])->name('payments');
+//Route:: get('/dashboard/payments/success', [PaymentController::class, 'success'])->name('payments');
+//Route:: get('/dashboard/payments/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
+Route::middleware('auth')->group(function () {
+    // Route to show the payment form for a specific order.
+    // Example URL: /order/123/pay
+    Route::get('/order/{order}/pay', [PaymentController::class, 'showPaymentForm'])->name('payment.form');
+
+    // Route that the form submits to (processes the payment)
+    Route::post('/stripe/charge', [PaymentController::class, 'processPayment'])->name('stripe.charge');
+
+    // A simple "Thank You" page to redirect to after payment
+    Route::get('/payment/thank-you', [PaymentController::class, 'thankYou'])->name('payment.thankyou');
+});
+
+// The webhook route must be exempt from CSRF protection
+Route::post('/stripe/webhook', [PaymentController::class, 'handleWebhook'])->name('stripe.webhook');
 
 
         // All routes for a Procurement officer's specific actions.
@@ -196,13 +211,6 @@ Route::post('/set-password/{user}', [SetPasswordController::class, 'update'])
 
 // Route for dashboard, redirects user based on their role
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', function () {
-        if (Auth::user() && Auth::user()->hasRole('Liquor Manager')) return redirect()->route('liquor-manager.products.index');
-        if (Auth::user() && Auth::user()->hasRole('Supplier')) return redirect()->route('supplier.orders.index');
-        // ... add other roles here
-        return view('dashboard');
-    })->name('dashboard');
-
     // 1. Liquor Manager Routes
     Route::middleware('role:Liquor Manager')->prefix('liquor-manager')->name('liquor-manager.')->group(function () {
         Route::resource('products', ProductController::class);
@@ -212,7 +220,10 @@ Route::middleware(['auth'])->group(function () {
     // 2. Supplier Routes
     Route::middleware('role:Supplier')->prefix('supplier')->name('supplier.')->group(function () {
         Route::resource('orders', SupplierOrderController::class)->only(['index', 'show', 'create', 'store']);
-        Route::get('orders', [SupplierOrderController::class, 'index'])->name('orders.index');
+        // NEW ROUTE for the supplier to mark an order as delivering
+    Route::patch('/orders/{order}/deliver', [SupplierOrderController::class, 'markAsDelivering'])
+        ->name('orders.markAsDelivering');
+        //Route::get('orders', [SupplierOrderController::class, 'index'])->name('orders.index');
         Route::get('orders/{order}', [SupplierOrderController::class, 'show'])->name('orders.show');
         Route::patch('orders/{order}', [SupplierOrderController::class, 'update'])->name('orders.update');
     });
@@ -222,6 +233,16 @@ Route::middleware(['auth'])->group(function () {
         Route::get('orders', [ManufacturerController::class, 'index'])->name('manufacturer-index');
         Route::get('orders/{order}', [ManufacturerController::class, 'show'])->name('orders.show');
         Route::patch('orders/{order}', [ManufacturerController::class, 'update'])->name('orders.update');
+        // ... your other routes ...
+    Route::get('/orders/paid', [ManufacturerController::class, 'paidOrders'])->name('orders.paid');
+
+    // NEW ROUTE to view all delivering orders
+    Route::get('/orders/delivering', [ManufacturerController::class, 'deliveringOrders'])
+        ->name('orders.delivering');
+
+    // NEW ROUTE to confirm the delivery
+    Route::patch('/orders/{order}/receive', [ManufacturerController::class, 'confirmDelivery'])
+        ->name('orders.confirmDelivery');
     });
 
     // 4. Vendor Routes (Placing Orders)
