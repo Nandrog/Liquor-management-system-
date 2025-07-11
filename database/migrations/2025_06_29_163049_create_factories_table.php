@@ -13,9 +13,13 @@ return new class extends Migration
             $table->string('name');
             $table->string('location');
 
-            // This links a Factory to ONE Warehouse.
-            // It's unique because one warehouse can only be associated with one factory.
-            $table->foreignId('warehouse_id')->unique()->constrained('warehouses');
+            // Manually specify the FK column type to match warehouses.warehouse_id
+            $table->unsignedBigInteger('warehouse_id')->unique();
+
+            $table->foreign('warehouse_id')
+                  ->references('warehouse_id')  // reference custom PK
+                  ->on('warehouses')
+                  ->cascadeOnDelete();          // optional, deletes factory if warehouse deleted
 
             $table->timestamps();
         });

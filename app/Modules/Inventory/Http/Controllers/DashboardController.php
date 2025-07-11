@@ -151,7 +151,7 @@ class DashboardController extends Controller
 }
         // Add more `elseif ($user->hasRole('...'))` blocks for other roles
 
-        return view('inventory.dashboard', [
+        return view('.dashboard', [
             'cards' => $cardsForUser,
         ]);
     }

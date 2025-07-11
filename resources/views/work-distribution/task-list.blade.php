@@ -11,6 +11,7 @@
           <th>Deadline</th>
           <th>Status</th>
           <th>Assigned Employee</th>
+          <th>Stock Movement</th> <!-- ✅ new -->
         </tr>
       </thead>
       <tbody>
@@ -20,12 +21,22 @@
             <td>{{ $task->type }}</td>
             <td>{{ $task->priority }}</td>
             <td>{{ $task->deadline }}</td>
-            <td><span class="badge bg-primary">{{ $task->status }}</span></td>
+            <td>
+              <span class="badge bg-primary">{{ $task->status }}</span>
+            </td>
             <td>{{ $task->employee->name ?? 'N/A' }}</td>
+            <td>
+              @if ($task->stockMovement)
+                #{{ $task->stockMovement->id }} — 
+                {{ $task->stockMovement->product->name ?? '' }} | Qty: {{ $task->stockMovement->quantity }}
+              @else
+                —
+              @endif
+            </td>
           </tr>
         @empty
           <tr>
-            <td colspan="6" class="text-center">No tasks found.</td>
+            <td colspan="7" class="text-center">No tasks found.</td>
           </tr>
         @endforelse
       </tbody>
