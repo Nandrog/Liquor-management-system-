@@ -22,12 +22,9 @@
             @if($user && $user->hasRole('Supplier'))
                 <li><a href="#" class="nav-link"><i class="bi bi-wallet2 me-2"></i> Payments</a></li>
                 <li><a href="{{ route('inventory.dashboard') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Inventory</a></li>
-<<<<<<< HEAD
                 <li><a href="{{route('supplier.orders.create')}}" class="nav-link"><i class="bi bi-truck me-2"></i> Orders</a></li>
                 <li><a href="{{route('supplier.orders.index')}}" class="nav-link"><i class="bi bi-truck me-2"></i> Orders view</a></li>
-=======
                 <li><a href="{{ route('supplier.orders.create') }}" class="nav-link"><i class="bi bi-truck me-2"></i> Orders</a></li>
->>>>>>> d9343d7ffa12cc5bad39b992033e72f85f93d19c
                 <li><a href="#" class="nav-link"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports</a></li>
                 <li><a href="#" class="nav-link"><i class="bi bi-graph-up me-2"></i> Analytics</a></li>
             @endif
@@ -60,12 +57,12 @@
             @if(auth()->user()->hasRole('Customer'))
                 {{-- Add specific Customer links here if needed --}}
                 {{-- Manager-specific links --}}
-                <li><a href="{{ route('customer.orders.index') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Order</a></li
+                <li><a href="{{ route('customer.orders.index') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Order</a></li>
             @endif
 
             @if($user && $user->hasRole('Liquor Manager'))
                 <li><a href="{{ route('inventory.dashboard') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Inventory</a></li>
-                <li><a href="{{ route('liquor-manager.products.create') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Products</a></li>
+                <li><a href="{{ route('liquor-manager.products.index') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Products</a></li>
             @endif
 
             {{-- Workforce (for specific roles) --}}
