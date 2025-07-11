@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo; // Import this
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class StockLevel extends Model
 {
@@ -21,7 +21,8 @@ class StockLevel extends Model
      */
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        // Assuming products table primary key is 'id'
+        return $this->belongsTo(Product::class, 'product_id', 'id');
     }
 
     /**
@@ -29,6 +30,7 @@ class StockLevel extends Model
      */
     public function warehouse(): BelongsTo
     {
-        return $this->belongsTo(Warehouse::class);
+        // Explicitly state foreign key and custom primary key on warehouses table
+        return $this->belongsTo(Warehouse::class, 'warehouse_id', 'warehouse_id');
     }
 }

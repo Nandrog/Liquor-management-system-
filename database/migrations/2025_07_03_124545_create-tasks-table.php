@@ -14,14 +14,19 @@ return new class extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('employee_id')->nullable();
-
-            // Correct foreign key constraint
-            $table->foreign('employee_id')
-                  ->references('id') // assumes employees table uses id
-                  ->on('employees')
+            // Employee foreign key
+            $table->foreignId('employee_id')
+                  ->nullable()
+                  ->constrained('employees')
                   ->onDelete('cascade');
 
+            // Stock movement foreign key
+            $table->foreignId('stock_movement_id')
+                  ->nullable()
+                  ->constrained('stock_movements')
+                  ->nullOnDelete();
+
+            // Task details
             $table->string('type');
             $table->string('priority');
             $table->timestamp('deadline');

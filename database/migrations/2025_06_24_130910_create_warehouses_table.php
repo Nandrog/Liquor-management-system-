@@ -12,17 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('warehouses', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('warehouse_id'); 
             $table->string('name');
             $table->string('location');
             $table->integer('capacity')->nullable();
             $table->string('manager_name')->nullable();
-            $table->string('contant_info')->nullable();
+            $table->string('contact_info')->nullable(); // fixed typo
 
-    ;
-        
-            // This links to the user who is the manager.
-            $table->foreignId('manager_id')->nullable()->constrained('users');            
+            // Foreign key linking to users table (optional manager user)
+            $table->foreignId('manager_id')->nullable()->constrained('users');
+
             $table->timestamps();
         });
     }
