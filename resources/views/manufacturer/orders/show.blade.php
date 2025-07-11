@@ -7,12 +7,12 @@
 
     <p><strong>Supplier:</strong> {{ $order->supplier->name }}</p>
     <p><strong>Status:</strong> {{ $order->status->value }}</p>
-    <p><strong>Total:</strong> ${{ number_format($order->total_amount, 2) }}</p>
+    <p><strong>Total:</strong> UGX{{ number_format($order->total_amount, 2) }}</p>
 
     <h3>Items:</h3>
     <ul>
         @foreach($order->items as $item)
-        <li>{{ $item->product->name }} - Qty: {{ $item->quantity }} @ ${{ number_format($item->price, 2) }} each</li>
+        <li>{{ $item->product->name }} - Qty: {{ $item->quantity }} @ UGX{{ number_format($item->unitprice, 2) }} each</li>
         @endforeach
     </ul>
 
@@ -22,13 +22,14 @@
             @csrf
             @method('PATCH')
             <input type="hidden" name="status" value="confirmed">
-            <button type="submit" class="bg-green-500 text-white p-2 rounded">Accept & Pay</button>
+            <button class="auth-button-green auth-button" type="submit" class="bg-blue-500 text-red p-2 rounded">Accept & Pay</button>
         </form>
+        <br>
         <form action="{{ route('manufacturer.orders.update', $order) }}" method="POST">
             @csrf
             @method('PATCH')
             <input type="hidden" name="status" value="rejected">
-            <button type="submit" class="bg-red-500 text-white p-2 rounded">Reject</button>
+            <button class="auth-button-yellow auth-button" type="submit" class="bg-red-500 text-white p-2 rounded">Reject</button>
         </form>
     </div>
     @endif

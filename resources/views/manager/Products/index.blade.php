@@ -21,13 +21,13 @@
                         </div>
                     @endif
 
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
+                    <div class="overflow-x-auto table-responsive">
+                        <table class="min-w-full divide-y divide-gray-200 table table-hover align-middle">
+                            <thead class="bg-gray-50 table-light">
                                 <tr>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Base Price</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Price</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
                                 </tr>
                             </thead>
@@ -40,7 +40,7 @@
                                                 {{ str_replace('_', ' ', $product->type) }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">${{ number_format($product->base_price, 2) }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">UGX{{ number_format($product->unit_price, 2) }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $product->created_at->format('Y-m-d') }}</td>
                                     </tr>
                                 @empty

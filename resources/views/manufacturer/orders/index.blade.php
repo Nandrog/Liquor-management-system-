@@ -20,8 +20,8 @@
                         This is a list of all orders submitted by suppliers. Please review each order's details to accept (and pay) or reject it.
                     </p>
 
-                    <div class="overflow-x-auto border-t border-gray-200">
-                        <table class="min-w-full divide-y divide-gray-200">
+                    <div class="overflow-x-auto border-t border-gray-200 table-responsive">
+                        <table class="min-w-full divide-y divide-gray-200 table table-hover align-middle">
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -46,7 +46,6 @@
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @forelse ($orders as $order)
-                                    {{-- Eager load user to prevent N+1 queries in a real app: Order::with('user')... --}}
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                             #{{ $order->id }}
@@ -58,22 +57,22 @@
                                             {{ $order->created_at->format('M d, Y') }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            ${{ number_format($order->total_amount, 2) }}
+                                            UGX{{ number_format($order->total_amount, 2) }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
+                                            {{-- FIX: Compare the enum's string value instead of the case object --}}
                                             <span @class([
                                                 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                                                'bg-yellow-100 text-yellow-800' => $order->status === \App\Enums\OrderStatus::PendingApproval,
-                                                'bg-green-100 text-green-800' => $order->status === \App\Enums\OrderStatus::Paid || $order->status === \App\Enums\OrderStatus::Confirmed,
-                                                'bg-red-100 text-red-800' => $order->status === \App\Enums\OrderStatus::Rejected,
-                                                'bg-gray-100 text-gray-800' => $order->status === \App\Enums\OrderStatus::Pending,
+                                                'bg-yellow-100 text-yellow-800' => $order->status->value === 'pending_approval',
+                                                'bg-green-100 text-green-800'   => in_array($order->status->value, ['paid', 'confirmed']),
+                                                'bg-red-100 text-red-800'       => $order->status->value === 'rejected',
+                                                'bg-gray-100 text-gray-800'     => $order->status->value === 'pending',
                                             ])>
-                                                {{-- Beautify the enum value for display --}}
+                                                {{-- This part was already correct: it beautifies the enum's string value --}}
                                                 {{ ucwords(str_replace('_', ' ', $order->status->value)) }}
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            {{-- The action is to view the details page to approve/reject --}}
                                             <a href="{{ route('manufacturer.orders.show', $order) }}" class="text-indigo-600 hover:text-indigo-900">
                                                 Review
                                             </a>

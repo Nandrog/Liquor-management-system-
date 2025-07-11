@@ -3,10 +3,14 @@
 use App\Modules\Inventory\Http\Controllers\DashboardController as InventoryDashboardController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Modules\Orders\Http\Controllers\OrderController;
 use App\Http\Controllers\VendorApplicationController;
 use Illuminate\Support\Facades\Auth;
 // KEEP ONLY THE NEW, MODULAR CONTROLLER IMPORT. Delete any other DashboardController import.
 use App\Modules\Dashboard\Http\Controllers\DashboardController;
+use App\Modules\Payments\Http\Controllers\PaymentsController;
+use App\Http\Controllers\WorkDistribution\TaskController;
+use App\Http\Controllers\WorkDistribution\ShiftController;
 use App\Modules\Communications\Http\Controllers\MessageController;
 
 use App\Modules\Inventory\Http\Controllers\LmStockLevelController;
@@ -26,14 +30,31 @@ use App\Modules\Orders\Http\Controllers\CustomerOrderController;
 use App\Modules\Inventory\Http\Controllers\MaPurchaseOrderController;
 use App\Http\Controllers\SetPasswordController;
 
+Route::prefix('work-distribution')->group(function () {
+    // (Tasks above)
+     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+    Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
+    Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+
+    // Shifts
+     Route::get('/shifts', [ShiftController::class, 'index'])->name('shifts.index');
+    Route::get('/shifts/create', [ShiftController::class, 'create'])->name('shifts.create');
+    Route::post('/shifts', [ShiftController::class, 'store'])->name('shifts.store');
+});
+Route::prefix('work-distribution')->group(function () {
+
+    // Show the Task form
+    Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
+
+    // Save the Task (handle the form POST)
+    Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+
+});
 /*
 |--------------------------------------------------------------------------
 | Public Routes (No login required)
 |--------------------------------------------------------------------------
 */
-
-//Route::middleware(['auth'])->post('/order', [OrderController::class, 'index']);
-
 
 Route::get('/', function () {
     return view('welcome');
@@ -81,6 +102,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // All routes for a Supplier's specific actions (e.g., managing their inventory).
     Route::middleware(['role:Supplier'])->prefix('supplier')->name('supplier.')->group(function () {
         // Example: Route::get('/inventory', [InventoryStockController::class, 'index'])->name('inventory.index');
+    });
+
+    // All routes for a Liquor Manager's specific actions.
         });
 
         // All routes for a Liquor Manager's specific actions.
@@ -126,10 +150,10 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-        
-    
 
-});
+Route:: get('/dashboard/payments', [PaymentsController::class, 'index'])->name('payments');
+
+
         // All routes for a Procurement officer's specific actions.
 
     Route::middleware(['role:Procurement Officer'])->prefix('officer')->name('officer.')->group(function () {
@@ -161,7 +185,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
 
-  
+
 // Route to set initial password via signed link
 Route::get('/set-password/{user}', [SetPasswordController::class, 'show'])
     ->middleware(['signed']) // ensures link validity
@@ -189,6 +213,8 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('role:Supplier')->prefix('supplier')->name('supplier.')->group(function () {
         Route::resource('orders', SupplierOrderController::class)->only(['index', 'show', 'create', 'store']);
         Route::get('orders', [SupplierOrderController::class, 'index'])->name('orders.index');
+        Route::get('orders/{order}', [SupplierOrderController::class, 'show'])->name('orders.show');
+        Route::patch('orders/{order}', [SupplierOrderController::class, 'update'])->name('orders.update');
     });
 
     // 3. Manufacturer Routes
@@ -218,4 +244,5 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('orders', CustomerOrderController::class)->only(['index', 'show', 'create', 'store']);
     });
 });
+
 

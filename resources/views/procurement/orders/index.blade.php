@@ -20,9 +20,9 @@
                         This list shows all purchase orders submitted by vendors for finished goods. Please review each order to verify stock levels before confirming for dispatch.
                     </p>
 
-                    <div class="overflow-x-auto border rounded-lg">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
+                    <div class="overflow-x-auto border rounded-lg table-responsive">
+                        <table class="min-w-full divide-y divide-gray-200 table table-hover align-middle">
+                            <thead class="bg-gray-50 table-light">
                                 <tr>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Order ID

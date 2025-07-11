@@ -7,10 +7,10 @@
 
     <form action="{{ route('vendor.products.update', $vendor) }}" method="POST">
         @csrf
-        @method('PUT') 
-        
-        <table>
-            <thead>
+        @method('PUT')
+
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
                 <tr>
                     <th>Product Name</th>
                     <th>Your Retail Price</th>
@@ -21,10 +21,10 @@
                 <tr>
                     <td>{{ $product->name }}</td>
                     <td>
-                        <input type="number" 
-                               name="products[{{ $product->id }}][retail_price]" 
+                        <input type="number"
+                               name="products[{{ $product->id }}][retail_price]"
                                value="{{ $product->vendorProducts->first()->retail_price ?? '' }}"
-                               step="0.01" 
+                               step="0.01"
                                min="0"
                                class="form-input rounded-md shadow-sm">
                     </td>

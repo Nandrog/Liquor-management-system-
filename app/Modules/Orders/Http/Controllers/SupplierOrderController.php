@@ -21,7 +21,7 @@ class SupplierOrderController extends Controller
         if (!$supplier) {
             abort(403, 'You are not registered as a supplier.');
         }
-        $orders = $supplier->orders()->where('type', OrderType::SUPPLIER_ORDER)->latest()->paginate(10);
+        $orders = $supplier->orders()->withCount('items')->where('type', OrderType::SUPPLIER_ORDER)->latest()->paginate(10);
         return view('supplier.orders.index', compact('orders'));
     }
 
@@ -53,6 +53,21 @@ class SupplierOrderController extends Controller
             $total += $product['quantity'] * $product['price'];
         }
 
+
+foreach ($request->items as $itemData) {
+        // 1. Find the master product to get its current price
+        $product = Product::find($itemData['product_id']);
+
+        if ($product) {
+            // 2. Create the order item and explicitly save the price
+            $order->items()->create([
+                'product_id' => $itemData['product_id'],
+                'quantity' => $itemData['quantity'],
+                'price' => $product->price, // <-- THE FIX IS HERE
+            ]);
+        }
+        }
+
         $order->update(['total_amount' => $total]);
 
         return redirect()->route('supplier.orders.index')->with('success', 'Order submitted for approval.');
@@ -61,6 +76,7 @@ class SupplierOrderController extends Controller
     public function show(Order $order)
     {
         $this->authorize('view', $order);
+        $order->load('items.product');
         return view('supplier.orders.show', compact('order'));
     }
 }

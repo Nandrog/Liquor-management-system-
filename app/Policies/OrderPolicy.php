@@ -13,7 +13,16 @@ class OrderPolicy
     {
         // Supplier can view their own supplier_order
         if ($user->hasRole('Supplier') && $order->type === OrderType::SUPPLIER_ORDER) {
-            return $user->supplier_id === $order->supplier_id;
+        // Check if the user is linked to a supplier record
+        if ($user->supplier) {
+             // THE NEW LOGIC: Compare the ID from the related supplier model
+            return $user->supplier->id === $order->supplier_id;
+        }
+        return false; // User has role but no supplier record
+    }
+
+        if ($user->hasRole('Supplier') && $order->type === OrderType::SUPPLIER_ORDER) {
+            return $user->isAdmin();
         }
 
         // Manufacturer can view any supplier_order
@@ -30,7 +39,7 @@ class OrderPolicy
         if ($user->hasRole('Procurement Officer') && $order->type === OrderType::VENDOR_ORDER) {
             return true;
         }
-        
+
         // Customer can view their own orders
         if ($user->hasRole('Customer') && $order->customer_id === $user->customer->id) {
             return true;
