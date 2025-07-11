@@ -37,6 +37,7 @@
             @if($user && $user->hasRole('Procurement Officer'))
                 <li><a href="{{ route('inventory.dashboard') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Inventory</a></li>
                 <li><a href="{{ route('procurement.orders.index') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Orders</a></li>
+                <li><a href="{{ route('analytics.dashboard') }}" class="nav-link"><i class="bi bi-graph-up me-2"></i> Analytics</a></li>
             @endif
 
             @if($user && $user->hasRole('Finance'))
@@ -56,7 +57,7 @@
 
             @if($user && $user->hasRole('Liquor Manager'))
                 <li><a href="{{ route('inventory.dashboard') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Inventory</a></li>
-                <li><a href="{{ route('liquor-manager.products.index') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Products</a></li>
+                <li><a href="{{ route('liquor-manager.products.create') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Products</a></li>
             @endif
 
             {{-- Workforce (for specific roles) --}}
@@ -80,10 +81,29 @@
                 </li>
             @endif
 
-            {{-- Chat --}}
-            <li>
-                <a href="#" class="nav-link"><i class="bi bi-chat-dots me-2"></i> Chat</a>
-            </li>
+            {{-- Common Links at the bottom --}}
+            <li><a href="{{ route('messages.index') }} " class="nav-link"><i class="bi bi-chat-dots me-2"></i> Chat</a></li>
+
+           {{-- Analytics Access Based on Role --}}
+           @if(auth()->user()->hasRole('Finance'))
+               <li>
+                    <a href="{{ route('analytics.menu') }}" class="nav-link">
+                        <i class="bi bi-bar-chart me-2"></i> Analytics
+                    </a>
+                </li>
+            @elseif(auth()->user()->hasRole('Liquor Manager'))
+                <li>
+                    <a href="{{ route('analytics.menu') }}" class="nav-link">
+                        <i class="bi bi-bar-chart me-2"></i> Analytics
+                    </a>
+                </li>
+            @elseif(auth()->user()->hasRole('Procurement Officer'))
+                <li>
+                    <a href="{{ route('analytics.dashboard') }}" class="nav-link">
+                        <i class="bi bi-bar-chart me-2"></i> Analytics
+                    </a>
+                </li>
+            @endif
         </ul>
     </nav>
 </aside>

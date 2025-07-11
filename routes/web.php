@@ -29,7 +29,7 @@ use App\Http\Controllers\ManufacturerController;
 use App\Modules\Orders\Http\Controllers\CustomerOrderController;
 use App\Modules\Inventory\Http\Controllers\MaPurchaseOrderController;
 use App\Http\Controllers\SetPasswordController;
-
+use App\Http\Controllers\AnalyticsController;
 Route::prefix('work-distribution')->group(function () {
     // (Tasks above)
      Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
@@ -186,6 +186,7 @@ Route:: get('/dashboard/payments', [PaymentsController::class, 'index'])->name('
 
 
 
+
 // Route to set initial password via signed link
 Route::get('/set-password/{user}', [SetPasswordController::class, 'show'])
     ->middleware(['signed']) // ensures link validity
@@ -243,6 +244,27 @@ Route::middleware(['auth'])->group(function () {
         Route::get('orders', [CustomerOrderController::class, 'index'])->name('orders.index');
         Route::resource('orders', CustomerOrderController::class)->only(['index', 'show', 'create', 'store']);
     });
+
+    Route::middleware(['auth', 'role:Liquor Manager|Procurement Officer|Finance'])->group(function () {
+        Route::get('/analytics/dashboard', [AnalyticsController::class, 'dashboard'])->name('analytics.dashboard');
+    });
+
+    Route::middleware(['auth', 'role:Finance|Liquor Manager'])->prefix('analytics')->group(function () {
+        Route::get('/dashboard', [AnalyticsController::class, 'analyticsMenu'])->name('analytics.menu');
+        Route::get('/forecast', [AnalyticsController::class, 'forecast'])->name('analytics.forecast');
+        Route::get('/segmentation', [AnalyticsController::class, 'segmentation'])->name('analytics.segmentation');
 });
+
+
+});
+
+Route::get('/set-password/{user}', [SetPasswordController::class, 'show'])
+    ->middleware(['signed'])//ensures link validity
+    ->name('password.set');
+
+Route::post('/set-password/{user}', [SetPasswordController::class, 'update'])
+    ->name('password.set.update');
+
+
 
 
