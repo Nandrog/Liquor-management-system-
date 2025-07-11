@@ -23,11 +23,8 @@ class ManufacturerController extends Controller
     public function show(Order $order)
     {
         $this->authorize('view', $order);
-        $this->authorize('view', $warehouses = Warehouse::all());
-        return view('manufacturer.orders.show',  [
-            'order' => $order,
-            'warehouses' => $warehouses,
-        ]);
+        $warehouses = Warehouse::all();
+        return view('manufacturer.orders.show',  compact('order', 'warehouses'));
     }
 
     public function update(Request $request, Order $order)

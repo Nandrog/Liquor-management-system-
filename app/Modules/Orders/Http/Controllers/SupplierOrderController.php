@@ -85,6 +85,21 @@ class SupplierOrderController extends Controller
         ->with('success', 'Order submitted for approval successfully.');
 }
 
+public function edit(Order $order)
+{
+    // You can add an authorization check here if you have a Policy
+    // $this->authorize('update', $order);
+
+    // Make sure the order has its items loaded, similar to your show() method
+    $order->load('items.product');
+
+    // We also need the list of all possible raw materials to potentially add more
+    $rawMaterials = Product::where('type', ProductType::RAW_MATERIAL)->get();
+
+    // Return the view, passing the specific order and the list of materials
+    return view('supplier.orders.edit', compact('order', 'rawMaterials'));
+}
+
     public function show(Order $order)
     {
         $this->authorize('view', $order);
@@ -108,5 +123,18 @@ class SupplierOrderController extends Controller
     }
 
     return redirect()->back()->with('error', 'This order is not in a state to be marked as delivering.');
+}
+
+public function destroy(Order $order)
+{
+    // Optional, but recommended: Authorize that the user can delete this order
+    // $this->authorize('delete', $order);
+
+    // Perform the delete operation
+    $order->delete();
+
+    // Redirect back to the list of orders with a success message
+    return redirect()->route('supplier.orders.index')
+                   ->with('success', 'Order has been deleted successfully.');
 }
 }

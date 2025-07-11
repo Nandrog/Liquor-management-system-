@@ -76,8 +76,8 @@
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ $item->product->name }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400">{{ $item->quantity }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 dark:text-gray-400">UGX{{ number_format($item->price, 2) }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-gray-700 dark:text-gray-200">UGX{{ number_format($item->price * $item->quantity, 2) }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 dark:text-gray-400">UGX{{ number_format($item->product->unit_price, 2) }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-gray-700 dark:text-gray-200">UGX{{ number_format($item->product->unit_price * $item->quantity, 2) }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -93,13 +93,14 @@
                     {{-- Conditional Actions for Supplier --}}
                     @if ($order->status == App\Enums\OrderStatus::PENDING_APPROVAL)
                         <div class="mt-8 flex items-center justify-end space-x-4">
-                            <a href="{{ route('supplier.orders.edit', $order) }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-500 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
+                            <a href="{{ route('supplier.orders.edit', $order) }}" class="auth-button-yellow auth-button">
                                 Edit Order
                             </a>
+                            <br>
                             <form action="{{ route('supplier.orders.destroy', $order) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this supply offer? This action cannot be undone.');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 active:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
+                                <button type="submit" class="auth-button-green auth-button">
                                     Cancel Offer
                                 </button>
                             </form>

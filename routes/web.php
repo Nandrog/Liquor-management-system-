@@ -225,13 +225,20 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/orders/{order}/deliver', [SupplierOrderController::class, 'markAsDelivering'])
         ->name('orders.markAsDelivering');
         //Route::get('orders', [SupplierOrderController::class, 'index'])->name('orders.index');
+        //Route::resource('supplier/orders', SupplierOrderController::class)->names('supplier.orders');
+        // Route to show the form for editing an existing order
+        Route::get('/supplier/orders/{order}/edit', [SupplierOrderController::class, 'edit'])->name('orders.edit');
+
+        // Route to handle the submission of the edit form
+        Route::put('/supplier/orders/{order}', [SupplierOrderController::class, 'update'])->name('orders.update');
+        Route::delete('/supplier/orders/{order}', [SupplierOrderController::class, 'destroy'])->name('orders.destroy');
         Route::get('orders/{order}', [SupplierOrderController::class, 'show'])->name('orders.show');
         Route::patch('orders/{order}', [SupplierOrderController::class, 'update'])->name('orders.update');
     });
 
     // 3. Manufacturer Routes
     Route::middleware('role:Manufacturer')->prefix('manufacturer')->name('manufacturer.')->group(function () {
-        Route::get('orders', [ManufacturerController::class, 'index'])->name('manufacturer-index');
+        Route::get('orders', [ManufacturerController::class, 'index'])->name('orders.index');
         Route::get('orders/{order}', [ManufacturerController::class, 'show'])->name('orders.show');
         Route::patch('orders/{order}', [ManufacturerController::class, 'update'])->name('orders.update');
         // ... your other routes ...

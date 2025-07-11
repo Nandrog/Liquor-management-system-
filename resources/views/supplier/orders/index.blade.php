@@ -1,8 +1,3 @@
-{{--
-    File: resources/views/supplier/orders/index.blade.php
-    This view displays a list of orders submitted by the logged-in supplier.
---}}
-
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
@@ -35,9 +30,7 @@
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date Submitted</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Items</th>
-                                    <th scope="col" class="relative px-6 py-3">
-                                        <span class="sr-only">Actions</span>
-                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -45,30 +38,39 @@
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">#{{ $order->id }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            {{-- Display a styled status badge --}}
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
                                                 @switch($order->status)
-                                                    @case(App\Enums\OrderStatus::PENDING_APPROVAL)
-                                                        bg-yellow-100 text-yellow-800
-                                                        @break
-                                                    @case(App\Enums\OrderStatus::REJECTED)
-                                                        bg-red-100 text-red-800
-                                                        @break
-                                                    @case(App\Enums\OrderStatus::PAID)
-                                                        bg-green-100 text-green-800
-                                                        @break
-                                                    @default
-                                                        bg-gray-100 text-gray-800
+                                                    @case(App\Enums\OrderStatus::PENDING_APPROVAL) bg-yellow-100 text-yellow-800 @break
+                                                    @case(App\Enums\OrderStatus::REJECTED) bg-red-100 text-red-800 @break
+                                                    @case(App\Enums\OrderStatus::PAID) bg-green-100 text-green-800 @break
+                                                    @default bg-gray-100 text-gray-800
                                                 @endswitch
                                             ">
-                                                {{-- Format the enum value to be more readable --}}
                                                 {{ str_replace('_', ' ', Str::title($order->status->value)) }}
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $order->created_at->format('d M, Y') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $order->items_count }}</td>
+
+                                        {{-- ===== MODIFIED ACTIONS CELL ===== --}}
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <a href="{{ route('supplier.orders.show', $order) }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900">View Details</a>
+                                            <div class="flex items-center justify-end space-x-4">
+
+                                                <a href="{{ route('supplier.orders.show', $order) }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900">View</a>
+
+                                                {{-- Only show Edit and Delete if the order is still pending --}}
+                                                @if ($order->status == App\Enums\OrderStatus::PENDING_APPROVAL)
+                                                    <a href="{{ route('supplier.orders.edit', $order) }}" class="text-green-600 dark:text-green-400 hover:text-green-900">Edit</a>
+
+                                                    {{-- The secure way to create a Delete button --}}
+                                                    <form action="{{ route('supplier.orders.destroy', $order->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this order?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="auth-button-yellow auth-button">Delete</button>
+                                                    </form>
+                                                @endif
+
+                                            </div>
                                         </td>
                                     </tr>
                                 @empty
