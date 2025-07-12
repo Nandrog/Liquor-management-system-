@@ -1,17 +1,25 @@
-@props(['title', 'value', 'description', 'icon'])
+@props(['title', 'description', 'icon', 'route', 'count', 'countLabel'])
 
-<div class="card h-100 shadow-sm">
-    <div class="card-body">
-        <div class="d-flex justify-content-between">
-            <div>
-                <h5 class="card-title text-muted">{{ $title }}</h5>
-                <p class="card-text h2 fw-bold">{{ $value }}</p>
-                <p class="card-text"><small class="text-muted">{{ $description }}</small></p>
+<a href="{{ $route }}" class="dashboard-action-card text-decoration-none d-block h-100">
+    <div class="card h-100">
+        <div class="card-body">
+            <div class="d-flex align-items-start">
+                <div class="card-icon me-3">
+                    <i class="{{ $icon }}"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h5 class="card-title">{{ $title }}</h5>
+                    <p class="card-text text-muted">{{ $description }}</p>
+                </div>
             </div>
-            @if(isset($icon))
-                <i class="bi {{ $icon }} h1 text-muted"></i>
-            @endif
         </div>
-         <a href="#" class="stretched-link">See all</a>
+        @if(isset($count))
+        <div class="card-footer bg-light border-top-0">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="small">{{ $countLabel }}</span>
+                <span class="fw-bold h5 mb-0">{{ $count }}</span>
+            </div>
+        </div>
+        @endif
     </div>
-</div>>
+</a>

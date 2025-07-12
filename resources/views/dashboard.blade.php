@@ -1,17 +1,31 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+    {{-- Page Header --}}
+    <div class="mb-4">
+        <h1 class="h2">Dashboard</h1>
+        <p class="text-muted">Welcome back, {{ Auth::user()->firstname }}!</p>
+    </div>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    {{ __("You're logged in!") }}
+    {{-- The grid of action cards --}}
+    <div class="row">
+        @forelse ($cards as $card)
+            <div class="col-12 col-md-6 col-lg-4 mb-4">
+                <x-dashboard-card
+                    :title="$card['title']"
+                    :description="$card['description']"
+                    :icon="$card['icon']"
+                    :route="$card['route']"
+                    :count="$card['count']"
+                    :countLabel="$card['count_label']"
+                />
+            </div>
+        @empty
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <p class="mb-0">There are no actions available for your role at this time.</p>
+                    </div>
                 </div>
             </div>
-        </div>
+        @endforelse
     </div>
 </x-app-layout>

@@ -196,13 +196,7 @@ Route::post('/set-password/{user}', [SetPasswordController::class, 'update'])
 
 // Route for dashboard, redirects user based on their role
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', function () {
-        if (Auth::user() && Auth::user()->hasRole('Liquor Manager')) return redirect()->route('liquor-manager.products.index');
-        if (Auth::user() && Auth::user()->hasRole('Supplier')) return redirect()->route('supplier.orders.index');
-        // ... add other roles here
-        return view('dashboard');
-    })->name('dashboard');
-
+    
     // 1. Liquor Manager Routes
     Route::middleware('role:Liquor Manager')->prefix('liquor-manager')->name('liquor-manager.')->group(function () {
         Route::resource('products', ProductController::class);
