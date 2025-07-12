@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('employees', function (Blueprint $table) {
@@ -18,15 +15,19 @@ return new class extends Migration
             $table->string('role');
             $table->string('email')->unique();
             $table->string('skillset');
-            $table->foreignId('warehouse_id')->nullable()->unique()->constrained('warehouses');
+
+            // Foreign key referencing warehouses.warehouse_id
+            $table->unsignedBigInteger('warehouse_id')->nullable();
+
+            $table->foreign('warehouse_id')
+                  ->references('warehouse_id')
+                  ->on('warehouses')
+                  ->nullOnDelete();
 
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('employees');

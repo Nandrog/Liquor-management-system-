@@ -93,7 +93,7 @@ class DashboardController extends Controller
                 // Dynamically create the route name, e.g., 'manager.items.index', 'manager.stock_levels.index'
                 $card['route'] = route("manager.{$action}.index");
                 $cardsForUser[] = $card;
-        
+
             }
         }  elseif ($user->hasRole('Procurement Officer')) {
 

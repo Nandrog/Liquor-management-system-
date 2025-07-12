@@ -38,7 +38,21 @@
         <label for="employee_id" class="form-label">Assign to Employee</label>
         <select name="employee_id" id="employee_id" class="form-select">
           @foreach($employees as $emp)
-            <option value="{{ $emp->id }}">{{ $emp->name }}</option>
+            <option value="{{ $emp->id }}">
+              {{ $emp->name }} — {{ $emp->warehouse->name ?? 'No Warehouse' }}
+            </option>
+          @endforeach
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="stock_movement_id" class="form-label">Related Stock Movement</label>
+        <select name="stock_movement_id" id="stock_movement_id" class="form-select">
+          <option value="">None</option>
+          @foreach($stockMovements as $movement)
+            <option value="{{ $movement->id }}">
+              #{{ $movement->id }} — Product: {{ $movement->product->name ?? '' }} | Qty: {{ $movement->quantity }} | {{ $movement->notes ?? '' }}
+            </option>
           @endforeach
         </select>
       </div>

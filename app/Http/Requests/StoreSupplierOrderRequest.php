@@ -7,7 +7,7 @@ class StoreSupplierOrderRequest extends FormRequest {
     public function rules() {
         return [
             'products' => 'required|array|min:1',
-            'products.*.id' => 'required|exists:products,id',
+            'products.*.id' => 'required|integer|exists:products,id',
             'products.*.quantity' => 'required|integer|min:1',
             'products.*.price' => 'required|numeric|min:0',
         ];
