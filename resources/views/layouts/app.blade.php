@@ -4,6 +4,7 @@
     {{-- ... meta tags, etc. ... --}}
     <title>{{ config('app.name', 'LMS') }}</title>
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -17,7 +18,7 @@
 @endphp
 
 <body class="font-sans antialiased {{ $themeClass }}">
-    <div class="app-container d-flex">
+    <div id="app" class="app-container d-flex">
         {{-- Sidebar --}}
         @include('layouts.partials.sidebar')
 

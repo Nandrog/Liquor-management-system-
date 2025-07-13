@@ -14,7 +14,7 @@ class MaPurchaseOrderController extends Controller
         // 1. Fetch all orders of the correct type.
         $orders = Order::where('type', OrderType::SUPPLIER_ORDER)
             // 2. Eager load the supplier (which is a User) and the items (with their products).
-            ->with(['supplier', 'items.product'])
+            ->with(['recipientSupplier', 'items.product'])
             ->latest() // Show the most recent orders first
             ->paginate(15); // Paginate the results
 

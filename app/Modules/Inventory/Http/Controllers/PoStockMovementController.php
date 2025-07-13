@@ -9,25 +9,22 @@ use App\Models\StockMovement;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
-
+use Illuminate\Validation\ValidationException;
 
 class PoStockMovementController extends Controller
 {
-     /**
+    /**
      * Display the stock movement page with warehouse summaries and movement history.
      */
     public function index()
     {
-        // Eager load stock levels and products to calculate total quantity efficiently
-        $warehouses = Warehouse::with('stockLevels.product')->get();
+        // BEST PRACTICE: Use withSum for a much more efficient query than your previous version.
+        $warehouses = Warehouse::withSum('stockLevels', 'quantity')->orderBy('name')->get();
 
-        // Fetch recent stock movements, eager loading related data
         $movements = StockMovement::with(['product', 'fromWarehouse', 'toWarehouse'])
             ->latest('moved_at')
             ->paginate(10);
             
-        // Fetch data for the transfer form dropdowns
         $products = Product::orderBy('name')->get();
 
         return view('officer.stock_movements.index', [
@@ -42,61 +39,58 @@ class PoStockMovementController extends Controller
      */
     public function store(Request $request)
     {
-        // 1. Validation
-        $request->validate([
+        // 1. Validation - Corrected to use the 'warehouse_id' column for the 'exists' rule.
+        $validated = $request->validate([
             'product_id' => ['required', 'integer', 'exists:products,id'],
-            'from_warehouse_id' => ['required', 'integer', 'exists:warehouses,id'],
-            'to_warehouse_id' => ['required', 'integer', 'exists:warehouses,id', 'different:from_warehouse_id'],
+            'from_warehouse_id' => ['required', 'integer', 'exists:warehouses,warehouse_id'],
+            'to_warehouse_id' => ['required', 'integer', 'exists:warehouses,warehouse_id', 'different:from_warehouse_id'],
             'quantity' => ['required', 'integer', 'min:1'],
             'notes' => ['nullable', 'string'],
         ]);
 
-        $productId = $request->product_id;
-        $fromWarehouseId = $request->from_warehouse_id;
-        $toWarehouseId = $request->to_warehouse_id;
-        $quantityToMove = $request->quantity;
+        $quantityToMove = $validated['quantity'];
 
-        // 2. Use a Database Transaction
-        // This ensures that all database operations succeed or none of them do.
-        // It prevents a situation where stock is removed from one warehouse but never added to the other.
         try {
-            DB::transaction(function () use ($productId, $fromWarehouseId, $toWarehouseId, $quantityToMove, $request) {
+            DB::transaction(function () use ($validated, $quantityToMove) {
                 // 3. Decrement stock from the source warehouse
-                $fromStock = StockLevel::where('product_id', $productId)
-                                       ->where('warehouse_id', $fromWarehouseId)
-                                       ->firstOrFail(); // Fails if the product doesn't exist at the source
+                $fromStock = StockLevel::where('product_id', $validated['product_id'])
+                                       ->where('warehouse_id', $validated['from_warehouse_id'])
+                                       ->first(); // Use first() instead of firstOrFail() for a custom error message
 
-                if ($fromStock->quantity < $quantityToMove) {
-                    // Not enough stock to move, throw an exception to roll back the transaction
-                    throw new \Exception('Not enough stock in the source warehouse to complete the transfer.');
+                // Custom check for stock levels
+                if (!$fromStock || $fromStock->quantity < $quantityToMove) {
+                    throw ValidationException::withMessages([
+                        'quantity' => 'Not enough stock in the source warehouse to complete the transfer.'
+                    ]);
                 }
 
                 $fromStock->decrement('quantity', $quantityToMove);
 
                 // 4. Increment stock in the destination warehouse
-                // Use firstOrCreate: if the product doesn't exist in the destination, create a new stock level record.
                 $toStock = StockLevel::firstOrCreate(
-                    ['product_id' => $productId, 'warehouse_id' => $toWarehouseId],
-                    ['quantity' => 0] // Default to 0 if creating for the first time
+                    ['product_id' => $validated['product_id'], 'warehouse_id' => $validated['to_warehouse_id']],
+                    ['quantity' => 0]
                 );
                 $toStock->increment('quantity', $quantityToMove);
 
                 // 5. Create a record of the movement
                 StockMovement::create([
-                    'product_id' => $productId,
-                    'from_warehouse_id' => $fromWarehouseId,
-                    'to_warehouse_id' => $toWarehouseId,
+                    'product_id' => $validated['product_id'],
+                    'from_warehouse_id' => $validated['from_warehouse_id'],
+                    'to_warehouse_id' => $validated['to_warehouse_id'],
                     'quantity' => $quantityToMove,
                     'moved_at' => now(),
-                    'notes' => $request->notes,
+                    'notes' => $validated['notes'],
                 ]);
             });
+        } catch (ValidationException $e) {
+            // If our custom validation exception was thrown, redirect back with its specific errors.
+            return back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
-            // If anything went wrong (like not enough stock), redirect back with an error.
-            return back()->with('error', $e->getMessage());
+            // Catch any other generic exceptions.
+            return back()->with('error', 'An unexpected error occurred: ' . $e->getMessage());
         }
 
-        // 6. Redirect back with a success message
         return redirect()->route('officer.stock_movements.index')
                          ->with('success', 'Stock transferred successfully!');
     }
