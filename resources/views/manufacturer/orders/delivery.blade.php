@@ -42,11 +42,11 @@
                         <h5 class="mb-3">Shipment Details</h5>
 
                         {{-- CORRECTED THIS SECTION --}}
-                        <p class="icon-text mb-2"><i class="fas fa-user-tie text-muted"></i> <strong>Supplier:</strong> {{ $order->supplier->name ?? 'N/A' }}</p>
+                        <p class="icon-text mb-2"><i class="fas fa-user-tie text-muted"></i> <strong>Supplier:</strong> {{ $order->user->name ?? 'N/A' }}</p>
 
                         <p class="icon-text mb-2"><i class="fas fa-map-marker-alt text-muted"></i> <strong>Shipping Address:</strong> {{ $order->shipping_address ?? 'N/A' }}</p>
                         <p class="icon-text mb-2"><i class="fas fa-calendar-alt text-muted"></i> <strong>Order Date:</strong> {{ $order->created_at->format('M d, Y') }}</p>
-                        <p class="icon-text mb-2"><i class="fas fa-shipping-fast text-muted"></i> <strong>Shipped On:</strong> {{ $order->shipped_at?->format('M d, Y') ?? 'N/A' }}</p>
+                        <p class="icon-text mb-2"><i class="fas fa-shipping-fast text-muted"></i> <strong>Shipped On:</strong> {{ $order->delivering_at?->format('M d, Y') ?? 'N/A' }}</p>
                     </div>
 
                     <div class="col-lg-8 col-md-6">
