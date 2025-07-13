@@ -33,7 +33,7 @@
                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                             required
                             min="1"
-                            value="{{ request('amount', 0) }}"
+                            value="{{ request('number_format($order->total_amount, 2)', 0) }}"{{-- number_format($order->total_amount, 2) --}}
                             readonly
                         >
                     </div>

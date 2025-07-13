@@ -18,7 +18,7 @@ class Order extends Model
         'status',
         'total_amount',
     ];
-    
+
     protected $casts = [
         'type' => \App\Enums\OrderType::class,
         'status' => \App\Enums\OrderStatus::class,
@@ -38,7 +38,7 @@ class Order extends Model
     {
         return $this->belongsTo(Vendor::class);
     }
-    
+
     public function customer()
     {
         return $this->belongsTo(Customer::class);
@@ -47,5 +47,14 @@ class Order extends Model
     public function items()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+    public function scopeSupplierOrders($query)
+    {
+        return $query->where('type', \App\Enums\OrderType::SUPPLIER_ORDER);
     }
 }
