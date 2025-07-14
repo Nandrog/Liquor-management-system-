@@ -1,4 +1,4 @@
-{{-- ... --}}
+<x-app-layout>
 <div class="accordion" id="supplierAccordion">
     @forelse ($suppliers as $supplierUser) {{-- The variable is now a User object --}}
         <div class="accordion-item">
@@ -42,3 +42,4 @@
         {{-- ... --}}
     @endforelse
 </div>
+</x-app-layout>

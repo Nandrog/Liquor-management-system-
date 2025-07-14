@@ -4,7 +4,7 @@
 
         {{-- This is the main Flexbox container that forces the side-by-side layout.
              The 'flex-row' is explicit, and the height makes it fill the screen. --}}
-        <div id="app" class="flex flex-row border shadow-lg bg-white" style="height: 80vh;">
+        <div id="chat-container" class="flex flex-row border shadow-lg bg-white" style="height: 80vh;">
 
             <!-- PANEL 1: CONVERSATION LIST -->
             <div class="w-1/3 border-r overflow-y-auto">

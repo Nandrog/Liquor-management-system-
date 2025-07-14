@@ -5,17 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class StockMovement extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [ // <<< ADD THIS ENTIRE PROPERTY
+    protected $fillable = [
         'product_id',
         'from_warehouse_id',
         'to_warehouse_id',
@@ -24,11 +20,10 @@ class StockMovement extends Model
         'notes',
     ];
 
-    protected $casts = [ // <<< ADD THIS ENTIRE PROPERTY
+    protected $casts = [
         'moved_at' => 'datetime',
     ];
 
-    // It's also good practice to define the relationships
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
@@ -42,5 +37,10 @@ class StockMovement extends Model
     public function toWarehouse(): BelongsTo
     {
         return $this->belongsTo(Warehouse::class, 'to_warehouse_id');
+    }
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
     }
 }

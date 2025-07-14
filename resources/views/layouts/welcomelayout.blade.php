@@ -15,12 +15,12 @@
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
 <body>
-    <div id="app" class="d-flex"> {{-- Use d-flex for sidebar layout --}}
+    <div id="app" class="flex"> {{-- Use d-flex for sidebar layout --}}
 
         {{-- Optional: Your sidebar partial (if uncommented) --}}
         {{-- @include('layouts.partials.sidebar') --}}
 
-        <div class="main-content flex-grow-1"> {{-- This div usually wraps main content and header --}}
+        <div class=" flex-grow-1"> {{-- This div usually wraps main content and header --}}
             {{-- Optional: Your header/top-nav partial (if uncommented) --}}
             {{-- @include('layouts.partials.header') --}}
 

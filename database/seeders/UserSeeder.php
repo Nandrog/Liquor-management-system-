@@ -8,96 +8,128 @@ use App\Models\Supplier;
 use App\Models\Customer;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Use a transaction to ensure all users and profiles are created together
         DB::transaction(function () {
-            // --- Create Admin User ---
-            $adminUser = User::factory()->create([
-                'firstname' => 'Admin',
-                'lastname' => 'User',
-                'username' => 'admin',
-                'email' => 'admin@lms.com',
-                'employee_id' => 'EMP001'
-            ]);
+            // --- Admin User ---
+            $adminUser = User::firstOrCreate(
+                ['username' => 'admin'],
+                [
+                    'firstname' => 'Admin',
+                    'lastname' => 'User',
+                    'email' => 'admin@lms.com',
+                    'employee_id' => 'EMP001',
+                    'password' => Hash::make('your-secure-password'),
+                    'email_verified_at' => now(),
+                    'remember_token' => Str::random(10),
+                ]
+            );
             $adminUser->assignRole(Role::findByName('Admin'));
 
-            // --- Create Supplier User and Profile ---
-            $supplierUser = User::factory()->create([
-                'firstname' => 'Amos',
-                'lastname' => 'Tindyebwa',
-                'username' => 'amossupplier',
-                'email' => 'supplier1@example.com',
-            ]);
+            // --- Supplier Users ---
+            $supplierUser = User::firstOrCreate(
+                ['username' => 'amossupplier'],
+                [
+                    'firstname' => 'Amos',
+                    'lastname' => 'Tindyebwa',
+                    'email' => 'supplier1@example.com',
+                    'password' => Hash::make('your-secure-password'),
+                    'email_verified_at' => now(),
+                    'remember_token' => Str::random(10),
+                ]
+            );
             $supplierUser->assignRole(Role::findByName('Supplier'));
-            // Create the supplier's business profile
 
+            $supplierUser2 = User::firstOrCreate(
+                ['username' => 'mariasupplier'],
+                [
+                    'firstname' => 'Maria',
+                    'lastname' => 'Nankya',
+                    'email' => 'supplier2@example.com',
+                    'password' => Hash::make('your-secure-password'),
+                    'email_verified_at' => now(),
+                    'remember_token' => Str::random(10),
+                ]
+            );
+            $supplierUser2->assignRole(Role::findByName('Supplier'));
 
-            $supplierUser2 = User::factory()->create([
-    'firstname' => 'Maria',
-    'lastname' => 'Nankya',
-    'username' => 'mariasupplier',
-    'email' => 'supplier2@example.com',
-]);
-$supplierUser2->assignRole(Role::findByName('Supplier'));
-
-
-            $vendorUser = User::factory()->create([
-                'firstname' => 'Amos',
-                'lastname' => 'Tindbwa',
-                'username' => 'amosvendor',
-                'email' => 'vendor@example.com',
-            ]);     
+            // --- Vendor User ---
+            $vendorUser = User::firstOrCreate(
+                ['username' => 'amosvendor'],
+                [
+                    'firstname' => 'Amos',
+                    'lastname' => 'Tindbwa',
+                    'email' => 'vendor@example.com',
+                    'password' => Hash::make('your-secure-password'),
+                    'email_verified_at' => now(),
+                    'remember_token' => Str::random(10),
+                ]
+            );
             $vendorUser->assignRole(Role::findByName('Vendor'));
-            // Create the supplier's business profile
-            
 
-            // --- Create Customer User and Profile ---
-            $customerUser = User::factory()->create([
-                'firstname' => 'Jane',
-                'lastname' => 'Doe',
-                'username' => 'janedoe',
-                'email' => 'customer@example.com',
-            ]);
+            // --- Customer User ---
+            $customerUser = User::firstOrCreate(
+                ['username' => 'janedoe'],
+                [
+                    'firstname' => 'Jane',
+                    'lastname' => 'Doe',
+                    'email' => 'customer@example.com',
+                    'password' => Hash::make('your-secure-password'),
+                    'email_verified_at' => now(),
+                    'remember_token' => Str::random(10),
+                ]
+            );
             $customerUser->assignRole(Role::findByName('Customer'));
-            // Create the customer's business profile
-            Customer::create([
-                'user_id' => $customerUser->id,
-                'company_name' => 'Kampala Bar & Grill',
-                'phone_number' => '256700987654',
-            ]);
 
-            // --- Create a Liquor Manager User ---
-            $managerUser = User::factory()->create([
-                'firstname' => 'Sarah',
-                'lastname' => 'Manager',
-                'username' => 'sarahmanager',
-                'email' => 'manager@lms.com',
-                'employee_id' => 'EMP002'
-            ]);
+            // Create the customer's profile only if new user
+            if ($customerUser->wasRecentlyCreated) {
+                Customer::firstOrCreate(
+                    ['user_id' => $customerUser->id],
+                    [
+                        'company_name' => 'Kampala Bar & Grill',
+                        'phone_number' => '256700987654',
+                    ]
+                );
+            }
+
+            // --- Liquor Manager User ---
+            $managerUser = User::firstOrCreate(
+                ['username' => 'sarahmanager'],
+                [
+                    'firstname' => 'Sarah',
+                    'lastname' => 'Manager',
+                    'email' => 'manager@lms.com',
+                    'employee_id' => 'EMP002',
+                    'password' => Hash::make('your-secure-password'),
+                    'email_verified_at' => now(),
+                    'remember_token' => Str::random(10),
+                ]
+            );
             $managerUser->assignRole(Role::findByName('Liquor Manager'));
 
-                        // --- NEW: Create a Manufacturer User and assign to a Factory ---
-            // 1. Find the first factory that was created by the FactorySeeder.
+            // --- Manufacturer User ---
             $factory = Factory::first();
 
             if ($factory) {
-                // 2. Create the manufacturer user and pass the factory_id directly.
-                $manufacturerUser = User::factory()->create([
-                    'firstname' => 'John',
-                    'lastname' => 'Maker',
-                    'username' => 'johnmaker',
-                    'email' => 'manufacturer@lms.com',
-                    'employee_id' => 'EMP101',
-                    'factory_id' => $factory->id, // Assign the factory here
-                ]);
+                $manufacturerUser = User::firstOrCreate(
+                    ['username' => 'johnmaker'],
+                    [
+                        'firstname' => 'John',
+                        'lastname' => 'Maker',
+                        'email' => 'manufacturer@lms.com',
+                        'employee_id' => 'EMP101',
+                        'factory_id' => $factory->id,
+                        'password' => Hash::make('your-secure-password'),
+                        'email_verified_at' => now(),
+                        'remember_token' => Str::random(10),
+                    ]
+                );
                 $manufacturerUser->assignRole(Role::findByName('Manufacturer'));
             } else {
                 $this->command->warn('No factories found. Skipping Manufacturer user seeding.');

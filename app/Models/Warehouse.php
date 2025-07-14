@@ -12,30 +12,38 @@ class Warehouse extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'location', 'capacity', 'manager_id','contact_info','manager_name'];
+    // It is NOT recommended to use a custom primary key name unless absolutely necessary.
+    // The Laravel convention is simply 'id'. If you change this back to 'id' in your
+    // migration and model, you won't need to specify keys in your relationships.
+    protected $primaryKey = 'warehouse_id';
 
-    /**
-     * The products that are in stock in this warehouse.
-     */
+    protected $fillable = ['name', 'location', 'capacity', 'manager_id', 'contact_info', 'manager_name'];
+
     public function products(): BelongsToMany
     {
-        return $this->belongsToMany(Product::class, 'inventory')
-                    ->withPivot('quantity') // Makes the 'quantity' from the pivot table accessible
+        return $this->belongsToMany(Product::class, 'stock_levels', 'warehouse_id', 'product_id')
+                    ->withPivot('quantity')
                     ->withTimestamps();
     }
 
-     public function stockLevels(): HasMany // <<< THIS IS THE METHOD THAT WAS MISSING
+    /**
+     * This is the corrected relationship.
+     * We explicitly tell Eloquent what the foreign and local keys are.
+     */
+    public function stockLevels(): HasMany
     {
-        return $this->hasMany(StockLevel::class);
+        return $this->hasMany(StockLevel::class, 'warehouse_id', 'warehouse_id');
     }
 
     public function factory(): HasOne
-  {
-    return $this->hasOne(Factory::class);
-  }
+    {
+        return $this->hasOne(Factory::class, 'warehouse_id', 'warehouse_id');
+    }
 
-  public function employees(): HasMany
-  {
-    return $this->hasMany(related:Employee::class);
-  }
+    public function employees(): HasMany
+    {
+        // This will also likely need explicit keys if the 'employees' table
+        // has a 'warehouse_id' and not a 'warehouse_warehouse_id'
+        return $this->hasMany(Employee::class, 'warehouse_id', 'warehouse_id');
+    }
 }

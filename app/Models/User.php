@@ -2,55 +2,49 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use App\Models\Factory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-
-
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Models\Order; 
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable,HasRoles;
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $fillable = [
-        'firstname', // Add this
-        'lastname',  // Add this
+        'firstname',
+        'lastname',
         'username',
         'email',
         'password',
-        'employee_id', // Add this
+        'employee_id',
         'factory_id',
     ];
-     /**
-     * Get the user's full name.
-     * This creates a "virtual" attribute called "name".
-     *
-     * @return \Illuminate\Database\Eloquent\Casts\Attribute
-     */
 
+    /**
+     * Virtual attribute: full name.
+     */
     protected function name(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->firstname . ' ' . $this->lastname,
+            get: fn () => "{$this->firstname} {$this->lastname}"
         );
     }
 
     /**
-     * The attributes that should be hidden for serialization.
+     * Attributes hidden from JSON responses.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -58,9 +52,9 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * Casts for attribute conversion.
      *
-     * @return array<string, string>
+     * @var array<string, string>
      */
     protected function casts(): array
     {
@@ -70,46 +64,50 @@ class User extends Authenticatable
         ];
     }
 
+    // Relationships
 
-
-public function sentMessage(){
-    return $this->hasMany(Message::class,'sender_id');
-}
-public function receivedMessage(){
-    return $this->hasMany(Message::class,'receiver_id');
-}
-public function customerProfile()
-{
-    return $this->hasOne(Customer::class);
-}
-
-public function productionPlant(): BelongsTo
-{
-    return $this->belongsTo(Factory::class, 'factory_id');
-}
-
-/*public function suppliedPurchases(): HasMany
-{
-    // The foreign key on the 'purchases' table is 'supplier_id'.
-    // The local key on the 'users' table is 'id'.
-   // return $this->hasMany(Purchase::class, 'supplier_id', 'id');
-}*/
-  // ... existing properties
-
-    public function supplier()
+    public function sentMessages(): HasMany
     {
-        return $this->hasOne(\App\Models\Supplier::class);
+        return $this->hasMany(Message::class, 'sender_id');
     }
 
-    public function vendor()
+    public function receivedMessages(): HasMany
+    {
+        return $this->hasMany(Message::class, 'receiver_id');
+    }
+
+    public function customerProfile(): HasOne
+    {
+        return $this->hasOne(Customer::class);
+    }
+
+    public function suppliedPurchases(): HasMany
+    {
+        // This tells Eloquent: "Look at the 'purchases' table. Find all records
+        // where the 'supplier_id' column on that table matches the 'id'
+        // of this User model."
+        return $this->hasMany(Order::class, 'supplier_id', 'id');
+    }
+
+    public function supplier(): HasOne
+    {
+        return $this->hasOne(Supplier::class);
+    }
+
+    public function vendor(): BelongsTo
     {
         return $this->belongsTo(Vendor::class);
     }
 
-    public function orders()
+    public function productionPlant(): BelongsTo
+    {
+        return $this->belongsTo(Factory::class, 'factory_id');
+    }
+
+    public function orders(): HasMany
     {
         return $this->hasMany(Order::class, 'user_id');
     }
+
+    
 }
-
-

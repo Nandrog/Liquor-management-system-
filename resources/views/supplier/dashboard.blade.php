@@ -5,26 +5,28 @@
     </div>
 
     <h2 class="h4 mb-3">Overview</h2>
-
-    {{-- Dashboard Cards Grid --}}
     <div class="row">
-        <div class="col-md-4 mb-4">
-            <x-dashboard-card title="Chats" value="{{ $stats['newChats'] }}" description="New Chats" icon="bi-chat-dots" />
-        </div>
-        <div class="col-md-4 mb-4">
-            <x-dashboard-card title="Out of Stock" value="{{ $stats['outOfStock'] }}" description="Products" icon="bi-box-seam" />
-        </div>
-        <div class="col-md-4 mb-4">
-            <x-dashboard-card title="View Contract" value="2 years" description="remaining" icon="bi-file-earmark-text" />
-        </div>
-        <div class="col-md-4 mb-4">
-            <x-dashboard-card title="Orders" value="{{ $stats['unfulfilledOrders'] }}" description="Unfulfilled" icon="bi-arrow-repeat" />
-        </div>
-        <div class="col-md-4 mb-4">
-            <x-dashboard-card title="Sales total" value="{{ $stats['salesTotal'] }}" description="" icon="bi-bar-chart-line" />
-        </div>
-        <div class="col-md-4 mb-4">
-            <x-dashboard-card title="Trend Predictions" value="Rush hour" description="" icon="bi-wallet2" />
-        </div>
+        @forelse ($cards as $card)
+            <div class="col-12 col-md-6 col-lg-4 mb-4">
+                <x-dashboard-card
+                    :title="$card['title']"
+                    :description="$card['description']"
+                    :icon="$card['icon']"
+                    :route="$card['route']"
+                    :count="$card['count']"
+                    :countLabel="$card['count_label']"
+                />
+            </div>
+        @empty
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <p class="mb-0">There are no actions available for your role at this time.</p>
+                    </div>
+                </div>
+            </div>
+        @endforelse
     </div>
+
+
 </x-app-layout>

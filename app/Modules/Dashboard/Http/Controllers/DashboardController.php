@@ -5,119 +5,184 @@ namespace App\Modules\Dashboard\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Product;
+use App\Models\Message;
+use App\Models\StockMovement;
+use App\Models\WorkDistribution\Task;
 
 class DashboardController extends Controller
 {
-    /**
-     * The main entry point for the /dashboard route.
-     * Dispatches to the correct role-specific dashboard method.
-     */
     public function index()
     {
         $user = Auth::user();
+         
 
-        if ($user->hasRole('Supplier')) {
-            return $this->supplierDashboard();
+        // Use a switch statement for cleaner code when you have many roles
+        switch ($user->getRoleNames()->first()) {
+            case 'Supplier':
+                return $this->supplierDashboard();
+            case 'Liquor Manager':
+                return $this->managerDashboard();
+            case 'Procurement Officer':
+                return $this->officerDashboard();
+            case 'Vendor':
+                return $this->vendorDashboard();
+            case 'Finance':
+                return $this->financeDashboard();
+            case 'Manufacturer':
+                return $this->manufacturerDashboard();
+            case 'Customer':
+                return $this->customerDashboard();
+            default:
+                // This is the fallback for any other role (e.g., Admin)
+                return view('dashboard', ['cards' => []]);
         }
-
-        if ($user->hasRole('Liquor Manager')) {
-            return $this->managerDashboard();
-        }
-        if ($user->hasRole('Procurement Officer')) {
-            return $this->officerDashboard();
-        }
-        if ($user->hasRole('Vendor')) {
-            return $this->vendorDashboard();
-        }
-        if ($user->hasRole('Finance')) {
-            return $this->financeDashboard();
-        }
-        if ($user->hasRole('Manufacturer')) {
-            return $this->manufacturerDashboard();
-        }
-        if ($user->hasRole('Customer')) {
-            return $this->customerDashboard();
-        }
-        
-
-        // ... other role checks here ...
-
-        // Fallback to a generic view if no specific dashboard is defined
-        return view('dashboard');
     }
 
-    /**
-     * Gathers data for and displays the Supplier dashboard.
-     */
     private function supplierDashboard()
     {
-        // In the future, you will get data from your *real* modules.
-        // For example:
-        // $chatCount = app(ChatService::class)->getUnreadCountFor(Auth::id());
-        // $outOfStock = app(InventoryService::class)->getOutOfStockCountFor(Auth::id());
-
-        // For now, we use static data.
-        $stats = [
-            'newChats' => 8,
-            'outOfStock' => 12,
-            'unfulfilledOrders' => 10,
-            'salesTotal' => 'Sh.40000000',
+        $cards = [
+            ['title' => 'Purchase Orders', 'description' => 'View incoming orders', 'icon' => 'bi-clipboard-check', 'route' => '#', 'count' => 5, 'count_label' => 'Pending'],
+            ['title' => 'My Products', 'description' => 'Manage your product listings', 'icon' => 'bi-box-seam', 'route' => '#', 'count' => 25, 'count_label' => 'Total'],
         ];
+        return view('supplier.dashboard', ['cards' => $cards]);
+    }
 
-        // This controller from the 'Dashboard' module renders the view
-        // from the 'supplier' role-based view folder.
-        return view('supplier.dashboard', ['stats' => $stats]);
+    private function managerDashboard()
+    {
+        // Your existing logic to get counts...
+        $itemsAvailable = Product::whereHas('stockLevels', fn($q) => $q->where('quantity', '>', 0))->count();
+        $itemsOutOfStock = Product::whereDoesntHave('stockLevels', fn($q) => $q->where('quantity', '>', 0))->count();
+        $tasks=Task::where('status','pending')->count();
+        $messages = Message::where('receiver_id', Auth::id())->where('is_read',false)->count();
+
+
+        $cards = [
+            [
+                'title' => 'Stock Levels',
+                'description' => 'View detailed stock levels.',
+                'icon' => 'bi-clipboard-data',
+                'route' => route('manager.stock_levels.index'), // Assuming a shared stock levels route
+                'count' => $itemsAvailable,
+                'count_label' => 'Items Available',
+                'secondary_count' => $itemsOutOfStock,
+                'secondary_count_label' => 'Out of Stock'
+            ],
+            [
+                'title'=>'Task Master',
+                'description'=>'Monitor tasks and assign tasks',
+                'icon'=>'bi-clipboard-check',
+                'route'=>route('manager.work-distribution.task-list'),
+                'count' =>$tasks,
+                'count_label' =>'Pending Tasks', 
+                'secondaryCount' => null,     // Default to null
+                'secondaryCountLabel' => null
+            ],
+            [
+                'title' => 'Forecast Analysis',
+                'description' => 'Aanalysis of stock trends and forecasts',
+                'icon' => 'bi-graph-up',
+                'route'=> route('analytics.forecast'),
+                'count' =>null,
+                'count_label' => null,         // Default to null
+                'secondaryCount' => null,     // Default to null
+                'secondaryCountLabel' => null
+            ],
+            [
+                'title' => 'Chats',
+                'description' => 'Communicate with other users',
+                'icon' => 'bi-chat-left-text',
+                'route' => route('messages.index'),
+                'count' => $messages,
+                'count_label' => 'Unread Messages'
+
+            ]
+            // ... other cards for the manager
+        ];
+        
+        // This should return the manager-specific view
+        return view('manager.dashboard', ['cards' => $cards]);
+    }
+
+    // You can build out these methods with their own logic and views
+    private function officerDashboard() {
+        $itemsAvailable = Product::whereHas('stockLevels', fn($q) => $q->where('quantity', '>', 0))->count();
+        $itemsOutOfStock = Product::whereDoesntHave('stockLevels', fn($q) => $q->where('quantity', '>', 0))->count();
+        $tasks=Task::where('status','pending')->count();
+        $messages = Message::where('receiver_id', Auth::id())->where('is_read',false)->count();
+        $stalkMovements = StockMovement::count();
+
+
+        $cards = [
+            [
+                'title' => 'Stock Movements',
+                'description' => 'Transfer stock and track stock movements and adjustments',
+                'icon' => 'bi-truck',
+                'route' => route('officer.stock_movements.index'), // Assuming a shared stock levels route
+                'count' => $stalkMovements ,
+                'count_label' => 'Moved Stock',
+                'secondary_count' => $itemsOutOfStock,
+                'secondary_count_label' => 'Out of Stock'
+            ],
+            [
+                'title'=>'Task Master',
+                'description'=>'Monitor tasks and assign tasks',
+                'icon'=>'bi-clipboard-check',
+                'route'=>route('officer.work-distribution.task-list'),
+                'count' =>$tasks,
+                'count_label' =>'Pending Tasks', 
+                'secondaryCount' => null,     // Default to null
+                'secondaryCountLabel' => null
+            ],
+            [
+                'title' => 'Chats',
+                'description' => 'Communicate with other users',
+                'icon' => 'bi-chat-left-text',
+                'route' => route('messages.index'),
+                'count' => $messages,
+                'count_label' => 'Unread Messages'
+            ],
+           /* [
+                'title' => 'Order Management',
+                'description' => 'Manage purchase orders and vendor interactions',
+                'icon' => 'bi-file-earmark-text',
+                'route' =>route(),
+                'count' => null,
+                'count_label' => null
+            ]*/
+        ];
+        
+        return view('officer.dashboard',['cards' => $cards]);
+     }
+
+
+    private function vendorDashboard() { return view('vendor.dashboard'); }
+    private function customerDashboard() { return view('customer.dashboard'); }
+    private function manufacturerDashboard() { return view('manufacturer.dashboard'); }
+    private function financeDashboard() { 
+         
+        $itemsAvailable = Product::whereHas('stockLevels', fn($q) => $q->where('quantity', '>', 0))->count();
+
+        $cards = [
+            [
+              'title' => 'Stock Levels',
+                'description' => 'View detailed stock levels.',
+                'icon' => 'bi-clipboard-data',
+                'route' => route('finance.items.index'), // Assuming a shared stock levels route
+                'count' => $itemsAvailable,
+                'count_label' => 'Items Available',  
+            ]
+        ];
+        return view('finance.dashboard', ['cards'=>$cards]); 
     }
 
     /**
-     * Gathers data for and displays the Liquor Manager dashboard.
+     * The default dashboard for any user whose role doesn't have a custom view.
      */
-    private function managerDashboard()
+    private function defaultDashboard()
     {
-        // Fetch data specific to the Liquor Manager...
-        $stats = [ /* ... manager stats ... */ ];
-
-        return view('manager.dashboard', ['stats' => $stats]);
-    }
-
-    // ... add other private methods for other roles (financeDashboard, etc.)
-    private function vendorDashboard()
-    {
-        // Fetch data specific to the Liquor Manager...
-        $stats = [ /* ... manager stats ... */ ];
-
-        return view('vendor.dashboard' /*,['stats' => $stats]*/);
-    }
-
-    private function customerDashboard()
-    {
-        // Fetch data specific to the Liquor Manager...
-        $stats = [ /* ... manager stats ... */ ];
-
-        return view('customer.dashboard' /*,['stats' => $stats]*/);
-    }
-
-    private function officerDashboard()
-    {
-        // Fetch data specific to the Liquor Manager...
-        $stats = [ /* ... manager stats ... */ ];
-
-        return view('officer.dashboard' /*,['stats' => $stats]*/);
-    }
-
-    private function manufacturerDashboard()
-    {
-        // Fetch data specific to the Liquor Manager...
-        $stats = [ /* ... manager stats ... */ ];
-
-        return view('manufacturer.dashboard' /*,['stats' => $stats]*/);
-    }
-
-    private function financeDashboard()
-    {
-        // Fetch data specific to the Liquor Manager...
-        //$stats = [ /* ... manager stats ... */ ];
-
-        return view('finance.dashboard' /*,['stats' => $stats]*/);
+        // This method now returns the generic 'dashboard' view
+        // and provides it with an empty array for the $cards variable.
+        return view('dashboard', ['cards' => []]);
     }
 }

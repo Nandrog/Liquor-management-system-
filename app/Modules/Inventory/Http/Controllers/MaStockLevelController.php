@@ -35,7 +35,7 @@ class MaStockLevelController extends Controller
         // 4. Fetch only the stock levels for that specific warehouse.
         // We still eager load the 'product' relationship for efficiency.
         $stockLevels = StockLevel::with('product')
-            ->where('warehouse_id', $warehouse->id)
+            ->where('warehouse_id', $warehouse->warehouse_id)
             ->paginate(15); // Paginate the results
 
         // 5. Return the view, passing the warehouse name and its stock levels.

@@ -16,11 +16,15 @@ class StockLevelSeeder extends Seeder
 
         foreach ($warehouses as $warehouse) {
             foreach ($products as $product) {
-                StockLevel::create([
-                    'warehouse_id' => $warehouse->id,
-                    'product_id' => $product->id,
-                    'quantity' => rand(50, 500), // Start with a random quantity
-                ]);
+                StockLevel::updateOrCreate(
+                    [
+                        'warehouse_id' => $warehouse->warehouse_id,  // <-- fixed here
+                        'product_id' => $product->id,
+                    ],
+                    [
+                        'quantity' => rand(50, 500),
+                    ]
+                );
             }
         }
     }
