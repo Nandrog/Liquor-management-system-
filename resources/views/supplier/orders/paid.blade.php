@@ -45,9 +45,9 @@
                     <div class="col-lg-4 col-md-6 mb-4 mb-lg-0 border-end-lg">
                         <h5 class="mb-3">Order Details</h5>
                         <p class="icon-text mb-2"><i class="fas fa-user-tie text-muted"></i> <strong>Supplier:</strong> {{ $order->user->name ?? 'N/A' }}</p>
-                        <p class="icon-text mb-2"><i class="fas fa-map-marker-alt text-muted"></i> <strong>Shipping Address:</strong> {{ $order->shipping_address ?? 'N/A' }}</p>
+                        <p class="icon-text mb-2"><i class="fas fa-map-marker-alt text-muted"></i> <strong>Shipping Address:</strong>Warehouse {{--$order->shipping_address ?? 'N/A' --}}</p>
                         <p class="icon-text mb-2"><i class="fas fa-calendar-alt text-muted"></i> <strong>Order Date:</strong> {{ $order->created_at->format('M d, Y') }}</p>
-                        <p class="icon-text mb-2"><i class="fas fa-dollar-sign text-muted"></i> <strong>Paid On:</strong> {{ $order->paid_at?->format('M d, Y') ?? 'N/A' }}</p>
+                        <p class="icon-text mb-2"><i class="fas fa-dollar-sign text-muted"></i> <strong>Paid On:</strong> {{ $order->paid_at?->format('M d, Y') ?? now()->format('M d, Y') }}</p>
                     </div>
 
                     <div class="col-lg-8 col-md-6">

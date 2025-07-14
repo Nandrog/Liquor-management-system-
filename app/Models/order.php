@@ -33,7 +33,7 @@ class Order extends Model
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
-        
+
     }
 
     public function recipientSupplier(): BelongsTo
@@ -63,5 +63,9 @@ class Order extends Model
     public function scopeSupplierOrders($query)
     {
         return $query->where('type', \App\Enums\OrderType::SUPPLIER_ORDER);
+    }
+     public function products()
+    {
+        return $this->belongsToMany(Product::class)->withPivot('quantity');
     }
 }

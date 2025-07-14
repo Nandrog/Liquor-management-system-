@@ -30,9 +30,6 @@ use App\Modules\Orders\Http\Controllers\CustomerOrderController;
 use App\Modules\Inventory\Http\Controllers\MaPurchaseOrderController;
 use App\Http\Controllers\SetPasswordController;
 use App\Http\Controllers\AnalyticsController;
-
-
-
 Route::prefix('work-distribution')->group(function () {
     // (Tasks above)
     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
@@ -117,9 +114,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/stock-levels', [LmStockLevelController::class, 'index'])->name('stock_levels.index');
         Route::resource('items', LmItemController::class);
         Route::get('/purchase-orders', [MaPurchaseOrderController::class, 'index'])->name('purchase_orders.index');
-        Route::get('/task-monitor', [TaskController::class, 'index'])->name('work-distribution.task-list');
-        Route::get('/tasks/create', [TaskController::class, 'create'])->name('work-distribution.tasks.create');
-        Route::post('/tasks', [TaskController::class, 'store'])->name('work-distribution.tasks.store');
     });
 
         // All routes for a Finance's specific actions.
@@ -181,9 +175,6 @@ Route::post('/stripe/webhook', [PaymentController::class, 'handleWebhook'])->nam
     Route::get('/stock-movements', [PoStockMovementController::class, 'index'])->name('stock_movements.index');
         Route::post('/stock-movements', [PoStockMovementController::class, 'store'])->name('stock_movements.store');
         Route::get('/supplier-overview', [PoSupplierMgtController::class, 'index'])->name('supplier.overview');
-         Route::get('/task-monitor', [TaskController::class, 'index'])->name('work-distribution.task-list');
-        Route::get('/tasks/create', [TaskController::class, 'create'])->name('work-distribution.tasks.create');
-        Route::post('/tasks', [TaskController::class, 'store'])->name('work-distribution.tasks.store');
     });
 
         // All routes for a Vendor's specific actions.

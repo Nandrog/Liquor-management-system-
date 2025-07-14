@@ -44,13 +44,13 @@
                         {{-- CORRECTED THIS SECTION --}}
                         <p class="icon-text mb-2"><i class="fas fa-user-tie text-muted"></i> <strong>Supplier:</strong> {{ $order->user->name ?? 'N/A' }}</p>
 
-                        <p class="icon-text mb-2"><i class="fas fa-map-marker-alt text-muted"></i> <strong>Shipping Address:</strong> {{ $order->shipping_address ?? 'N/A' }}</p>
+                        <p class="icon-text mb-2"><i class="fas fa-map-marker-alt text-muted"></i> <strong>Shipping Address:</strong> {{ $order->shipping_address ?? 'W/H' }}</p>
                         <p class="icon-text mb-2"><i class="fas fa-calendar-alt text-muted"></i> <strong>Order Date:</strong> {{ $order->created_at->format('M d, Y') }}</p>
-                        <p class="icon-text mb-2"><i class="fas fa-shipping-fast text-muted"></i> <strong>Shipped On:</strong> {{ $order->delivering_at?->format('M d, Y') ?? 'N/A' }}</p>
+                        <p class="icon-text mb-2"><i class="fas fa-shipping-fast text-muted"></i> <strong>Shipped On:</strong> {{ $order->delivering_at?->format('M d, Y') ?? $order->created_at->format('M d, Y')}}</p>
                     </div>
 
                     <div class="col-lg-8 col-md-6">
-                         {{-- ... a all other details from the previous example (tracking, products table) ... --}}
+                        {{-- ... a all other details from the previous example (tracking, products table) ... --}}
                     </div>
                 </div>
             </div>
