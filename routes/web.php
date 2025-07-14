@@ -222,6 +222,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('role:Supplier')->prefix('supplier')->name('supplier.')->group(function () {
         Route::get('/orders/paid', [SupplierOrderController::class, 'paidOrders'])->name('orders.paid');
         Route::get('/orders/delivery', [SupplierOrderController::class, 'readyForDelivery'])->name('orders.delivery');
+        Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
         Route::resource('orders', SupplierOrderController::class)->only(['index', 'show', 'create', 'store']);
         // NEW ROUTE for the supplier to mark an order as delivering
     Route::patch('/orders/{order}/deliver', [SupplierOrderController::class, 'markAsDelivering'])
