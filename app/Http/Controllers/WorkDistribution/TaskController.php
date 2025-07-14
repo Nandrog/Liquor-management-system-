@@ -6,21 +6,22 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\WorkDistribution\Task;
 use App\Models\WorkDistribution\Employee;
-use App\Models\StockMovement; // ✅ Add this
+use App\Models\StockMovement;
+use App\Notifications\TaskAssigned; // ✅ Add this!
 
 class TaskController extends Controller
 {
     public function index()
     {
-        $tasks = Task::with(['employee', 'stockMovement'])->get(); // eager load stockMovement too
+        $tasks = Task::with(['employee', 'stockMovement'])->get();
         return view('work-distribution.task-list', compact('tasks'));
     }
 
     // Show task form
     public function create()
     {
-        $employees = Employee::with('warehouse')->get(); // helpful for dropdown labels
-        $stockMovements = StockMovement::with('product')->get(); // pass to view
+        $employees = Employee::with('warehouse')->get();
+        $stockMovements = StockMovement::with('product')->get();
 
         return view('work-distribution.create-task', compact('employees', 'stockMovements'));
     }
@@ -36,15 +37,21 @@ class TaskController extends Controller
             'stock_movement_id' => 'nullable|exists:stock_movements,id',
         ]);
 
-        Task::create([
+        $task = Task::create([
             'employee_id' => $request->employee_id,
             'type' => $request->type,
             'priority' => $request->priority,
             'deadline' => $request->deadline,
             'status' => 'pending',
-            'stock_movement_id' => $request->stock_movement_id, // ✅ store link
+            'stock_movement_id' => $request->stock_movement_id,
         ]);
 
-        return redirect()->back()->with('success', 'Task assigned successfully!');
+        // ✅ Send notification to the assigned Employee
+        $employee = $task->employee;
+        if ($employee && $employee->email) {
+            $employee->notify(new TaskAssigned($task));
+        }
+
+        return redirect()->back()->with('success', 'Task assigned successfully and employee notified!');
     }
 }
