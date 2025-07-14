@@ -52,7 +52,7 @@ class DashboardController extends Controller
             ],
             'purchase_orders' => [
                 'title' => 'Purchase Orders',
-                'description' => 'Create and manage orders from suppliers.',
+                'description' => 'View orders from suppliers.',
                 'icon' => 'bi-cart-plus',
                 'route' => '#',
             ],

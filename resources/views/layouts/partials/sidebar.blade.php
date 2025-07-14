@@ -38,7 +38,7 @@
             @if($user && $user->hasRole('Procurement Officer'))
                 <li><a href="{{ route('inventory.dashboard') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Inventory</a></li>
                 <li><a href="{{ route('procurement.orders.index') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Orders</a></li>
-                <li><a href="{{ route('analytics.dashboard') }}" class="nav-link"><i class="bi bi-graph-up me-2"></i> Analytics</a></li>
+                <li><a href="{{ route('analytics.menu') }}" class="nav-link"><i class="bi bi-graph-up me-2"></i> Analytics</a></li>
             @endif
 
             @if($user && $user->hasRole('Finance'))
@@ -103,7 +103,7 @@
                 </li>
             @elseif(auth()->user()->hasRole('Procurement Officer'))
                 <li>
-                    <a href="{{ route('analytics.dashboard') }}" class="nav-link">
+                    <a href="{{ route(/*changed something*/'analytics.menu') }}" class="nav-link">
                         <i class="bi bi-bar-chart me-2"></i> Analytics
                     </a>
                 </li>

@@ -1,6 +1,21 @@
 <x-guest-layout>
-    <div class="auth-card auth-card-yellow-border">
-        <h2 class="auth-title text-yellow">Vendor Application</h2>
+    @php
+        
+        $currentRole = request()->get('role', 'vendor');
+        // This match expression is a clean way to map roles to theme classes.
+        $themeClass = match ($currentRole) {
+            'finance' => 'theme-finance',
+            'supplier' => 'theme-supplier',
+            'manufacturer' => 'theme-manufacturer',
+            'customer' => 'theme-customer',
+            'liquor manager' => 'theme-manager',
+            'procurement officer' => 'theme-officer',
+            'vendor' => 'theme-vendor',
+            default => 'theme-default',
+        };
+    @endphp
+    <div class="auth-card {{$themeClass}}">
+        <h2 class="auth-title ">Vendor Application</h2>
         <p class="auth-subtitle">Please submit your application for review.</p>
 
         @if ($errors->any())
@@ -39,5 +54,13 @@
                 </button>
             </div>
         </form>
+
+         <p class="auth-footer-link mt-4">
+            Already have an approved account?
+            <a href="{{ route('login') }}" class="text-yellow">
+                Sign In
+            </a>
+        </p>
+        
     </div>
 </x-guest-layout>

@@ -16,11 +16,12 @@ return new class extends Migration
                   ->onDelete('cascade');
 
             // Define warehouse_id as unsignedBigInteger, referencing warehouses.warehouse_id
-            $table->unsignedBigInteger('warehouse_id');
+            
 
-            $table->foreign('warehouse_id')
+            $table->foreignId('warehouse_id')
                   ->references('warehouse_id')
                   ->on('warehouses')
+                  ->constrained()
                   ->onDelete('cascade');
 
             $table->integer('quantity'); // The current on-hand quantity
