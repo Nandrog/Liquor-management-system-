@@ -113,6 +113,15 @@ public function edit(Order $order)
         abort(403, 'Unauthorized action.');
     }
 
+    if ($order->status !== OrderStatus::PAID) {
+        return redirect()->back()->with('error', 'This order is not ready for delivery.');
+    }
+
+    $order->update([
+        'status' => OrderStatus::DELIVERING,
+        'shipped_at' => now(), // Record the time of shipment
+    ]);
+
     // Business logic check: ensure the order is in the correct state
     if ($order->status == OrderStatus::CONFIRMED && $order->payment_status == 'paid') {
         $order->status = OrderStatus::DELIVERING;
@@ -125,6 +134,27 @@ public function edit(Order $order)
     return redirect()->back()->with('error', 'This order is not in a state to be marked as delivering.');
 }
 
+public function paidOrders()
+{
+    $supplier = Auth::user()->supplier;
+
+    if (!$supplier) {
+        abort(403, 'You are not registered as a supplier.');
+    }if (!$supplier) {
+        abort(403, 'You are not registered as a supplier.');
+    }
+
+    $paidOrders = Order::where('type', OrderType::SUPPLIER_ORDER)
+                        ->where('status', OrderStatus::PAID)
+                        ->latest()
+                        ->paginate(15);
+
+    return view('supplier.orders.paid', [
+        'orders' => $paidOrders,
+        'pageTitle' => 'Paid Orders'
+    ]);
+}
+
 public function destroy(Order $order)
 {
     // Optional, but recommended: Authorize that the user can delete this order
@@ -135,6 +165,55 @@ public function destroy(Order $order)
 
     // Redirect back to the list of orders with a success message
     return redirect()->route('supplier.orders.index')
-                   ->with('success', 'Order has been deleted successfully.');
+                    ->with('success', 'Order has been deleted successfully.');
 }
+
+public function readyForDelivery()
+{
+
+    $supplier = Auth::user()->supplier;
+    if (!$supplier) {
+        abort(403, 'You are not registered as a supplier.');
+    }
+
+    // Only show orders for the currently logged-in supplier that are 'Paid'.
+    $ordersToDeliver =  Order::with('user')
+                            ->where('supplier_id', $supplier->id)
+                             ->where('status', OrderStatus::DELIVERING) // <-- The Key Change
+                            ->latest()
+                            ->paginate(15);
+
+
+    return view('supplier.orders.delivery', [
+        'orders' => $ordersToDeliver,
+        'pageTitle' => 'Ready for Delivery'
+    ]);
+}
+
+public function markAsDelivered(Request $request, Order $order)
+{
+    // 1. Security Check: Ensure the order belongs to the authenticated supplier
+    $supplier = Auth::user()->supplier;
+    if (!$supplier || $order->supplier_id !== $supplier->id) {
+        abort(403, 'Unauthorized action.');
+    }
+
+    // 2. Business Logic Check: Only orders that are 'DELIVERING' can be marked as 'DELIVERED'.
+    if ($order->status !== OrderStatus::DELIVERING) {
+        return redirect()->back()->with('error', 'This order is not in transit and cannot be marked as delivered.');
+    }
+
+    // 3. Update the Order
+    $order->update([
+        'status' => OrderStatus::DELIVERED,
+        'delivered_at' => now(), // Optional: record the exact time of delivery
+    ]);
+
+    // 4. Redirect back to the delivery page with a success message.
+    // The order will now be gone from this list.
+    return redirect()->route('supplier.orders.delivery')
+                    ->with('success', "Order #{$order->id} has been successfully marked as delivered.");
+}
+
+
 }

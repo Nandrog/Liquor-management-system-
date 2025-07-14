@@ -9,7 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Services\InventoryService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\log;
+use Illuminate\Http\RedirectResponse;
 
 class ManufacturerController extends Controller
 {
@@ -44,6 +46,27 @@ class ManufacturerController extends Controller
         return redirect()->route('manufacturer.orders.index')->with('success', 'Order status updated.');
     }
 
+
+    // Add this new method inside your ManufacturerController class
+
+public function paidOrders()
+{
+    // You can add authorization here if needed, e.g.
+    // $this->authorize('viewAny', Order::class);
+
+    // Find all supplier orders with the 'paid' status
+    $paidOrders = Order::where('type', OrderType::SUPPLIER_ORDER)
+                        ->where('status', OrderStatus::PAID)
+                        ->latest()
+                        ->paginate(15);
+
+    // Return a view, passing the orders and a title
+    // You will need to create this view file later.
+    return view('manufacturer.orders.paid', [
+        'orders' => $paidOrders,
+        'pageTitle' => 'Paid Orders'
+    ]);
+}
 // ... other methods in your controller ...
 
 /**
@@ -56,11 +79,27 @@ public function deliveringOrders()
                             ->latest()
                             ->paginate(15);
 
-    return view('manufacturer.orders.index', [
+    return view('manufacturer.orders.delivery', [
         'orders' => $deliveringOrders,
         'pageTitle' => 'Orders In Delivery'
     ]);
 }
+
+public function markAsDelivered(Order $order): RedirectResponse
+    {
+        // Authorization: Ensure the logged-in user owns this order.
+        if ($order->manufacturer_id !== Auth::id()) {
+            abort(403, 'You are not authorized to update this order.');
+        }
+
+        // Update the order status and record the delivery time.
+        $order->update([
+            'status' => OrderStatus::DELIVERED, // Use your Enum
+            'delivered_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', "Order #{$order->order_number} marked as delivered.");
+    }
 
 
 public function confirmDelivery(Request $request, Order $order, InventoryService $inventoryService)
@@ -93,4 +132,5 @@ public function confirmDelivery(Request $request, Order $order, InventoryService
     return redirect()->route('manufacturer.orders.show', $order)
                     ->with('success', 'Delivery confirmed and inventory allocated successfully!');
 }
+
 }

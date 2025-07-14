@@ -229,10 +229,14 @@ Route::middleware(['auth'])->group(function () {
 
     // 2. Supplier Routes
     Route::middleware('role:Supplier')->prefix('supplier')->name('supplier.')->group(function () {
+        Route::get('/orders/paid', [SupplierOrderController::class, 'paidOrders'])->name('orders.paid');
+        Route::get('/orders/delivery', [SupplierOrderController::class, 'readyForDelivery'])->name('orders.delivery');
         Route::resource('orders', SupplierOrderController::class)->only(['index', 'show', 'create', 'store']);
         // NEW ROUTE for the supplier to mark an order as delivering
     Route::patch('/orders/{order}/deliver', [SupplierOrderController::class, 'markAsDelivering'])
         ->name('orders.markAsDelivering');
+        Route::patch('/orders/{order}/mark-as-delivered', [SupplierOrderController::class, 'markAsDelivered'])
+        ->name('orders.markAsDelivered');
         //Route::get('orders', [SupplierOrderController::class, 'index'])->name('orders.index');
         //Route::resource('supplier/orders', SupplierOrderController::class)->names('supplier.orders');
         // Route to show the form for editing an existing order
@@ -248,16 +252,21 @@ Route::middleware(['auth'])->group(function () {
     // 3. Manufacturer Routes
     Route::middleware('role:Manufacturer')->prefix('manufacturer')->name('manufacturer.')->group(function () {
         Route::get('orders', [ManufacturerController::class, 'index'])->name('orders.index');
+
+        Route::get('/orders/delivery', [ManufacturerController::class, 'deliveringOrders'])->name('orders.delivery');
+
+        Route::get('/orders/paid', [ManufacturerController::class, 'paidOrders'])->name('orders.paid');
+
+
         Route::get('orders/{order}', [ManufacturerController::class, 'show'])->name('orders.show');
         Route::patch('orders/{order}', [ManufacturerController::class, 'update'])->name('orders.update');
         // ... your other routes ...
-    Route::get('/orders/paid', [ManufacturerController::class, 'paidOrders'])->name('orders.paid');
 
     // NEW ROUTE to view all delivering orders
-    Route::get('/orders/delivering', [ManufacturerController::class, 'deliveringOrders'])
-        ->name('orders.delivering');
 
-    // NEW ROUTE to confirm the delivery
+    // Route for the action of marking an order as delivered
+    Route::patch('/orders/{order}/mark-as-delivered', [ManufacturerController::class, 'markAsDelivered'])->name('orders.markAsDelivered');
+
     Route::patch('/orders/{order}/receive', [ManufacturerController::class, 'confirmDelivery'])
         ->name('orders.confirmDelivery');
     });
