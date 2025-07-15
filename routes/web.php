@@ -50,6 +50,8 @@ Route::prefix('work-distribution')->group(function () {
     Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
 
 });
+Route::get('/officer/work-distribution/tasks', [TaskController::class, 'index'])
+     ->name('officer.work-distribution.task-list'); // <-- THIS IS THE FIX
 /*
 |--------------------------------------------------------------------------
 | Public Routes (No login required)
