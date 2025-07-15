@@ -1,57 +1,60 @@
 <?php
 
-namespace App\Http\Controllers\WorkDistribution;
+namespace App\Notifications;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\WorkDistribution\Task;
-use App\Models\WorkDistribution\Employee;
-use App\Models\StockMovement;
-use App\Notifications\TaskAssigned; // ✅ Add this!
+use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\MailMessage;
 
-class TaskController extends Controller
+use App\Models\WorkDistribution\ShiftSchedule;
+
+class ShiftScheduled extends Notification
 {
-    public function index()
+    use Queueable;
+
+    public $shift;
+
+    /**
+     * Create a new notification instance.
+     */
+    public function __construct(ShiftSchedule $shift)
     {
-        $tasks = Task::with(['employee', 'stockMovement'])->get();
-        return view('work-distribution.task-list', compact('tasks'));
+        $this->shift = $shift;
     }
 
-    // Show task form
-    public function create()
+    /**
+     * Get the notification's delivery channels.
+     */
+    public function via($notifiable)
     {
-        $employees = Employee::with('warehouse')->get();
-        $stockMovements = StockMovement::with('product')->get();
-
-        return view('work-distribution.create-task', compact('employees', 'stockMovements'));
+        return ['mail', 'database'];
     }
 
-    // Save the task
-    public function store(Request $request)
+    /**
+     * Get the mail representation.
+     */
+    public function toMail($notifiable)
     {
-        $request->validate([
-            'employee_id' => 'required|exists:employees,id',
-            'type' => 'required|string',
-            'priority' => 'required|string',
-            'deadline' => 'required|date',
-            'stock_movement_id' => 'nullable|exists:stock_movements,id',
-        ]);
+        return (new MailMessage)
+            ->subject('🕒 New Shift Scheduled')
+            ->line('You have been scheduled for a new shift.')
+            ->line('Start: ' . $this->shift->start_time)
+            ->line('End: ' . $this->shift->end_time)
+            ->line('Break Hours: ' . $this->shift->break_hours)
+            ->action('View Shifts', url('/shifts'))
+            ->line('Thank you for your hard work!');
+    }
 
-        $task = Task::create([
-            'employee_id' => $request->employee_id,
-            'type' => $request->type,
-            'priority' => $request->priority,
-            'deadline' => $request->deadline,
-            'status' => 'pending',
-            'stock_movement_id' => $request->stock_movement_id,
-        ]);
-
-        // ✅ Send notification to the assigned Employee
-        $employee = $task->employee;
-        if ($employee && $employee->email) {
-            $employee->notify(new TaskAssigned($task));
-        }
-
-        return redirect()->back()->with('success', 'Task assigned successfully and employee notified!');
+    /**
+     * Get the array representation for database.
+     */
+    public function toArray($notifiable)
+    {
+        return [
+            'shift_id' => $this->shift->id,
+            'start_time' => $this->shift->start_time,
+            'end_time' => $this->shift->end_time,
+            'break_hours' => $this->shift->break_hours,
+        ];
     }
 }

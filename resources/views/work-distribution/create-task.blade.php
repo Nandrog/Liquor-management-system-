@@ -1,6 +1,6 @@
 <x-app>
   <div class="container py-4">
-    <h1 class="mb-4">📝 ASSIGN A NEW TASK </h1>
+    <h1 class="mb-4">📝 ASSIGN A NEW TASK</h1>
 
     @if (session('success'))
       <div class="alert alert-success">{{ session('success') }}</div>
@@ -51,7 +51,11 @@
           <option value="">None</option>
           @foreach($stockMovements as $movement)
             <option value="{{ $movement->id }}">
-              #{{ $movement->id }} — Product: {{ $movement->product->name ?? '' }} | Qty: {{ $movement->quantity }} | {{ $movement->notes ?? '' }}
+              #{{ $movement->id }}
+              — Product: {{ $movement->product->name ?? 'N/A' }}
+              — Qty: {{ $movement->quantity }}
+              — Order: {{ $movement->order->id ?? 'None' }}
+              — {{ $movement->notes ?? '' }}
             </option>
           @endforeach
         </select>

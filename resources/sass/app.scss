@@ -215,3 +215,56 @@
 .workforce-parent:hover .workforce-links {
   display: block;
 }
+/* ==========================
+   🔔 Notifications Bell
+   ========================== */
+
+.top-header .nav-link {
+  position: relative;
+  display: inline-block;
+  color: #333;
+
+  &:hover {
+    color: #0d6efd; // Bootstrap blue on hover
+  }
+}
+
+.top-header .badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.2em 0.45em;
+}
+
+.dropdown-menu {
+  max-height: 320px;
+  overflow-y: auto;
+  font-size: 0.85rem;
+
+  li {
+    line-height: 1.4;
+  }
+
+  .btn-link {
+    font-size: 0.75rem;
+  }
+
+  .btn-outline-secondary {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+  }
+}
+
+/* Optional: adjust spacing */
+.top-header .dropdown-menu {
+  margin-top: 10px;
+}
+
+.top-header .bi-bell {
+  font-size: 1.2rem;
+}
+
+/* Optional: better badge look for notification */
+.top-header .badge.bg-danger {
+  border: 1px solid #fff;
+  box-shadow: 0 0 0 1px #fff; /* white border to pop out */
+}

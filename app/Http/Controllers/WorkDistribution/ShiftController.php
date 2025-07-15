@@ -12,23 +12,20 @@ class ShiftController extends Controller
 {
     public function index()
     {
-        $shifts = ShiftSchedule::with(['employee', 'warehouse'])->get();
+        $shifts = ShiftSchedule::with('employee')->get();
         return view('work-distribution.shift-list', compact('shifts'));
     }
 
-    // Show create shift form
     public function create()
     {
         $employees = Employee::with('warehouse')->get();
         return view('work-distribution.create-shift', compact('employees'));
     }
 
-    // Store new shift & send notification
     public function store(Request $request)
     {
         $request->validate([
             'employee_id' => 'required|exists:employees,id',
-            'warehouse_id' => 'required|exists:warehouses,id',
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
             'notes' => 'nullable|string',
@@ -36,7 +33,6 @@ class ShiftController extends Controller
 
         $shift = ShiftSchedule::create([
             'employee_id' => $request->employee_id,
-            'warehouse_id' => $request->warehouse_id,
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,
             'notes' => $request->notes,

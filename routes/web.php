@@ -291,9 +291,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/forecast', [AnalyticsController::class, 'forecast'])->name('analytics.forecast');
         Route::get('/segmentation', [AnalyticsController::class, 'segmentation'])->name('analytics.segmentation');
 });
-
-
 });
+Route::get('/notifications/mark-all-read', function () {
+    auth()->user()->unreadNotifications->markAsRead();
+    return back();
+})->name('notifications.markAllRead');
+
 
 Route::get('/set-password/{user}', [SetPasswordController::class, 'show'])
     ->middleware(['signed'])//ensures link validity
