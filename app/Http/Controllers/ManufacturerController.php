@@ -81,8 +81,11 @@ public function deliveringOrders()
                             ->latest()
                             ->paginate(15);
 
+                            $warehouses = Warehouse::all();
+
     return view('manufacturer.orders.delivery', [
         'orders' => $deliveringOrders,
+        'warehouses' => $warehouses,
         'pageTitle' => 'Orders In Delivery'
     ]);
 }
@@ -119,80 +122,66 @@ public function confirmDelivery(Request $request, Order $order, InventoryService
                     ->with('success', 'Delivery confirmed and inventory allocated successfully!');
 }
 
-    public function markAsDelivered(Order $order)
-    {
-        // Validation 1: Check order status
-        if ($order->status !== 'delivering') {
-            return redirect()->back()->with('error', 'This order is not in a deliverable state.');
-        }
+    public function markAsDelivered(Request $request, Order $order)
+{
+    // 1. Authorize the action (optional but good practice)
+    $this->authorize('update', $order);
 
-        // Validation 2: Ensure we know which warehouse to add stock to.
-        // This assumes your 'orders' table has a 'warehouse_id' column.
-        if (is_null($order->warehouse_id)) {
-            return redirect()->back()->with('error', 'Cannot process delivery: Target warehouse is not specified on the order.');
-        }
+    // 2. Validate the request: ensure a warehouse was selected.
+    $validated = $request->validate([
+        'warehouse_id' => 'required|integer|exists:warehouses,warehouse_id',
+    ]);
+    $warehouseId = $validated['warehouse_id'];
 
-        try {
-            DB::transaction(function () use ($order) {
+    //dd('Validation passed. Warehouse ID is:', $validated);
 
-                // Iterate through each product item from the supplier's order
-                foreach ($order->products as $orderItem) {
-
-                    // === PART A: FIND OR CREATE THE MASTER PRODUCT RECORD ===
-
-                    $product = Product::updateOrCreate(
-                        // 1. Find the product using its unique SKU
-                        ['sku' => $orderItem->pivot->sku],
-
-                        // 2. If not found, create it with this data.
-                        //    (This data is ignored if the product already exists)
-                        [
-                            'name'            => $orderItem->pivot->product_name,
-                            'description'     => 'New product automatically created from delivery of Order #' . $order->order_number,
-                            'type'            => $orderItem->pivot->type ?? 'Raw Material', // Use a default if not specified
-                            'unit_price'      => $orderItem->pivot->price,
-                            'unit_of_measure' => $orderItem->pivot->unit_of_measure ?? 'unit',
-                            'reorder_level'   => 10, // A sensible default
-                            'category_id'     => $orderItem->pivot->category_id ?? null, // Assign a default or null
-                            'user_id'         => auth()->id, // The manufacturer receiving the goods
-                            'vendor_id'       => $order->user_id, // The supplier who sent the order
-                        ]
-                    );
-
-                    // === PART B: UPDATE THE STOCK IN THE CORRECT WAREHOUSE ===
-
-                    // Get the quantity received from the order's pivot table
-                    $quantityReceived = $orderItem->pivot->quantity;
-
-                    // Find the stock level for this specific product in this specific warehouse.
-                    // If it doesn't exist, create it with an initial quantity of 0.
-                    $stockLevel = StockLevel::firstOrCreate(
-                        [
-                            'product_id'   => $product->id,
-                            'warehouse_id' => $order->warehouse_id,
-                        ],
-                        ['quantity' => 0] // Only sets quantity to 0 if creating for the first time
-                    );
-
-                    // Now, atomically increment the quantity. This is safe from race conditions.
-                    $stockLevel->increment('quantity', $quantityReceived);
-                }
-
-                // === PART C: UPDATE THE ORDER STATUS ===
-                $order->status = 'delivered';
-                $order->delivered_at = now();
-                $order->save();
-            });
-
-        } catch (\Exception $e) {
-            // Log the detailed error for debugging purposes
-            Log::error("Failed to mark order #{$order->id} as delivered: " . $e->getMessage());
-
-            // Provide a user-friendly error message
-            return redirect()->back()->with('error', 'An unexpected error occurred while processing the delivery. The operation was cancelled.');
-        }
-
-        return redirect()->route('manufacturer.orders.delivery')
-                        ->with('success', "Order #{$order->order_number} marked as delivered. Inventory has been updated successfully.");
+    // 3. Check if the order is in the correct state
+    if ($order->status !== OrderStatus::DELIVERING) {
+        return redirect()->back()->with('error', 'This order is not in a deliverable state.');
     }
+
+    try {
+    DB::transaction(function () use ($order, $warehouseId) {
+
+        foreach ($order->products as $orderItem) {
+
+            // Get the quantity and price from the pivot table
+            $quantityReceived = $orderItem->pivot->quantity;
+            $purchasePrice = $orderItem->pivot->price;
+
+            // 5. Find the product by its ID from the relationship.
+            $product = Product::find($orderItem->id);
+
+            // If for some reason the product doesn't exist, skip it to prevent errors.
+            if (!$product) {
+                continue;
+            }
+
+            // 6. Find the stock level for this product in the selected warehouse, or create it.
+            $stockLevel = StockLevel::firstOrCreate(
+                [
+                    'product_id'   => $product->id,
+                    'warehouse_id' => $warehouseId,
+                ],
+                ['quantity' => 0] // This is only set if the record is new
+            );
+
+            // 7. Atomically increment the stock level.
+            $stockLevel->increment('quantity', $quantityReceived);
+        }
+
+        // 8. Update the order's status to 'Delivered'.
+        $order->status = OrderStatus::DELIVERED;
+        $order->delivered_at = now();
+        $order->save();
+    });
+
+    } catch (\Exception $e) {
+        Log::error("Failed to process delivery for Order #{$order->id}: " . $e->getMessage());
+        return redirect()->back()->with('error', 'An error occurred while updating inventory. The operation was cancelled.');
+
+    }
+//dd($e);
+    return redirect()->route('manufacturer.orders.delivery')->with('success', "Order #{$order->order_number} marked as delivered. Inventory updated.");
+}
 }
