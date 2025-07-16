@@ -150,7 +150,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/chats', [ChatController::class, 'users'])->name('chat.page');
    
 
-});
+
 
     // --- ROLE-SPECIFIC FUNCTIONALITY ROUTES ---
 
@@ -172,7 +172,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     |--------------------------------------------------------------------------
     */
         // Example: Route::get('/inventory', [InventoryStockController::class, 'index'])->name('inventory.index');
-    });
+
 
     // All routes for a Liquor Manager's specific actions.
 
