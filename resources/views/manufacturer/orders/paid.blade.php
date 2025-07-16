@@ -33,7 +33,7 @@
                                 <td><strong>{{ $order->order_number ?? $order->id }}</strong></td>
                                 <td>{{ $order->user->name ?? 'N/A' }}</td>
                                 <td>{{ $order->created_at->format('M d, Y') }}</td>
-                                <td>{{ $order->paid_at?->format('M d, Y') ?? 'N/A' }}</td>
+                                <td>{{ $order->paid_at?->format('M d, Y') ?? now()->format('M d, Y') }}</td>
                                 <td>{{ $order->orderItems->count() }}</td>
                                 <td>${{ number_format($order->total_amount, 2) }}</td>
                                 <td>

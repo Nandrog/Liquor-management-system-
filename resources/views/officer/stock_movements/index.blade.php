@@ -1,4 +1,5 @@
 <x-app-layout>
+
     {{-- Page Header --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h2">Stock Movements</h1>
@@ -101,7 +102,7 @@
                         <select class="form-select" name="from_warehouse_id" id="from_warehouse_id" required>
                             <option value="">Select source...</option>
                             @foreach ($warehouses as $warehouse)
-                                <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
+                                <option value="{{ $warehouse->warehouse_id }}">{{ $warehouse->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -110,7 +111,7 @@
                         <select class="form-select" name="to_warehouse_id" id="to_warehouse_id" required>
                              <option value="">Select destination...</option>
                             @foreach ($warehouses as $warehouse)
-                                <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
+                                <option value="{{ $warehouse->warehouse_id }}">{{ $warehouse->name }}</option>
                             @endforeach
                         </select>
                     </div>

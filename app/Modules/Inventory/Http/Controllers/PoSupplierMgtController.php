@@ -16,14 +16,14 @@ class PoSupplierMgtController extends Controller
             ->with([
                 // 3. Eager load the new 'suppliedPurchases' relationship on the User model.
                 'suppliedPurchases' => function ($query) {
-                    $query->orderBy('purchase_date', 'desc');
+                    $query->orderBy('created_at', 'desc');
                 },
                 'suppliedPurchases.items.product',
                 'suppliedPurchases.warehouse'
             ])
             ->get();
 
-        return view('procurement.supplier.overview', [
+        return view('officer.supplier.overview', [
             'suppliers' => $suppliers,
         ]);
     }

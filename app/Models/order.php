@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Order extends Model
 {
@@ -32,6 +33,12 @@ class Order extends Model
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
+
+    }
+
+    public function recipientSupplier(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function vendor()
@@ -56,5 +63,10 @@ class Order extends Model
     public function scopeSupplierOrders($query)
     {
         return $query->where('type', \App\Enums\OrderType::SUPPLIER_ORDER);
+    }
+     public function products()
+    {
+         return $this->belongsToMany(Product::class, 'order_items') // <-- Add table name
+                ->withPivot('quantity', 'price');
     }
 }

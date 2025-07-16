@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('quantity_produced'); // Number of bottles
             $table->decimal('cost_of_materials', 12, 2);
             $table->timestamp('completed_at');
+            $table->timestamps();
         });
     }
 

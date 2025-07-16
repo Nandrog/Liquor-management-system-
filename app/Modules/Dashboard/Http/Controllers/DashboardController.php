@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Product;
+use App\Models\Message;
+use App\Models\StockMovement;
+use App\Models\WorkDistribution\Task;
 
 class DashboardController extends Controller
 {
@@ -50,6 +53,9 @@ class DashboardController extends Controller
         // Your existing logic to get counts...
         $itemsAvailable = Product::whereHas('stockLevels', fn($q) => $q->where('quantity', '>', 0))->count();
         $itemsOutOfStock = Product::whereDoesntHave('stockLevels', fn($q) => $q->where('quantity', '>', 0))->count();
+        $tasks=Task::where('status','pending')->count();
+        $messages = Message::where('receiver_id', Auth::id())->where('is_read',false)->count();
+
 
         $cards = [
             [
@@ -62,6 +68,35 @@ class DashboardController extends Controller
                 'secondary_count' => $itemsOutOfStock,
                 'secondary_count_label' => 'Out of Stock'
             ],
+            [
+                'title'=>'Task Master',
+                'description'=>'Monitor tasks and assign tasks',
+                'icon'=>'bi-clipboard-check',
+                'route'=>route('manager.work-distribution.task-list'),
+                'count' =>$tasks,
+                'count_label' =>'Pending Tasks', 
+                'secondaryCount' => null,     // Default to null
+                'secondaryCountLabel' => null
+            ],
+            [
+                'title' => 'Forecast Analysis',
+                'description' => 'Aanalysis of stock trends and forecasts',
+                'icon' => 'bi-graph-up',
+                'route'=> route('analytics.forecast'),
+                'count' =>null,
+                'count_label' => null,         // Default to null
+                'secondaryCount' => null,     // Default to null
+                'secondaryCountLabel' => null
+            ],
+            [
+                'title' => 'Chats',
+                'description' => 'Communicate with other users',
+                'icon' => 'bi-chat-left-text',
+                'route' => route('messages.index'),
+                'count' => $messages,
+                'count_label' => 'Unread Messages'
+
+            ]
             // ... other cards for the manager
         ];
         
@@ -70,7 +105,57 @@ class DashboardController extends Controller
     }
 
     // You can build out these methods with their own logic and views
-    private function officerDashboard() { return view('procurement.dashboard'); }
+    private function officerDashboard() {
+        $itemsAvailable = Product::whereHas('stockLevels', fn($q) => $q->where('quantity', '>', 0))->count();
+        $itemsOutOfStock = Product::whereDoesntHave('stockLevels', fn($q) => $q->where('quantity', '>', 0))->count();
+        $tasks=Task::where('status','pending')->count();
+        $messages = Message::where('receiver_id', Auth::id())->where('is_read',false)->count();
+        $stalkMovements = StockMovement::count();
+
+
+        $cards = [
+            [
+                'title' => 'Stock Movements',
+                'description' => 'Transfer stock and track stock movements and adjustments',
+                'icon' => 'bi-truck',
+                'route' => route('officer.stock_movements.index'), // Assuming a shared stock levels route
+                'count' => $stalkMovements ,
+                'count_label' => 'Moved Stock',
+                'secondary_count' => $itemsOutOfStock,
+                'secondary_count_label' => 'Out of Stock'
+            ],
+            [
+                'title'=>'Task Master',
+                'description'=>'Monitor tasks and assign tasks',
+                'icon'=>'bi-clipboard-check',
+                'route'=>route('officer.work-distribution.task-list'),
+                'count' =>$tasks,
+                'count_label' =>'Pending Tasks', 
+                'secondaryCount' => null,     // Default to null
+                'secondaryCountLabel' => null
+            ],
+            [
+                'title' => 'Chats',
+                'description' => 'Communicate with other users',
+                'icon' => 'bi-chat-left-text',
+                'route' => route('messages.index'),
+                'count' => $messages,
+                'count_label' => 'Unread Messages'
+            ],
+           /* [
+                'title' => 'Order Management',
+                'description' => 'Manage purchase orders and vendor interactions',
+                'icon' => 'bi-file-earmark-text',
+                'route' =>route(),
+                'count' => null,
+                'count_label' => null
+            ]*/
+        ];
+        
+        return view('officer.dashboard',['cards' => $cards]);
+     }
+
+
     private function vendorDashboard() { return view('vendor.dashboard'); }
     private function customerDashboard() { return view('customer.dashboard'); }
     private function manufacturerDashboard() { return view('manufacturer.dashboard'); }

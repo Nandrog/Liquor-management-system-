@@ -27,7 +27,26 @@ use App\Http\Controllers\ProcurementController;
 use App\Http\Controllers\ManufacturerController;
 use App\Http\Controllers\SetPasswordController;
 use App\Http\Controllers\AnalyticsController;
+Route::prefix('work-distribution')->group(function () {
+    // (Tasks above)
+    Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+    Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
+    Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
 
+    // Shifts
+    Route::get('/shifts', [ShiftController::class, 'index'])->name('shifts.index');
+    Route::get('/shifts/create', [ShiftController::class, 'create'])->name('shifts.create');
+    Route::post('/shifts', [ShiftController::class, 'store'])->name('shifts.store');
+});
+Route::prefix('work-distribution')->group(function () {
+
+    // Show the Task form
+    Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
+
+    // Save the Task (handle the form POST)
+    Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+
+});
 /*
 |--------------------------------------------------------------------------
 | Public Routes
@@ -138,7 +157,82 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ];
             return view('vendor.dashboard', compact('stats'));
         })->name('dashboard');
+ });
 
+    Route::middleware(['can:view stock levels'])->group(function () {
+
+
+    // Now, any user whose role has the 'view stock levels' permission can access this.
+    Route::get('/stock-levels', [LmStockLevelController::class, 'index'])->name('manager.stock_levels.index');
+    Route::get('/stock-levels', [LmStockLevelController::class, 'index'])->name('officer.stock_levels.index');
+
+    });
+
+
+
+
+// Route to set initial password via signed link
+Route::get('/set-password/{user}', [SetPasswordController::class, 'show'])
+    ->middleware(['signed']) // ensures link validity
+    ->name('password.set');
+
+Route::post('/set-password/{user}', [SetPasswordController::class, 'update'])
+    ->name('password.set.update');
+
+// Route for dashboard, redirects user based on their role
+Route::middleware(['auth'])->group(function () {
+    // 1. Liquor Manager Routes
+    Route::middleware('role:Liquor Manager')->prefix('liquor-manager')->name('liquor-manager.')->group(function () {
+        Route::resource('products', ProductController::class);
+        Route::get('products', [ProductController::class, 'index'])->name('products.index');
+    });
+
+    // 2. Supplier Routes
+    Route::middleware('role:Supplier')->prefix('supplier')->name('supplier.')->group(function () {
+        Route::get('/orders/paid', [SupplierOrderController::class, 'paidOrders'])->name('orders.paid');
+        Route::get('/orders/delivery', [SupplierOrderController::class, 'readyForDelivery'])->name('orders.delivery');
+        Route::resource('orders', SupplierOrderController::class)->only(['index', 'show', 'create', 'store']);
+        // NEW ROUTE for the supplier to mark an order as delivering
+    Route::patch('/orders/{order}/deliver', [SupplierOrderController::class, 'markAsDelivering'])
+        ->name('orders.markAsDelivering');
+        Route::patch('/orders/{order}/mark-as-delivered', [SupplierOrderController::class, 'markAsDelivered'])
+        ->name('orders.markAsDelivered');
+        //Route::get('orders', [SupplierOrderController::class, 'index'])->name('orders.index');
+        //Route::resource('supplier/orders', SupplierOrderController::class)->names('supplier.orders');
+        // Route to show the form for editing an existing order
+        Route::get('/supplier/orders/{order}/edit', [SupplierOrderController::class, 'edit'])->name('orders.edit');
+
+        // Route to handle the submission of the edit form
+        Route::put('/supplier/orders/{order}', [SupplierOrderController::class, 'update'])->name('orders.update');
+        Route::delete('/supplier/orders/{order}', [SupplierOrderController::class, 'destroy'])->name('orders.destroy');
+        Route::get('orders/{order}', [SupplierOrderController::class, 'show'])->name('orders.show');
+        Route::patch('orders/{order}', [SupplierOrderController::class, 'update'])->name('orders.update');
+    });
+
+    // 3. Manufacturer Routes
+    Route::middleware('role:Manufacturer')->prefix('manufacturer')->name('manufacturer.')->group(function () {
+        Route::get('orders', [ManufacturerController::class, 'index'])->name('orders.index');
+
+        Route::get('/orders/delivery', [ManufacturerController::class, 'deliveringOrders'])->name('orders.delivery');
+
+        Route::get('/orders/paid', [ManufacturerController::class, 'paidOrders'])->name('orders.paid');
+
+
+        Route::get('orders/{order}', [ManufacturerController::class, 'show'])->name('orders.show');
+        Route::patch('orders/{order}', [ManufacturerController::class, 'update'])->name('orders.update');
+        // ... your other routes ...
+
+    // NEW ROUTE to view all delivering orders
+
+    // Route for the action of marking an order as delivered
+    Route::patch('/orders/{order}/mark-as-delivered', [ManufacturerController::class, 'markAsDelivered'])->name('orders.markAsDelivered');
+
+    Route::patch('/orders/{order}/receive', [ManufacturerController::class, 'confirmDelivery'])
+        ->name('orders.confirmDelivery');
+    });
+
+    // 4. Vendor Routes (Placing Orders)
+    Route::middleware('role:Vendor')->prefix('vendor')->name('vendor.')->group(function () {
         Route::resource('orders', VendorOrderController::class)->only(['index', 'show', 'create', 'store']);
         Route::resource('products', VendorProductController::class)->only(['index', 'edit', 'update']);
     });

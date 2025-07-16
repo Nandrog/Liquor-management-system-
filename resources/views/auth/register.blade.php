@@ -1,21 +1,46 @@
 <x-guest-layout>
     @php
-        // Define which roles are considered 'employees'
-        $employeeRoles = ['manufacturer', 'procurement officer', 'liquor manager', 'finance'];
-        $currentRole = request()->get('role', 'customer'); // Default to 'customer' if no role is passed
+        $employeeRoles = ['finance', 'supplier', 'manufacturer', 'liquor manager', 'procurement officer']; 
+        $currentRole = request()->get('role', 'customer');
         $isEmployee = in_array($currentRole, $employeeRoles);
+        // This match expression is a clean way to map roles to theme classes.
+        $themeClass = match ($currentRole) {
+            'finance' => 'theme-finance',
+            'supplier' => 'theme-supplier',
+            'manufacturer' => 'theme-manufacturer',
+            'customer' => 'theme-customer',
+            'liquor manager' => 'theme-manager',
+            'procurement officer' => 'theme-officer',
+            'vendor' => 'theme-vendor',
+            default => 'theme-default',
+        };
+
+        $imageName = match ($currentRole) {
+            'supplier' => 'supplier.jpg',
+            'manufacturer' => 'manufacturer.jpg',
+            'finance' => 'finance.jpg',
+            'customer' => 'customer.jpg',
+            'liquor manager' => 'manager.jpg',
+            'procurement officer' => 'officer.jpg',
+
+            // Add other roles...
+            default => 'default.jpg',
+        };
+        $imageUrl = asset('images/auth/' . $imageName);
     @endphp
 
     <div class="d-flex auth-container">
-        <div class="auth-image-panel">
-            {{-- This is the gray panel on the left. You can add an image here later. --}}
+        <div class="auth-image-panel" >
+            <img src="{{ $imageUrl }}" 
+                 alt="A decorative image representing the {{ $currentRole }} role." 
+                 class="auth-image">
         </div>
 
         <div class="auth-form-panel">
             {{-- Dynamically choose the card style based on the role --}}
-            <div class="auth-card {{ $isEmployee ? 'auth-card-green-border' : 'auth-card-yellow-border' }}">
+            <div class="auth-card {{ $themeClass}}">
 
-                <h2 class="auth-title {{ $isEmployee ? 'text-green' : 'text-yellow' }}">Create Account</h2>
+                <h2 class="auth-title ">Create Account</h2>
 
                 <form method="POST" action="{{ route('register') }}">
                     @csrf
