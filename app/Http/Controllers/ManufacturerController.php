@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Enums\OrderType;
 use App\Models\Warehouse;
+use App\Models\StockLevel;
 use App\Enums\OrderStatus;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Services\InventoryService;
@@ -79,27 +81,14 @@ public function deliveringOrders()
                             ->latest()
                             ->paginate(15);
 
+                            $warehouses = Warehouse::all();
+
     return view('manufacturer.orders.delivery', [
         'orders' => $deliveringOrders,
+        'warehouses' => $warehouses,
         'pageTitle' => 'Orders In Delivery'
     ]);
 }
-
-public function markAsDelivered(Order $order): RedirectResponse
-    {
-        // Authorization: Ensure the logged-in user owns this order.
-        if ($order->manufacturer_id !== Auth::id()) {
-            abort(403, 'You are not authorized to update this order.');
-        }
-
-        // Update the order status and record the delivery time.
-        $order->update([
-            'status' => OrderStatus::DELIVERED, // Use your Enum
-            'delivered_at' => now(),
-        ]);
-
-        return redirect()->back()->with('success', "Order #{$order->order_number} marked as delivered.");
-    }
 
 
 public function confirmDelivery(Request $request, Order $order, InventoryService $inventoryService)
@@ -133,4 +122,66 @@ public function confirmDelivery(Request $request, Order $order, InventoryService
                     ->with('success', 'Delivery confirmed and inventory allocated successfully!');
 }
 
+    public function markAsDelivered(Request $request, Order $order)
+{
+    // 1. Authorize the action (optional but good practice)
+    $this->authorize('update', $order);
+
+    // 2. Validate the request: ensure a warehouse was selected.
+    $validated = $request->validate([
+        'warehouse_id' => 'required|integer|exists:warehouses,warehouse_id',
+    ]);
+    $warehouseId = $validated['warehouse_id'];
+
+    //dd('Validation passed. Warehouse ID is:', $validated);
+
+    // 3. Check if the order is in the correct state
+    if ($order->status !== OrderStatus::DELIVERING) {
+        return redirect()->back()->with('error', 'This order is not in a deliverable state.');
+    }
+
+    try {
+    DB::transaction(function () use ($order, $warehouseId) {
+
+        foreach ($order->products as $orderItem) {
+
+            // Get the quantity and price from the pivot table
+            $quantityReceived = $orderItem->pivot->quantity;
+            $purchasePrice = $orderItem->pivot->price;
+
+            // 5. Find the product by its ID from the relationship.
+            $product = Product::find($orderItem->id);
+
+            // If for some reason the product doesn't exist, skip it to prevent errors.
+            if (!$product) {
+                continue;
+            }
+
+            // 6. Find the stock level for this product in the selected warehouse, or create it.
+            $stockLevel = StockLevel::firstOrCreate(
+                [
+                    'product_id'   => $product->id,
+                    'warehouse_id' => $warehouseId,
+                ],
+                ['quantity' => 0] // This is only set if the record is new
+            );
+
+            // 7. Atomically increment the stock level.
+            $stockLevel->increment('quantity', $quantityReceived);
+        }
+
+        // 8. Update the order's status to 'Delivered'.
+        $order->status = OrderStatus::DELIVERED;
+        $order->delivered_at = now();
+        $order->save();
+    });
+
+    } catch (\Exception $e) {
+        Log::error("Failed to process delivery for Order #{$order->id}: " . $e->getMessage());
+        return redirect()->back()->with('error', 'An error occurred while updating inventory. The operation was cancelled.');
+
+    }
+//dd($e);
+    return redirect()->route('manufacturer.orders.delivery')->with('success', "Order #{$order->order_number} marked as delivered. Inventory updated.");
+}
 }

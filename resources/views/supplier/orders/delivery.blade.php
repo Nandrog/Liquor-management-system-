@@ -10,6 +10,20 @@
             </a>
         </div>
     </x-slot>
+    <div class="container-fluid mt-n3">
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+    </div>
 
     <div class="card shadow-sm">
         <div class="card-body">
@@ -30,7 +44,7 @@
                                 <td><strong>{{ $order->order_number ?? $order->id }}</strong></td>
                                 <td>{{ $order->created_at->format('M d, Y') }}</td>
                                 <td>{{ $order->orderItems?->count() ?? 0 }}</td>
-                                <td>${{ number_format($order->total_amount, 2) }}</td>
+                                <td>UGX{{ number_format($order->total_amount, 2) }}</td>
                                 <td class="text-center">
                                     <form action="{{ route('supplier.orders.markAsDelivered', $order) }}" method="POST" onsubmit="return confirm('Confirm that this order has been delivered?');">
                                     @csrf

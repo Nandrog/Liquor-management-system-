@@ -12,6 +12,19 @@
         </div>
     </x-slot>
 
+    <div class="container-fluid"> {{-- Or just place it inside your main content area --}}
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <h5 class="alert-heading">Please fix the following errors:</h5>
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+    </div>
+
     @push('styles')
     <style>
         .order-card .card-header { background-color: #e3f2fd; }
@@ -44,13 +57,13 @@
                         {{-- CORRECTED THIS SECTION --}}
                         <p class="icon-text mb-2"><i class="fas fa-user-tie text-muted"></i> <strong>Supplier:</strong> {{ $order->user->name ?? 'N/A' }}</p>
 
-                        <p class="icon-text mb-2"><i class="fas fa-map-marker-alt text-muted"></i> <strong>Shipping Address:</strong> {{ $order->shipping_address ?? 'N/A' }}</p>
+                        <p class="icon-text mb-2"><i class="fas fa-map-marker-alt text-muted"></i> <strong>Shipping Address:</strong> {{ $order->shipping_address ?? 'W/H' }}</p>
                         <p class="icon-text mb-2"><i class="fas fa-calendar-alt text-muted"></i> <strong>Order Date:</strong> {{ $order->created_at->format('M d, Y') }}</p>
-                        <p class="icon-text mb-2"><i class="fas fa-shipping-fast text-muted"></i> <strong>Shipped On:</strong> {{ $order->delivering_at?->format('M d, Y') ?? 'N/A' }}</p>
+                        <p class="icon-text mb-2"><i class="fas fa-shipping-fast text-muted"></i> <strong>Shipped On:</strong> {{ $order->delivering_at?->format('M d, Y') ?? $order->created_at->format('M d, Y')}}</p>
                     </div>
 
                     <div class="col-lg-8 col-md-6">
-                         {{-- ... a all other details from the previous example (tracking, products table) ... --}}
+                        {{-- ... a all other details from the previous example (tracking, products table) ... --}}
                     </div>
                 </div>
             </div>
@@ -68,27 +81,61 @@
 
         {{-- ... The rest of the file (modal, empty state, pagination) is correct ... --}}
         <!-- Mark as Delivered Confirmation Modal -->
-        <div class="modal fade" id="markDeliveredModal-{{ $order->id }}" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Confirm Delivery</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Are you sure you want to mark Order #<strong>{{ $order->order_number ?? $order->id }}</strong> as 'Delivered'?
-                    </div>
-                    <div class="modal-footer">
+<div class="modal fade" id="markDeliveredModal-{{ $order->id }}" tabindex="-1" aria-labelledby="markDeliveredModalLabel-{{ $order->id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="markDeliveredModalLabel-{{ $order->id }}">
+                                Confirm Delivery for Order #{{ $order->order_number ?? $order->id }}
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
                         <form action="{{ route('manufacturer.orders.markAsDelivered', $order) }}" method="POST">
                             @csrf
                             @method('PATCH')
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-success">Yes, Mark as Delivered</button>
+
+                            <div class="modal-body">
+                                <p>You are about to mark this order as 'Delivered'. This action is irreversible and will update your inventory stock levels.</p>
+                                <hr>
+                                <div class="mb-3">
+                                    <label for="warehouse_id-{{ $order->id }}" class="form-label">
+                                        <strong><span class="text-danger">*</span> Select Destination Warehouse:</strong>
+                                    </label>
+                                    <select class="form-select" name="warehouse_id" id="warehouse_id-{{ $order->id }}" required>
+                                        <option value="" disabled selected>-- Choose a warehouse --</option>
+                                        @if(isset($warehouses) && $warehouses->count() > 0)
+                                            @foreach($warehouses as $warehouse)
+                                                {{-- THIS IS THE CRITICAL FIX --}}
+                                                <option value="{{ $warehouse->warehouse_id }}">{{ $warehouse->name }} ({{ $warehouse->location }})</option>
+                                            @endforeach
+                                        @else
+                                            <option value="" disabled>No warehouses found.</option>
+                                        @endif
+                                    </select>
+                                    @error('warehouse_id')
+                                        <div class="text-danger small mt-1">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="alert alert-warning small p-2" role="alert">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                    Ensure you select the correct warehouse. Stock will be added to its inventory.
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-check-circle me-1"></i>
+                                    Yes, Confirm Delivery
+                                </button>
+                            </div>
+
                         </form>
                     </div>
                 </div>
             </div>
-        </div>
     @empty
         <div class="card">
             <div class="card-body text-center py-5">
@@ -104,5 +151,4 @@
             {{ $orders->links() }}
         </div>
     @endif
-
 </x-app-layout>

@@ -20,7 +20,7 @@
 
             {{-- Role-based Links --}}
             @if($user && $user->hasRole('Supplier'))
-                <li><a href="#" class="nav-link"><i class="bi bi-wallet2 me-2"></i> Payments</a></li>
+                <li><a href="{{route('supplier.payments.index')}}" class="nav-link"><i class="bi bi-wallet2 me-2"></i> Payments</a></li>
                 <li><a href="{{ route('inventory.dashboard') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Inventory</a></li>
                 <li><a href="{{route('supplier.orders.create')}}" class="nav-link"><i class="bi bi-truck me-2"></i> Orders</a></li>
                 <li><a href="{{route('supplier.orders.index')}}" class="nav-link"><i class="bi bi-truck me-2"></i> Orders view</a></li>
