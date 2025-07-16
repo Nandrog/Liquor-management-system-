@@ -150,6 +150,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/chats', [ChatController::class, 'users'])->name('chat.page');
    
 
+Route::middleware(['auth', 'role:Liquor Manager|Finance|Procurement Officer'])
+    ->prefix('reports')
+    ->name('reports.')
+    ->group(function () {
+        Route::get('/', [ReportController::class, 'index'])->name('index');
+        Route::get('/stock-movements', [ReportController::class, 'stockMovements'])->name('stock_movements');
+        Route::get('/shift-schedules', [ReportController::class, 'shiftSchedules'])->name('shift_schedules');
+        Route::get('/task-performance', [ReportController::class, 'taskPerformance'])->name('task_performance');
+    });
 
 
     // --- ROLE-SPECIFIC FUNCTIONALITY ROUTES ---
