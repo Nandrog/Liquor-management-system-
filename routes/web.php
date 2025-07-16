@@ -1,11 +1,12 @@
 <?php
-
 use App\Modules\Inventory\Http\Controllers\DashboardController as InventoryDashboardController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CartController;
 use App\Modules\Orders\Http\Controllers\OrderController;
 use App\Http\Controllers\VendorApplicationController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\StorefrontController;
 // KEEP ONLY THE NEW, MODULAR CONTROLLER IMPORT. Delete any other DashboardController import.
 use App\Modules\Dashboard\Http\Controllers\DashboardController;
 use App\Modules\Payments\Http\Controllers\PaymentController;
@@ -30,6 +31,17 @@ use App\Modules\Orders\Http\Controllers\CustomerOrderController;
 use App\Modules\Inventory\Http\Controllers\MaPurchaseOrderController;
 use App\Http\Controllers\SetPasswordController;
 use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+// ... other imports
+
+Route::middleware('guest')->group(function () {
+    Route::get('register', [RegisteredUserController::class, 'create'])
+                ->name('register');
+
+    Route::post('register', [RegisteredUserController::class, 'store']);
+
+});
+
 Route::prefix('work-distribution')->group(function () {
     // (Tasks above)
     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
@@ -306,5 +318,27 @@ Route::post('/set-password/{user}', [SetPasswordController::class, 'update'])
     ->name('password.set.update');
 
 
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/storefront', [StorefrontController::class, 'index'])->name('storefront.index');
 
 
+    Route::get('/storefront/product/{product}', [StorefrontController::class, 'show'])->name('storefront.show');
+
+});
+
+Route::middleware(['auth'])->prefix('cart')->name('cart.')->group(function () {
+
+    // Route to display the cart page
+    Route::get('/', [CartController::class, 'index'])->name('index');
+
+    // Route to add an item to the cart (this fixes your error)
+    Route::post('/add', [CartController::class, 'add'])->name('add');
+
+    // Route to update item quantities in the cart
+    Route::post('/update', [CartController::class, 'update'])->name('update');
+
+    // Route to remove an item from the cart
+    Route::post('/remove', [CartController::class, 'remove'])->name('remove');
+
+});

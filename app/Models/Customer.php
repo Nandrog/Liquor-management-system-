@@ -9,7 +9,7 @@ class Customer extends Model
 {
     /** @use HasFactory<\Database\Factories\CustomerFactory> */
     use HasFactory;
-protected $fillable = ['user_id', 'company_name', 'phone_number'];
+protected $fillable = ['user_id', 'city','state','phone_number','location'];
 
 public function user()
 {

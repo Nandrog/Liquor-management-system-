@@ -23,7 +23,7 @@ class CustomerOrderController extends Controller
         $customer = Auth::user()->customer;
         if (!$customer) {
             // Handle case where user is not a customer
-            return redirect('/dashboard')->withErrors('You are not registered as a customer.');
+            abort(403, 'You are not registered as a customer.');
         }
 
         $orders = Order::where('customer_id', $customer->id)

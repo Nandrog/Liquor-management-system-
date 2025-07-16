@@ -58,6 +58,7 @@
                 {{-- Add specific Customer links here if needed --}}
                 {{-- Manager-specific links --}}
                 <li><a href="{{ route('customer.orders.index') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Order</a></li>
+                <li><a href="{{ route('storefront.index') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Browse Our Products</a></li>
             @endif
 
             @if($user && $user->hasRole('Liquor Manager'))
