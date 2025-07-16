@@ -12,6 +12,7 @@ use App\Modules\Payments\Http\Controllers\PaymentController;
 use App\Http\Controllers\WorkDistribution\TaskController;
 use App\Http\Controllers\WorkDistribution\ShiftController;
 use App\Modules\Communications\Http\Controllers\MessageController;
+use App\Http\Controllers\ChatController;
 
 use App\Modules\Inventory\Http\Controllers\LmStockLevelController;
 use App\Modules\Inventory\Http\Controllers\LmItemController;
@@ -30,6 +31,10 @@ use App\Modules\Orders\Http\Controllers\CustomerOrderController;
 use App\Modules\Inventory\Http\Controllers\MaPurchaseOrderController;
 use App\Http\Controllers\SetPasswordController;
 use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SalesReportController;
+
+
 Route::prefix('work-distribution')->group(function () {
     // (Tasks above)
     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
@@ -74,10 +79,12 @@ require __DIR__.'/auth.php';
 |--------------------------------------------------------------------------
 */
 
+
 // A single group for ALL routes that require a user to be logged in.
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // Main dashboard entry point, correctly pointing to the 'index' method.
+   
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/inventory', InventoryDashboardController::class)->name('inventory.dashboard');
 
@@ -93,9 +100,35 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
     Route::post('/messages/{id}/read', [MessageController::class, 'markAsRead'])->name('messages.markAsRead');
 
+    // --- REPORTS ROUTES (Available to all logged-in users) ---
+  
+    
+
+ 
+
+
+    // --- DASHBOARD ROUTES (Available to all logged-in users) ---
+   // Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+
+    // --- INVENTORY ROUTES (Available to all logged-in users) ---
+    //Route::get('/inventory', [InventoryDashboardController::class, 'index'])->name('inventory.index');
+
+    // --- PAYMENT ROUTES (Available to all logged-in users) ---
+    Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+    Route::post('/payments/charge', [PaymentController::class, 'charge'])->name('payments.charge');
+
+   
 
 
 
+
+   // --- CHAT ROUTES (Available to all logged-in users) ---
+    Route::get('/chat/{user}', [ChatController::class, 'chat'])->name('chat.with');
+    Route::post('/chat/send/{user}', [ChatController::class, 'sendMessage'])->name('chat.send');
+    Route::get('/chats', [ChatController::class, 'users'])->name('chat.page');
+   
+
+});
 
     // --- ROLE-SPECIFIC FUNCTIONALITY ROUTES ---
 
@@ -105,7 +138,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // All routes for a Liquor Manager's specific actions.
-        });
+
 
         // All routes for a Liquor Manager's specific actions.
     Route::middleware(['role:Liquor Manager'])->prefix('manager')->name('manager.')->group(function () {
@@ -147,6 +180,22 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // All routes for a Procurement officer's specific actions.
+
+
+// --- REPORTS ROUTES (Available to all logged-in users) ---
+Route::middleware(['auth'])->group(function () {
+    
+    // Reports index
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+
+    // Individual PDF report routes
+    Route::get('/reports/inventory', [ReportController::class, 'inventoryPdf'])->name('reports.inventory');
+    Route::get('/reports/sales', [ReportController::class, 'salesPdf'])->name('reports.sales');
+    Route::get('/reports/vendor', [ReportController::class, 'vendorPdf'])->name('reports.vendor');
+
+    // Charts or visual report data (optional)
+    Route::get('/reports/sales/chart', [ReportController::class, 'salesChart'])->name('reports.sales.chart');
+});
 
 
 
@@ -282,7 +331,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/forecast', [AnalyticsController::class, 'forecast'])->name('analytics.forecast');
         Route::get('/segmentation', [AnalyticsController::class, 'segmentation'])->name('analytics.segmentation');
 });
-
+  Route::middleware(['auth'])->group(function () {
+    Route::get('/reports/sales/weekly', [SalesReportController::class, 'weeklyReport'])->name('reports.sales.weekly');
+    Route::get('/reports/sales/weekly/pdf', [SalesReportController::class, 'downloadWeeklyPdf'])->name('reports.sales.weekly.pdf');
+});
 
 });
 

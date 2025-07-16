@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Models\Role;
+
 
 class User extends Authenticatable
 {
@@ -99,4 +101,16 @@ class User extends Authenticatable
     {
         return $this->hasMany(Order::class, 'user_id');
     }
+    public function messages()
+{
+    return $this->hasMany(Message::class, 'sender_id')->orWhere('receiver_id', $this->id);
+}
+
+public function userRole()
+{
+    return $this->belongsTo(Role::class); // your direct role relationship
+}
+
+
+
 }
