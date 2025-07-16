@@ -66,7 +66,7 @@
             @endif
 
             {{-- Workforce (for specific roles) --}}
-            @if($user && $user->hasAnyRole(['Finance', 'Procurement Officer', 'Liquor Manager']))
+            @if($user && $user->hasAnyRole(['Finance', 'Procurement Officer', 'Liquor Manager','Manufacturer']))
                 <li class="workforce-parent">
                     <a href="#" class="nav-link workforce-toggle">
                         <i class="bi bi-people-fill me-2"></i> Workforce

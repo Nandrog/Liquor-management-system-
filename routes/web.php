@@ -260,7 +260,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/stock-movements', [PoStockMovementController::class, 'index'])->name('stock_movements.index');
         Route::post('/stock-movements', [PoStockMovementController::class, 'store'])->name('stock_movements.store');
         Route::get('/supplier-overview', [PoSupplierMgtController::class, 'index'])->name('supplier.overview');
-    });
+    });Route::get('/tasks', [TaskController::class, 'index'])->name('work-distribution.task-list');
+        Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
+        Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
 
     /*
     |--------------------------------------------------------------------------
@@ -270,7 +272,9 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:Finance'])->prefix('finance')->name('finance.')->group(function () {
         Route::get('/items', [FiItemController::class, 'index'])->name('items.index');
         Route::patch('/items/{product}', [FiItemController::class, 'updatePrice'])->name('items.update_price');
-    });
+    });Route::get('/tasks', [TaskController::class, 'index'])->name('work-distribution.task-list');
+        Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
+        Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
 
     /*
     |--------------------------------------------------------------------------
@@ -278,13 +282,16 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
    Route::middleware(['role:Liquor Manager'])
-    ->prefix('liquor-manager')
-    ->name('liquor-manager.') // ✅ match prefix!
+    ->prefix('manager')
+    ->name('manager.') // ✅ match prefix!
     ->group(function () {
         Route::get('/stock-levels', [LmStockLevelController::class, 'index'])->name('stock_levels.index');
         Route::resource('items', LmItemController::class);
         Route::get('/purchase-orders', [MaPurchaseOrderController::class, 'index'])->name('purchase_orders.index');
         Route::resource('products', ProductController::class)->only(['index']);
+        Route::get('/tasks', [TaskController::class, 'index'])->name('work-distribution.task-list');
+        Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
+        Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
     });
 
     /*
