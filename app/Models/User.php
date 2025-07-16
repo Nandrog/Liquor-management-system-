@@ -10,9 +10,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use App\Models\Role;
-
-
+ 
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasRoles;
@@ -82,6 +80,14 @@ class User extends Authenticatable
         return $this->hasOne(Customer::class);
     }
 
+    public function suppliedPurchases(): HasMany
+    {
+        // This tells Eloquent: "Look at the 'purchases' table. Find all records
+        // where the 'supplier_id' column on that table matches the 'id'
+        // of this User model."
+        return $this->hasMany(Order::class, 'supplier_id', 'id');
+    }
+
     public function supplier(): HasOne
     {
         return $this->hasOne(Supplier::class);
@@ -101,16 +107,4 @@ class User extends Authenticatable
     {
         return $this->hasMany(Order::class, 'user_id');
     }
-    public function messages()
-{
-    return $this->hasMany(Message::class, 'sender_id')->orWhere('receiver_id', $this->id);
-}
-
-public function userRole()
-{
-    return $this->belongsTo(Role::class); // your direct role relationship
-}
-
-
-
-}
+ }

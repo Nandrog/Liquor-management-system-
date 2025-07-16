@@ -34,11 +34,11 @@
 
                                         {{-- This input correctly places the fixed price inside the box --}}
                                         <input class="form-control mt-1 block w-full sm:w-1/2 bg-gray-100 rounded-md border-gray-300 shadow-sm"
-                                               type="number"
-                                               name="products[{{ $loop->index }}][price]"
-                                               value="{{ $product->unit_price }}"
-                                               readonly
-                                               disabled>
+                                                type="number"
+                                                name="products[{{ $loop->index }}][price]"
+                                                value="{{ $product->unit_price }}"
+                                                readonly
+                                                disabled>
                                     </div>
                                 </div>
                             </div>

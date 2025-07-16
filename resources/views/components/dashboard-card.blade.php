@@ -1,4 +1,12 @@
-@props(['title', 'description', 'icon', 'route', 'count', 'countLabel'])
+@props([
+    'title',
+    'description',
+    'icon',
+    'route',
+    'count' => null,              // Default to null if not provided
+    'countLabel' => null,         // Default to null
+    'secondaryCount' => null,     // Default to null
+    'secondaryCountLabel' => null,])
 
 <a href="{{ $route }}" class="dashboard-action-card text-decoration-none d-block h-100">
     <div class="card h-100">

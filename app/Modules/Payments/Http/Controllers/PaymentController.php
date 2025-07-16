@@ -14,6 +14,23 @@ use Stripe\Webhook;
 
 class PaymentController extends Controller
 {
+    public function index()
+    {
+        // --- The Core Query ---
+
+        // Fetch orders where the status indicates they have been paid for.
+        // 'delivered' is often included because delivery implies payment is complete.
+        // Adjust the array ['paid', 'delivered'] to match your specific status workflow.
+        $paidOrders = Order::whereIn('status', ['paid', 'delivered'])
+                            ->with('user')
+                            ->latest('paid_at')
+                            ->paginate(15);
+
+        return view('payment.index', [
+            'orders' => $paidOrders, // The view can now access the data via the $orders variable.
+            'pageTitle' => 'Payment History' // A dynamic title for the header.
+        ]);
+    }
     /**
      * Display the payment form for a specific order.
      *

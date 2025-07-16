@@ -30,10 +30,18 @@ class Product extends Model
         'category_id', // ADDED: This is needed for mass assignment.
         'user_id',
         'vendor_id',   // ADDED: This is needed for mass assignment.
-        
-        
+
+
     ];
 
+
+    public function warehouse()
+    {
+        // FIX: Explicitly define the correct keys.
+        // The foreign key on the 'products' table is 'warehouse_id'.
+        // The primary key (owner key) on the 'warehouses' table is 'id'.
+        return $this->belongsTo(Warehouse::class, 'warehouse_id', 'id');
+    }
     /**
      * Get the warehouses that have this product in stock.
      */

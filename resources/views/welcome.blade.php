@@ -4,7 +4,13 @@
 
 @section('content')
 
-<div  class="d-flex flex-column justify-content-center align-items-center min-vh-100">
+@php
+        // Use the asset() helper to generate a foolproof, absolute URL to your image.
+        $bgImageUrl = asset('images/backgrounds/bk2.jpg');
+    @endphp
+
+<div class="d-flex flex-column justify-content-center align-items-center min-vh-100 text-center welcome-page-background"  style="background-image: url('{{ $bgImageUrl }}')">
+
 <div class="container py-5">
     <div class="welcome-banner">
         <h1>Welcome</h1>
@@ -17,9 +23,9 @@
             // We'll handle the Vendor's special case differently
             ['name' => 'Finance', 'icon' => 'bi-currency-dollar', 'bg_class' => 'finance-bg', 'route' => 'register'],
             ['name' => 'Supplier', 'icon' => 'bi-box-seam', 'bg_class' => 'supplier-bg', 'route' => 'register'],
-            ['name' => 'Manufacturer', 'icon' => 'bi-barrel', 'bg_class' => 'manufacturer-bg', 'route' => 'register'],
+            ['name' => 'Manufacturer', 'icon' => 'bi-gear-fill', 'bg_class' => 'manufacturer-bg', 'route' => 'register'],
             ['name' => 'Customer', 'icon' => 'bi-cup-fill', 'bg_class' => 'customer-bg', 'route' => 'register'],
-            ['name' => 'Liquor Manager', 'icon' => 'bi-gear-fill', 'bg_class' => 'liquor-manager-bg', 'route' => 'register'],
+            ['name' => 'Liquor Manager', 'icon' => 'bi-person-badge', 'bg_class' => 'liquor-manager-bg', 'route' => 'register'],
             ['name' => 'Procurement Officer', 'icon' => 'bi-file-earmark-bar-graph-fill', 'bg_class' => 'procurement-officer-bg', 'route' => 'register'],
             // Special route for Vendors
             ['name' => 'Vendor', 'icon' => 'bi-shop', 'bg_class' => 'vendor-bg', 'route' => 'vendor.application.create'],

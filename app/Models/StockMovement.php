@@ -43,4 +43,8 @@ class StockMovement extends Model
     {
         return $this->hasMany(Task::class);
     }
+    public function order()
+{
+    return $this->belongsTo(Order::class);
+}
 }
