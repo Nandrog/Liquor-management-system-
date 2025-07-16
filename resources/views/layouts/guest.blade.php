@@ -11,8 +11,8 @@
         <!-- Scripts and CSS -->
         @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-gray-900 antialiased">
+    <body   class="font-sans text-gray-900 antialiased @stack('body-class')">
         {{-- By simply outputting the slot, we remove all of Breeze's default containers and padding --}}
         {{ $slot }}
-    </body>
+    </>
 </html>

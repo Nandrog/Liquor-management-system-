@@ -59,6 +59,12 @@
     text-decoration: none; // Remove underline from links
     color: $body-color; // Default text color
     margin-bottom: 1.5rem; // Space between rows
+    font-weight: 500;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #ffffff; // <<< ADD THIS LINE
+
 
     &:hover {
         color: $primary; // Change text color on hover

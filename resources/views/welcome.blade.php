@@ -4,7 +4,12 @@
 
 @section('content')
 
-<div class="d-flex flex-column justify-content-center align-items-center min-vh-100 text-center">
+@php
+        // Use the asset() helper to generate a foolproof, absolute URL to your image.
+        $bgImageUrl = asset('images/backgrounds/bk2.jpg');
+    @endphp
+
+<div class="d-flex flex-column justify-content-center align-items-center min-vh-100 text-center welcome-page-background"  style="background-image: url('{{ $bgImageUrl }}')">
 
 <div class="container py-5">
     <div class="welcome-banner">

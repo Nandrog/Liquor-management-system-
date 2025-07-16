@@ -26,6 +26,34 @@
     object-position: center; // Ensures the image is centered within its frame
 }
 
+// In _auth.scss, add this new class block at the end of the file.
+
+.welcome-page-background {
+  // Use the asset() path to your image in the public directory.
+ 
+  
+  // These properties ensure the background image looks great
+  background-size: cover;       // Scales the image to cover the entire container without distortion
+  background-position: center;  // Centers the image
+  background-repeat: no-repeat; // Prevents the image from tiling
+  
+  // Optional: Add a semi-transparent overlay to make text more readable
+  position: relative; // Needed for the ::before pseudo-element
+  z-index: 1;
+
+  // This pseudo-element creates the dark overlay
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); // A black overlay with 50% opacity
+    z-index: -1; // Place the overlay behind the content
+  }
+}
+
 .auth-form-panel {
     width: 50%;
     display: flex;
@@ -47,8 +75,9 @@
 
     &.auth-card-green {
         background-color: #C8E6C9; // Light green from design
-        margin-top: 100px;
-        margin-left: 400px;
+        margin:auto;
+        margin-top: 130px;
+        
     }
     &.auth-card-green-border {
         border: 2px solid #4CAF50;
@@ -113,6 +142,14 @@
         opacity: 0.9;
         transform: translateY(-2px);
     }
+}
+
+.login{
+  background-image: url('images/backgrounds/bk.jpg');  
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 .theme-finance {
