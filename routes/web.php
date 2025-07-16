@@ -10,6 +10,7 @@ use App\Modules\Payments\Http\Controllers\PaymentController;
 use App\Http\Controllers\WorkDistribution\TaskController;
 use App\Http\Controllers\WorkDistribution\ShiftController;
 use App\Modules\Communications\Http\Controllers\MessageController;
+use App\Http\Controllers\ChatController;
 use App\Modules\Inventory\Http\Controllers\LmStockLevelController;
 use App\Modules\Inventory\Http\Controllers\LmItemController;
 use App\Modules\Inventory\Http\Controllers\FiItemController;
@@ -27,6 +28,10 @@ use App\Http\Controllers\ProcurementController;
 use App\Http\Controllers\ManufacturerController;
 use App\Http\Controllers\SetPasswordController;
 use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SalesReportController;
+
+
 Route::prefix('work-distribution')->group(function () {
     // (Tasks above)
     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
@@ -68,8 +73,11 @@ require __DIR__.'/auth.php';
 |--------------------------------------------------------------------------
 */
 
+ 
+
 Route::middleware(['auth', 'verified'])->group(function () {
     // Main Dashboard
+   
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/inventory', InventoryDashboardController::class)->name('inventory.dashboard');
 
@@ -113,6 +121,40 @@ Route::middleware(['auth', 'verified'])->group(function () {
     | Supplier Routes
     |--------------------------------------------------------------------------
     */
+
+    // --- REPORTS ROUTES (Available to all logged-in users) ---
+  
+    
+
+ 
+
+
+    // --- DASHBOARD ROUTES (Available to all logged-in users) ---
+   // Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+
+    // --- INVENTORY ROUTES (Available to all logged-in users) ---
+    //Route::get('/inventory', [InventoryDashboardController::class, 'index'])->name('inventory.index');
+
+    // --- PAYMENT ROUTES (Available to all logged-in users) ---
+    Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+    Route::post('/payments/charge', [PaymentController::class, 'charge'])->name('payments.charge');
+
+   
+
+
+
+
+   // --- CHAT ROUTES (Available to all logged-in users) ---
+    Route::get('/chat/{user}', [ChatController::class, 'chat'])->name('chat.with');
+    Route::post('/chat/send/{user}', [ChatController::class, 'sendMessage'])->name('chat.send');
+    Route::get('/chats', [ChatController::class, 'users'])->name('chat.page');
+   
+
+});
+
+    // --- ROLE-SPECIFIC FUNCTIONALITY ROUTES ---
+
+    // All routes for a Supplier's specific actions (e.g., managing their inventory).
     Route::middleware(['role:Supplier'])->prefix('supplier')->name('supplier.')->group(function () {
         Route::get('/orders/paid', [SupplierOrderController::class, 'paidOrders'])->name('orders.paid');
         Route::get('/orders/delivery', [SupplierOrderController::class, 'readyForDelivery'])->name('orders.delivery');
@@ -129,10 +171,96 @@ Route::middleware(['auth', 'verified'])->group(function () {
     | Manufacturer Routes
     |--------------------------------------------------------------------------
     */
+        // Example: Route::get('/inventory', [InventoryStockController::class, 'index'])->name('inventory.index');
+    });
+
+    // All routes for a Liquor Manager's specific actions.
+
+
+        // All routes for a Liquor Manager's specific actions.
+    Route::middleware(['role:Liquor Manager'])->prefix('manager')->name('manager.')->group(function () {
+
+
+        Route::get('/stock-levels', [LmStockLevelController::class, 'index'])->name('stock_levels.index');
+        Route::resource('items', LmItemController::class);
+        Route::get('/purchase-orders', [MaPurchaseOrderController::class, 'index'])->name('purchase_orders.index');
+    });
+
+        // All routes for a Finance's specific actions.
+    Route::middleware(['role:Finance'])->prefix('finance')->name('finance.')->group(function () {
+        Route::get('/items', [FiItemController::class, 'index'])->name('items.index');
+        Route::patch('/items/{product}', [FiItemController::class, 'updatePrice'])->name('items.update_price');
+    });
+
+        // All routes for a Customer's specific actions.
+    Route::middleware(['role:Customer'])->prefix('customer')->name('customer.')->group(function () {
+        // ...
+    });
+
+        // All routes for a manufacturer's specific actions.
     Route::middleware(['role:Manufacturer'])->prefix('manufacturer')->name('manufacturer.')->group(function () {
         Route::get('/stock-levels', [MaStockLevelController::class, 'index'])->name('stock_levels.index');
         Route::get('/production', [ProductionController::class, 'index'])->name('production.index');
         Route::post('/production', [ProductionController::class, 'store'])->name('production.store');
+    });
+
+
+/*----------------------------------------------------
+Communication routes
+------------------------------------------------------*/
+Route::middleware(['auth'])->group(function () {
+    Route::get('/messages', [MessageController::class, 'index'])->name('messages.index'); // showing view and messages
+    Route::get('/messages/{user}', [MessageController::class, 'show'])->name('messages.show'); // single user messages
+    Route::post('/messages', [MessageController::class, 'store'])->name('messages.store'); // send message
+    Route::post('/messages/{id}/read', [MessageController::class, 'markAsRead'])->name('messages.markAsRead'); // mark as read
+    Route::delete('/messages/{id}', [MessageController::class, 'destroy'])->middleware('auth'); // delete message
+});
+
+// All routes for a Procurement officer's specific actions.
+
+
+// --- REPORTS ROUTES (Available to all logged-in users) ---
+Route::middleware(['auth'])->group(function () {
+    
+    // Reports index
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+
+    // Individual PDF report routes
+    Route::get('/reports/inventory', [ReportController::class, 'inventoryPdf'])->name('reports.inventory');
+    Route::get('/reports/sales', [ReportController::class, 'salesPdf'])->name('reports.sales');
+    Route::get('/reports/vendor', [ReportController::class, 'vendorPdf'])->name('reports.vendor');
+
+    // Charts or visual report data (optional)
+    Route::get('/reports/sales/chart', [ReportController::class, 'salesChart'])->name('reports.sales.chart');
+});
+
+
+
+
+//Route:: get('/dashboard/payments/success', [PaymentController::class, 'success'])->name('payments');
+//Route:: get('/dashboard/payments/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
+Route::middleware('auth')->group(function () {
+    // Route to show the payment form for a specific order.
+    // Example URL: /order/123/pay
+    Route::get('/order/{order}/pay', [PaymentController::class, 'showPaymentForm'])->name('payment.form');
+
+    // Route that the form submits to (processes the payment)
+    Route::post('/stripe/charge', [PaymentController::class, 'processPayment'])->name('stripe.charge');
+
+    // A simple "Thank You" page to redirect to after payment
+    Route::get('/payment/thank-you', [PaymentController::class, 'thankYou'])->name('payment.thankyou');
+});
+
+// The webhook route must be exempt from CSRF protection
+Route::post('/stripe/webhook', [PaymentController::class, 'handleWebhook'])->name('stripe.webhook');
+
+
+        // All routes for a Procurement officer's specific actions.
+
+    Route::middleware(['role:Procurement Officer'])->prefix('officer')->name('officer.')->group(function () {
+    Route::get('/stock-movements', [PoStockMovementController::class, 'index'])->name('stock_movements.index');
+        Route::post('/stock-movements', [PoStockMovementController::class, 'store'])->name('stock_movements.store');
+        Route::get('/supplier-overview', [PoSupplierMgtController::class, 'index'])->name('supplier.overview');
         Route::get('/orders', [ManufacturerController::class, 'index'])->name('orders.index');
         Route::get('/orders/paid', [ManufacturerController::class, 'paidOrders'])->name('orders.paid');
         Route::get('/orders/delivery', [ManufacturerController::class, 'deliveringOrders'])->name('orders.delivery');
@@ -334,6 +462,21 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/set-password/{user}', [SetPasswordController::class, 'show'])
         ->middleware(['signed'])
         ->name('password.set');
+    });
+
+    Route::middleware(['auth', 'role:Finance|Liquor Manager'])->prefix('analytics')->group(function () {
+        Route::get('/dashboard', [AnalyticsController::class, 'analyticsMenu'])->name('analytics.menu');
+        Route::get('/forecast', [AnalyticsController::class, 'forecast'])->name('analytics.forecast');
+        Route::get('/segmentation', [AnalyticsController::class, 'segmentation'])->name('analytics.segmentation');
+});
+  Route::middleware(['auth'])->group(function () {
+    Route::get('/reports/sales/weekly', [SalesReportController::class, 'weeklyReport'])->name('reports.sales.weekly');
+    Route::get('/reports/sales/weekly/pdf', [SalesReportController::class, 'downloadWeeklyPdf'])->name('reports.sales.weekly.pdf');
+});
+
+
+Route::get('/set-password/{user}', [SetPasswordController::class, 'show'])
+    ->middleware(['signed'])//ensures link validity
+    ->name('password.set');
 
     Route::post('/set-password/{user}', [SetPasswordController::class, 'update'])->name('password.set.update');
-});

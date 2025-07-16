@@ -24,6 +24,7 @@
                 <li><a href="{{ route('inventory.dashboard') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Inventory</a></li>
                 <li><a href="{{route('supplier.orders.create')}}" class="nav-link"><i class="bi bi-truck me-2"></i> Orders</a></li>
                 <li><a href="{{route('supplier.orders.index')}}" class="nav-link"><i class="bi bi-truck me-2"></i> Orders view</a></li>
+                <li><a href="{{ route('reports.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports</a></li>
                 <li><a href="{{route('supplier.orders.paid')}}" class="nav-link"><i class="bi bi-truck me-2"></i> Orders paid</a></li>
                 <li><a href="#" class="nav-link"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports</a></li>
                 <li><a href="#" class="nav-link"><i class="bi bi-graph-up me-2"></i> Analytics</a></li>
@@ -33,7 +34,7 @@
                 <li><a href="#" class="nav-link"><i class="bi bi-wallet2 me-2"></i> My Details</a></li>
                 <li><a href="{{ route('inventory.dashboard') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Inventory</a></li>
                 <li><a href="{{ route('manufacturer.orders.index') }}" class="nav-link"><i class="bi bi-truck me-2"></i> Orders</a></li>
-                <li><a href="#" class="nav-link"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports</a></li>
+                <li><a href="{{ route('reports.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports</a></li>
             @endif
 
             @if($user && $user->hasRole('Procurement Officer'))
@@ -46,7 +47,7 @@
                 <li><a href="#" class="nav-link"><i class="bi bi-wallet2 me-2"></i> My Details</a></li>
                 <li><a href="{{ route('inventory.dashboard') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Inventory</a></li>
                 <li><a href="#" class="nav-link"><i class="bi bi-truck me-2"></i> Orders</a></li>
-                <li><a href="#" class="nav-link"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports</a></li>
+                <li><a href="{{ route('reports.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports</a></li>
             @endif
 
             @if($user && $user->hasRole('Vendor'))
@@ -63,6 +64,7 @@
             @if($user && $user->hasRole('Liquor Manager'))
                 <li><a href="{{ route('inventory.dashboard') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Inventory</a></li>
                 <li><a href="{{ route('liquor-manager.products.index') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Products</a></li>
+                 <li><a href="{{ route('reports.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports</a></li>
             @endif
 
             {{-- Workforce (for specific roles) --}}
@@ -87,7 +89,7 @@
             @endif
 
             {{-- Common Links at the bottom --}}
-            <li><a href="{{ route('messages.index') }} " class="nav-link"><i class="bi bi-chat-dots me-2"></i> Chat</a></li>
+            <li><a href="{{ route('chat.page') }} " class="nav-link"><i class="bi bi-chat-dots me-2"></i> Chat</a></li>
 
            {{-- Analytics Access Based on Role --}}
            @if(auth()->user()->hasRole('Finance'))

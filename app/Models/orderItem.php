@@ -16,4 +16,9 @@ use Illuminate\Database\Eloquent\Model;
     public function order() {
         return $this->belongsTo(Order::class);
     }
+    public function sale()
+{
+    return $this->belongsTo(\App\Models\Sale::class, 'order_id');
+}
+
 }
