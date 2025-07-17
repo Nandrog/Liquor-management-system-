@@ -435,6 +435,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/tasks', [TaskController::class, 'index'])->name('work-distribution.task-list');
         Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
         Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+        
     });
 
     /*
@@ -495,3 +496,6 @@ Route::get('/set-password/{user}', [SetPasswordController::class, 'show'])
     ->name('password.set');
 
     Route::post('/set-password/{user}', [SetPasswordController::class, 'update'])->name('password.set.update');
+    Route::prefix('officer')->name('officer.work-distribution.')->group(function () {
+    Route::get('/tasks', [TaskController::class, 'index'])->name('task-list');
+});

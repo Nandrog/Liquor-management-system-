@@ -18,6 +18,8 @@ use Database\Seeders\ProductSeeder;
 use Database\Seeders\RecipeSeeder;
 use Database\Seeders\StockLevelSeeder;
 use Database\Seeders\StockMovementSeeder;
+use Database\Seeders\OrderSeeder;
+
 
 class DatabaseSeeder extends Seeder
 {
@@ -35,6 +37,8 @@ class DatabaseSeeder extends Seeder
             RecipeSeeder::class,
             StockLevelSeeder::class,
             StockMovementSeeder::class,
+            OrderSeeder::class,
+
         ]);
 
         // ✅ Create a test user with password to avoid error
