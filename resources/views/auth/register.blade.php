@@ -1,6 +1,6 @@
 <x-guest-layout>
     @php
-        $employeeRoles = ['finance', 'supplier', 'manufacturer', 'liqour manager', 'procurement officer'];
+        $employeeRoles = ['finance', 'supplier', 'manufacturer', 'liquor manager', 'procurement officer'];
         $currentRole = request()->get('role', 'customer');
         $isEmployee = in_array($currentRole, $employeeRoles);
         // This match expression is a clean way to map roles to theme classes.
@@ -21,6 +21,8 @@
             'finance' => 'finance.jpg',
             'customer' => 'customer.jpg',
             'liquor manager' => 'manager.jpg',
+            'procurement officer' => 'officer.jpg',
+
             // Add other roles...
             default => 'default.jpg',
         };

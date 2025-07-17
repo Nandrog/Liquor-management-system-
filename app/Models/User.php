@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Models\Order;
 
+
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasRoles;
@@ -109,9 +110,5 @@ class User extends Authenticatable
         return $this->hasMany(Order::class, 'user_id');
     }
 
-    public function customer(): HasOne
-    {
-        return $this->hasOne(Customer::class, 'user_id', 'id');
-    }
 
 }

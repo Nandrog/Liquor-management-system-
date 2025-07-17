@@ -18,6 +18,7 @@ return new class extends Migration
             // Match the warehouses primary key column name and type
             $table->unsignedBigInteger('from_warehouse_id');
             $table->unsignedBigInteger('to_warehouse_id');
+            $table->foreignId('employee_id')->nullable()->constrained('employees')->onDelete('set null');
 
             $table->integer('quantity');
             $table->timestamp('moved_at');

@@ -1,4 +1,14 @@
+@push('body-class', 'full-page-background')
+
 <x-guest-layout>
+
+    @php
+        // Use the asset() helper to generate a foolproof, absolute URL to your image.
+        $bgImageUrl = asset('images/backgrounds/bk.jpg');
+    @endphp
+
+
+    
     <div class="auth-card auth-card-green">
         <h2 class="auth-title">Sign in into your account</h2>
         <p class="auth-subtitle">Welcome back! log in with your credentials</p>
@@ -38,4 +48,5 @@
             </a>
         </p>
     </div>
+    
 </x-guest-layout>

@@ -26,21 +26,21 @@ class EmployeeSeeder extends Seeder
                 'role'         => 'Logistics Coordinator',
                 'email'        => 'michael@northerndepot.com',
                 'skillset'     => 'Coordination, Scheduling',
-                'warehouse_id' => $warehouses['Northern Depot'] ?? null,
+                'warehouse_id' => $warehouses['Kampala Central Warehouse'] ?? null,
             ],
             [
                 'name'         => 'Grace Kembabazi',
                 'role'         => 'Warehouse Assistant',
                 'email'        => 'grace@eastdist.com',
                 'skillset'     => 'Inventory, Quality Control',
-                'warehouse_id' => $warehouses['Eastern Distribution Center'] ?? null,
+                'warehouse_id' => $warehouses['Jinja Regional Hub'] ?? null,
             ],
             [
                 'name'         => 'Peter Mwesigwa',
                 'role'         => 'Stock Controller',
                 'email'        => 'peter@westhub.com',
                 'skillset'     => 'Stock Auditing, Documentation',
-                'warehouse_id' => $warehouses['Western Hub'] ?? null,
+                'warehouse_id' => $warehouses['Jinja Regional Hub'] ?? null,
             ],
         ];
 
