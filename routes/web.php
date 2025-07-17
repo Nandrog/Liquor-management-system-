@@ -30,6 +30,8 @@ use App\Http\Controllers\SetPasswordController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalesReportController;
+use App\Modules\Inventory\Http\Controllers\MaPurchaseOrderController;
+
 
 
 Route::prefix('work-distribution')->group(function () {
@@ -338,7 +340,7 @@ Route::middleware(['auth'])->group(function () {
         //Route::resource('supplier/orders', SupplierOrderController::class)->names('supplier.orders');
         // Route to show the form for editing an existing order
         Route::get('/supplier/orders/{order}/edit', [SupplierOrderController::class, 'edit'])->name('orders.edit');
-
+         Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
         // Route to handle the submission of the edit form
         Route::put('/supplier/orders/{order}', [SupplierOrderController::class, 'update'])->name('orders.update');
         Route::delete('/supplier/orders/{order}', [SupplierOrderController::class, 'destroy'])->name('orders.destroy');
@@ -397,10 +399,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/stock-movements', [PoStockMovementController::class, 'index'])->name('stock_movements.index');
         Route::post('/stock-movements', [PoStockMovementController::class, 'store'])->name('stock_movements.store');
         Route::get('/supplier-overview', [PoSupplierMgtController::class, 'index'])->name('supplier.overview');
-    });Route::get('/tasks', [TaskController::class, 'index'])->name('work-distribution.task-list');
+    Route::get('/tasks', [TaskController::class, 'index'])->name('work-distribution.task-list');
         Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
         Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+        Route::middleware(['role:Procurement Officer'])->prefix('officer')->name('officer.')->group(function () {
+    Route::get('/work-distribution/tasks', [TaskController::class, 'index'])->name('work-distribution.task-list');
+});
 
+});
     /*
     |--------------------------------------------------------------------------
     | Finance Routes
