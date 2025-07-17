@@ -24,6 +24,7 @@ return new class extends Migration
             $table->decimal('total_amount', 10, 2)->default(0);
             $table->string('payment_status')->default('pending'); // e.g., pending, paid, failed
             $table->string('transaction_id')->nullable(); // To store the Stripe Payment Intent ID
+            $table->foreignId('customer_id')->nullable()->constrained('customers')->onDelete('cascade');
             $table->timestamps();
         });
     }
