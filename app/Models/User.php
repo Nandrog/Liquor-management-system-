@@ -10,7 +10,8 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use App\Models\Order; 
+use App\Models\Order;
+
 
 class User extends Authenticatable
 {
@@ -109,5 +110,5 @@ class User extends Authenticatable
         return $this->hasMany(Order::class, 'user_id');
     }
 
-    
+
 }

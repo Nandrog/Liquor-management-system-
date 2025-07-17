@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Session;
 use Spatie\Permission\Models\Role; // Import the Role model
 
 class RegisteredUserController extends Controller
@@ -20,12 +21,30 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
+
+        $isVendor = session('is_vendor_registration', false);
+
+        // Prepare the data array to pass to the view.
+        $data = [
+            'is_vendor' => $isVendor,
+            'factories' => Factory::orderBy('name')->get(),
+            'name'      => '',
+            'email'     => '',
+        ];
+
+        // If it is a vendor registration, add the pre-filled data.
+        if ($isVendor) {
+            $data['name'] = session('vendor_name');
+            $data['email'] = session('contact_email');
+        }
+
             // Fetch all factories from the database
     $factories = Factory::orderBy('name')->get();
 
     // Pass the factories to the view
     return view('auth.register', [
         'factories' => $factories,
+        'data' => $data,
     ]);
     }
 
@@ -58,6 +77,17 @@ if ($request->role === 'supplier') {
     $rules['phone'] = ['required', 'string', 'max:20'];
 }
 
+if ($request->role === 'customer') {
+    $rules['city'] = ['required', 'string', 'max:255'];
+    $rules['state'] = ['required', 'string', 'max:255'];
+    $rules['phone_number'] = ['required', 'string', 'max:20'];
+    $rules['location'] = ['required', 'string', 'max:255'];
+}
+
+ if ($request->role === 'vendor') {
+            $rules['name'] = ['required', 'string', 'max:255'];
+            $rules['contact'] = ['required', 'string', 'max:20'];
+        }
 // The supplier record will be created after the user is created
 
     // Conditional validation for employee_id
@@ -90,6 +120,24 @@ if ($request->role === 'supplier') {
             'location' => $request->input('location'),
             'item-supplied' => $request->input('item_supplied'), // match your DB column name
             'phone' => $request->input('phone'),
+        ]);
+    }
+
+    if ($request->role === 'customer') {
+        \App\Models\Customer::create([
+            'user_id' => $user->id,
+            'city' => $request->input('city'),
+            'state' => $request->input('state'),
+            'phone_number' => $request->input('phone_number'),
+            'location' => $request->input('location'),
+        ]);
+    }
+
+    if ($request->role === 'vendor') {
+        \App\Models\vendor::create([
+            'user_id' => $user->id,
+            'name' => $request->input('name'),
+            'contact' => $request->input('contact'),
         ]);
     }
 

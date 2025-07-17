@@ -1,4 +1,7 @@
 import './bootstrap';
+//import '../css/app.css'; 
+
+ import * as bootstrap from 'bootstrap';
 
 import * as bootstrap from 'bootstrap';  // This is correct for Bootstrap JS
 import Alpine from 'alpinejs';

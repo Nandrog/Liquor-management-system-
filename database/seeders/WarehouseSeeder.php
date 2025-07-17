@@ -28,5 +28,6 @@ class WarehouseSeeder extends Seeder
             'contact_info' => 'jinja@warehouse.ug',
             'manager_id'   => $manager->id ?? null,
         ]);
+       
     }
 }

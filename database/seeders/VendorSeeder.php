@@ -16,11 +16,21 @@ class VendorSeeder extends Seeder
         // Using firstOrCreate ensures that we don't create duplicate vendors
         // if the seeder is run multiple times. It checks if a vendor with the
         // given name exists, and only creates it if it doesn't.
-        Vendor::firstOrCreate(['name' => 'Capital Shoppers Ntinda']);
-        Vendor::firstOrCreate(['name' => 'Shoprite Lugogo']);
-        Vendor::firstOrCreate(['name' => 'Mega Standard Supermarket']);
-        Vendor::firstOrCreate(['name' => 'Quality Supermarket']);
-        Vendor::firstOrCreate(['name' => 'Carrefour Oasis Mall']);
+        Vendor::firstOrCreate(['name' => 'Capital Shoppers Ntinda',
+                            'contact' => '00800097656'
+    ]);
+        Vendor::firstOrCreate(['name' => 'Shoprite Lugogo',
+                                'contact' => '00803097656'
+    ]);
+        Vendor::firstOrCreate(['name' => 'Mega Standard Supermarket',
+                                'contact' => '00870097656'
+                            ]);
+        Vendor::firstOrCreate(['name' => 'Quality Supermarket',
+                                'contact' => '00860097656'
+                            ]);
+        Vendor::firstOrCreate(['name' => 'Carrefour Oasis Mall',
+                                'contact' => '00809097656'
+    ]);
 
         // This command will output a message to your console when seeding is successful.
         $this->command->info('Vendors table seeded successfully!');

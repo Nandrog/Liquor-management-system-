@@ -26,4 +26,8 @@ class Task extends Model
         return 
         $this->belongsTo(StockMovement::class);
     }
+    public function order()
+{
+    return $this->stockMovement ? $this->stockMovement->order() : null;
+}
 }
