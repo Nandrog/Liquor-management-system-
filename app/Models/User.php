@@ -10,7 +10,9 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
- 
+use App\Models\Order;
+
+
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasRoles;
@@ -107,4 +109,6 @@ class User extends Authenticatable
     {
         return $this->hasMany(Order::class, 'user_id');
     }
- }
+
+
+}

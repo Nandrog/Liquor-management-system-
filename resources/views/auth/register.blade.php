@@ -1,6 +1,6 @@
 <x-guest-layout>
     @php
-        $employeeRoles = ['finance', 'supplier', 'manufacturer', 'liquor manager', 'procurement officer']; 
+        $employeeRoles = ['finance', 'supplier', 'manufacturer', 'liquor manager', 'procurement officer'];
         $currentRole = request()->get('role', 'customer');
         $isEmployee = in_array($currentRole, $employeeRoles);
         // This match expression is a clean way to map roles to theme classes.
@@ -31,9 +31,9 @@
 
     <div class="d-flex auth-container">
         <div class="auth-image-panel" >
-            <img src="{{ $imageUrl }}" 
-                 alt="A decorative image representing the {{ $currentRole }} role." 
-                 class="auth-image">
+            <img src="{{ $imageUrl }}"
+                alt="A decorative image representing the {{ $currentRole }} role."
+                class="auth-image">
         </div>
 
         <div class="auth-form-panel">
@@ -102,29 +102,69 @@
     </div>
 @endif
 
-@if ($currentRole === 'supplier')
-<!-- -->
+                    @if ($currentRole === 'supplier')
+                    <!-- -->
 
-<!-- ...existing form fields... -->
+                    <!-- ...existing form fields... -->
 
-<!-- Add these fields for supplier registration -->
-<div class="mt-4">
-    <label for="location">Location</label>
-    <input class="auth-input" id="location" type="text" name="location" required class="block mt-1 w-full" value="{{ old('location') }}">
-</div>
+                    <!-- Add these fields for supplier registration -->
+                    <div class="mt-4">
+                        <label for="location">Location</label>
+                        <input class="auth-input" id="location" type="text" name="location" required class="block mt-1 w-full" value="{{ old('location') }}">
+                    </div>
 
-<div class="mt-4">
-    <label for="item_supplied">Item Supplied</label>
-    <input class="auth-input" id="item_supplied" type="text" name="item_supplied" required class="block mt-1 w-full" value="{{ old('item_supplied') }}">
-</div>
+                    <div class="mt-4">
+                        <label for="item_supplied">Item Supplied</label>
+                        <input class="auth-input" id="item_supplied" type="text" name="item_supplied" required class="block mt-1 w-full" value="{{ old('item_supplied') }}">
+                    </div>
 
-<div class="mt-4">
-    <label for="phone">Phone</label>
-    <input class="auth-input" id="phone" type="text" name="phone" required class="block mt-1 w-full" value="{{ old('phone') }}">
-</div>
-<!-- ...existing form fields... -->
-@endif
+                    <div class="mt-4">
+                        <label for="phone">Phone</label>
+                        <input class="auth-input" id="phone" type="text" name="phone" required class="block mt-1 w-full" value="{{ old('phone') }}">
+                    </div>
+                    <!-- ...existing form fields... -->
+                    @endif
+                    @if ($currentRole === 'customer')
 
+                    <!-- Add these fields for customer registration -->
+
+                    <div class="mt-4">
+                        <label for="city">City</label>
+                        <input class="auth-input" id="city" type="text" name="city" required class="block mt-1 w-full" value="{{ old('city') }}">
+                    </div>
+
+                    <div class="mt-4">
+                        <label for="state">Division</label>
+                        <input class="auth-input" id="state" type="text" name="state" required class="block mt-1 w-full" value="{{ old('state') }}">
+                    </div>
+
+                    <div class="mt-4">
+                        <label for="phone_number">Phone</label>
+                        <input class="auth-input" id="phone_number" type="text" name="phone_number" required class="block mt-1 w-full" value="{{ old('phone_number') }}">
+                    </div>
+
+
+                    <div class="mt-4">
+                        <label for="location">Location</label>
+                        <input class="auth-input" id="location" type="text" name="location" required class="block mt-1 w-full" value="{{ old('location') }}">
+                    </div>
+
+                    <!-- ...existing form fields... -->
+                    @endif
+
+                    @if ($currentRole === 'vendor')
+
+                        <div class="mt-4">
+                        <label for="name">Full Name</label>
+                        <input class="auth-input" id="name" type="text" name="name" required class="block mt-1 w-full" value="{{ old('name') }}">
+                        </div>
+
+                        <div class="mt-4">
+                        <label for="contact">Phone</label>
+                        <input class="auth-input" id="contact" type="text" name="contact" required class="block mt-1 w-full" value="{{ old('contact') }}">
+                        </div>
+
+                    @endif
                     {{-- You can add the "Contact" field here if needed, I've omitted for brevity but it's simple to add --}}
 
                     <!-- Password -->

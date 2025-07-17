@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Factory;
 use App\Models\VendorApplication;
 use App\Mail\VendorValidationResultMail;
 use Illuminate\Support\Facades\Mail;
@@ -100,6 +101,26 @@ class VendorApplicationController extends Controller
 
             // Redirect vendor to the password setup page
             return redirect($setPasswordUrl);
+
+/*
+        \App\Models\Vendor::firstOrCreate(
+        ['contact' => $request->contact_email],
+        ['name' => $request->vendor_name]
+    );
+
+    // This is the correct, readable way to do it.
+    return redirect()->route('register')
+        ->with('is_vendor_registration', true)
+        ->with('vendor_name', $request->vendor_name)
+        ->with('contact_email', $request->contact_email);\App\Models\Vendor::firstOrCreate(
+        ['contact' => $request->contact_email],
+        ['name' => $request->vendor_name]
+    );
+
+    return redirect()->route('register')
+        ->with('is_vendor_registration', true)
+        ->with('vendor_name', $request->vendor_name)
+        ->with('contact_email', $request->contact_email);*/
         }
 
         // ❌ Not approved: show result page

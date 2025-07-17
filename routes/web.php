@@ -1,4 +1,7 @@
 <?php
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\StorefrontController;
+// KEEP ONLY THE NEW, MODULAR CONTROLLER IMPORT. Delete any other DashboardController import.
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -7,11 +10,13 @@ use App\Http\Controllers\VendorApplicationController;
 use App\Modules\Dashboard\Http\Controllers\DashboardController;
 use App\Modules\Inventory\Http\Controllers\DashboardController as InventoryDashboardController;
 use App\Modules\Payments\Http\Controllers\PaymentController;
+use App\Modules\Payments\Http\Controllers\PaymentsController;
 use App\Http\Controllers\WorkDistribution\TaskController;
 use App\Http\Controllers\WorkDistribution\ShiftController;
 use App\Modules\Communications\Http\Controllers\MessageController;
 use App\Http\Controllers\ChatController;
 use App\Modules\Inventory\Http\Controllers\LmStockLevelController;
+use App\Modules\Inventory\Http\Controllers\MaPurchaseOrderController;
 use App\Modules\Inventory\Http\Controllers\LmItemController;
 use App\Modules\Inventory\Http\Controllers\FiItemController;
 use App\Modules\Inventory\Http\Controllers\MaStockLevelController;
@@ -52,6 +57,8 @@ Route::prefix('work-distribution')->group(function () {
 
     // Save the Task (handle the form POST)
     Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+    Route::get('/officer/work-distribution/task-list', [TaskController::class, 'taskList'])
+     ->name('officer.work-distribution.task-list');
 
 });
 /*
@@ -75,11 +82,11 @@ require __DIR__.'/auth.php';
 |--------------------------------------------------------------------------
 */
 
- 
+
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Main Dashboard
-   
+
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/inventory', InventoryDashboardController::class)->name('inventory.dashboard');
 
@@ -125,10 +132,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     */
 
     // --- REPORTS ROUTES (Available to all logged-in users) ---
-  
-    
 
- 
+
+
+
 
 
     // --- DASHBOARD ROUTES (Available to all logged-in users) ---
@@ -141,7 +148,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
     Route::post('/payments/charge', [PaymentController::class, 'charge'])->name('payments.charge');
 
-   
+
 
 
 
@@ -150,7 +157,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/chat/{user}', [ChatController::class, 'chat'])->name('chat.with');
     Route::post('/chat/send/{user}', [ChatController::class, 'sendMessage'])->name('chat.send');
     Route::get('/chats', [ChatController::class, 'users'])->name('chat.page');
-   
+
 
 Route::middleware(['auth', 'role:Liquor Manager|Finance|Procurement Officer'])
     ->prefix('reports')
@@ -195,12 +202,23 @@ Route::middleware(['auth', 'role:Liquor Manager|Finance|Procurement Officer'])
         Route::get('/stock-levels', [LmStockLevelController::class, 'index'])->name('stock_levels.index');
         Route::resource('items', LmItemController::class);
         Route::get('/purchase-orders', [MaPurchaseOrderController::class, 'index'])->name('purchase_orders.index');
+
+        Route::get('/tasks', [TaskController::class, 'index'])->name('work-distribution.task-list');
+        Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
+        Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+
+       
     });
 
         // All routes for a Finance's specific actions.
     Route::middleware(['role:Finance'])->prefix('finance')->name('finance.')->group(function () {
         Route::get('/items', [FiItemController::class, 'index'])->name('items.index');
         Route::patch('/items/{product}', [FiItemController::class, 'updatePrice'])->name('items.update_price');
+
+        Route::get('/tasks', [TaskController::class, 'index'])->name('work-distribution.task-list');
+        Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
+        Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+
     });
 
         // All routes for a Customer's specific actions.
@@ -232,7 +250,7 @@ Route::middleware(['auth'])->group(function () {
 
 // --- REPORTS ROUTES (Available to all logged-in users) ---
 Route::middleware(['auth'])->group(function () {
-    
+
     // Reports index
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
@@ -272,6 +290,11 @@ Route::post('/stripe/webhook', [PaymentController::class, 'handleWebhook'])->nam
     Route::get('/stock-movements', [PoStockMovementController::class, 'index'])->name('stock_movements.index');
         Route::post('/stock-movements', [PoStockMovementController::class, 'store'])->name('stock_movements.store');
         Route::get('/supplier-overview', [PoSupplierMgtController::class, 'index'])->name('supplier.overview');
+
+        Route::get('/tasks', [TaskController::class, 'index'])->name('work-distribution.task-list');
+        Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
+        Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+
         Route::get('/orders', [ManufacturerController::class, 'index'])->name('orders.index');
         Route::get('/orders/paid', [ManufacturerController::class, 'paidOrders'])->name('orders.paid');
         Route::get('/orders/delivery', [ManufacturerController::class, 'deliveringOrders'])->name('orders.delivery');
@@ -340,6 +363,8 @@ Route::middleware(['auth'])->group(function () {
         //Route::resource('supplier/orders', SupplierOrderController::class)->names('supplier.orders');
         // Route to show the form for editing an existing order
         Route::get('/supplier/orders/{order}/edit', [SupplierOrderController::class, 'edit'])->name('orders.edit');
+        Route::get('/suppliers/payments', [PaymentController::class, 'index'])
+        ->name('payments.index');
          Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
         // Route to handle the submission of the edit form
         Route::put('/supplier/orders/{order}', [SupplierOrderController::class, 'update'])->name('orders.update');
@@ -466,7 +491,9 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::get('/notifications/mark-all-read', function () {
-        auth()->user()->unreadNotifications->markAsRead();
+        if (Auth::check()) {
+            Auth::user()->unreadNotifications->markAsRead();
+        }
         return back();
     })->name('notifications.markAllRead');
 
@@ -485,7 +512,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/forecast', [AnalyticsController::class, 'forecast'])->name('analytics.forecast');
         Route::get('/segmentation', [AnalyticsController::class, 'segmentation'])->name('analytics.segmentation');
 });
-  Route::middleware(['auth'])->group(function () {
+    Route::middleware(['auth'])->group(function () {
     Route::get('/reports/sales/weekly', [SalesReportController::class, 'weeklyReport'])->name('reports.sales.weekly');
     Route::get('/reports/sales/weekly/pdf', [SalesReportController::class, 'downloadWeeklyPdf'])->name('reports.sales.weekly.pdf');
 });
@@ -495,7 +522,36 @@ Route::get('/set-password/{user}', [SetPasswordController::class, 'show'])
     ->middleware(['signed'])//ensures link validity
     ->name('password.set');
 
+Route::post('/set-password/{user}', [SetPasswordController::class, 'update'])
+    ->name('password.set.update');
+
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/storefront', [StorefrontController::class, 'index'])->name('storefront.index');
+
+
+    Route::get('/storefront/product/{product}', [StorefrontController::class, 'show'])->name('storefront.show');
+
+});
+
+Route::middleware(['auth'])->prefix('cart')->name('cart.')->group(function () {
+
+    // Route to display the cart page
+    Route::get('/', [CartController::class, 'index'])->name('index');
+
+    // Route to add an item to the cart (this fixes your error)
+    Route::post('/add', [CartController::class, 'add'])->name('add');
+
+    // Route to update item quantities in the cart
+    Route::post('/update', [CartController::class, 'update'])->name('update');
+
+    // Route to remove an item from the cart
+    Route::post('/remove', [CartController::class, 'remove'])->name('remove');
+
+});
     Route::post('/set-password/{user}', [SetPasswordController::class, 'update'])->name('password.set.update');
+
     Route::prefix('officer')->name('officer.work-distribution.')->group(function () {
     Route::get('/tasks', [TaskController::class, 'index'])->name('task-list');
 });
