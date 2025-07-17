@@ -37,7 +37,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalesReportController;
 
 
-Route::prefix('work-distribution')->group(function () {
+Route::prefix ('work-distribution')->group(function () {
     // (Tasks above)
     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
     Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
@@ -380,6 +380,9 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('role:Vendor')->prefix('vendor')->name('vendor.')->group(function () {
         Route::resource('orders', VendorOrderController::class)->only(['index', 'show', 'create', 'store']);
         Route::resource('products', VendorProductController::class)->only(['index', 'edit', 'update']);
+        Route::get('/products', [VendorProductController::class, 'index'])->name('products.index');
+        Route::patch('/products/{product}', [VendorProductController::class, 'update'])->name('products.update');
+        Route::patch('/products/bulk-update', [VendorProductController::class, 'bulkUpdate'])->name('products.bulk-update');
     });
 
     /*
@@ -391,6 +394,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('browse/{vendor}', [CustomerOrderController::class, 'browse'])->name('browse');
         Route::get('orders', [CustomerOrderController::class, 'index'])->name('orders.index');
         Route::resource('orders', CustomerOrderController::class)->only(['index', 'show', 'create', 'store']);
+         // Route for showing the checkout page with the shipping form
+        Route::get('/checkout', [CustomerOrderController::class, 'create'])->name('checkout.create');
+
+    // Route for processing the checkout form submission
+        Route::post('/checkout', [CustomerOrderController::class, 'store'])->name('checkout.store');
+
     });
 
     /*
@@ -520,9 +529,9 @@ Route::middleware(['auth'])->prefix('cart')->name('cart.')->group(function () {
     Route::post('/add', [CartController::class, 'add'])->name('add');
 
     // Route to update item quantities in the cart
-    Route::post('/update', [CartController::class, 'update'])->name('update');
-
+    Route::patch('/cart/update', [CartController::class, 'update'])->name('update');
     // Route to remove an item from the cart
+    Route::delete('/cart/remove', [CartController::class, 'remove'])->name('remove');
     Route::post('/remove', [CartController::class, 'remove'])->name('remove');
 
 });

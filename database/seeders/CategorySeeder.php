@@ -21,5 +21,16 @@ class CategorySeeder extends Seeder
         Category::firstOrCreate(['name' => 'Ingredients'], ['description' => 'Raw materials used in the production process.']);
 
         $this->command->info('Categories seeded successfully!');
+
+        $categories = ['Whiskey', 'Vodka', 'Gin', 'Beer', 'Cider'];
+
+        // Use firstOrCreate to avoid creating duplicates if run again
+        foreach ($categories as $categoryName) {
+            Category::firstOrCreate(
+                ['name' => $categoryName],
+                ['description' => "A category for various types of {$categoryName}."]
+            );
+        }
+        $this->command->info('Categories have been seeded!');
     }
 }

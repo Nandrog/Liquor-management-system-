@@ -3,6 +3,7 @@ namespace App\Modules\Orders\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\VendorProduct;
 use App\Http\Requests\StoreVendorOrderRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Enums\ProductType;
@@ -10,14 +11,17 @@ use App\Enums\OrderType;
 use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
 
 class VendorOrderController extends Controller
 {
     use AuthorizesRequests;
     public function index()
     {
-        $orders = Auth::user()->vendor->orders()->where('type', OrderType::VENDOR_ORDER)->latest()->paginate(10);
-        return view('vendor.orders.index', compact('orders'));
+        $vendor = Auth::user()->vendor;
+        $orders = $vendor->orders()->where('type', OrderType::VENDOR_ORDER)->latest()->paginate(10);
+        $products = $vendor->vendorProducts()->with('product')->paginate(20);
+        return view('vendor.orders.index', compact('orders','products', 'vendor'));
     }
 
     public function create()
@@ -51,10 +55,28 @@ class VendorOrderController extends Controller
 
         return redirect()->route('vendor.orders.index')->with('success', 'Order placed successfully.');
     }
-    
+
     public function show(Order $order)
     {
         $this->authorize('view', $order);
         return view('vendor.orders.show', compact('order'));
+    }
+
+    public function update(Request $request, VendorProduct $product)
+    {
+        // Authorization: Ensure the product being updated belongs to the logged-in vendor.
+        if ($product->vendor_id !== Auth::user()->vendor->id) {
+            abort(403, 'UNAUTHORIZED ACTION');
+        }
+
+        $request->validate([
+            'retail_price' => 'required|numeric|min:0',
+        ]);
+
+        $product->update([
+            'retail_price' => $request->retail_price,
+        ]);
+
+        return back()->with('success', 'Price updated successfully!');
     }
 }

@@ -35,6 +35,7 @@ class DatabaseSeeder extends Seeder
             RecipeSeeder::class,
             StockLevelSeeder::class,
             StockMovementSeeder::class,
+            VendorProductSeeder::class,
         ]);
 
         // ✅ Create a test user with password to avoid error
