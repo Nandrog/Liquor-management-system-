@@ -10,6 +10,7 @@ use App\Http\Controllers\VendorApplicationController;
 use App\Modules\Dashboard\Http\Controllers\DashboardController;
 use App\Modules\Inventory\Http\Controllers\DashboardController as InventoryDashboardController;
 use App\Modules\Payments\Http\Controllers\PaymentController;
+use App\Modules\Payments\Http\Controllers\PaymentsController;
 use App\Http\Controllers\WorkDistribution\TaskController;
 use App\Http\Controllers\WorkDistribution\ShiftController;
 use App\Modules\Communications\Http\Controllers\MessageController;
@@ -54,6 +55,8 @@ Route::prefix('work-distribution')->group(function () {
 
     // Save the Task (handle the form POST)
     Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+    Route::get('/officer/work-distribution/task-list', [TaskController::class, 'taskList'])
+     ->name('officer.work-distribution.task-list');
 
 });
 /*
@@ -358,7 +361,8 @@ Route::middleware(['auth'])->group(function () {
         //Route::resource('supplier/orders', SupplierOrderController::class)->names('supplier.orders');
         // Route to show the form for editing an existing order
         Route::get('/supplier/orders/{order}/edit', [SupplierOrderController::class, 'edit'])->name('orders.edit');
-
+        Route::get('/suppliers/payments', [PaymentController::class, 'index'])
+        ->name('payments.index');
         // Route to handle the submission of the edit form
         Route::put('/supplier/orders/{order}', [SupplierOrderController::class, 'update'])->name('orders.update');
         Route::delete('/supplier/orders/{order}', [SupplierOrderController::class, 'destroy'])->name('orders.destroy');

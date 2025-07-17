@@ -13,7 +13,6 @@ class StorefrontController extends Controller
     {
         // We only want to show products that are ready for sale to customers.
        $products = Product::where('type', 'finished_good')
-                        ->with('media') // <-- EAGER LOAD THE IMAGES
                         ->get();
 
 

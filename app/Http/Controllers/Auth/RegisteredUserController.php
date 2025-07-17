@@ -84,7 +84,7 @@ if ($request->role === 'customer') {
     $rules['location'] = ['required', 'string', 'max:255'];
 }
 
- if ($request->role === 'vendor') {
+if ($request->role === 'vendor') {
             $rules['name'] = ['required', 'string', 'max:255'];
             $rules['contact'] = ['required', 'string', 'max:20'];
         }

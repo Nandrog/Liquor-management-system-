@@ -20,13 +20,12 @@ class CustomerOrderController extends Controller
      */
     public function index()
     {
-        $customer = Auth::user()->customer;
-        if (!$customer) {
-            // Handle case where user is not a customer
-            abort(403, 'You are not registered as a customer.');
-        }
 
-        $orders = Order::where('customer_id', $customer->id)
+if (! Auth::user() || ! Auth::user()->hasRole('Customer')) {
+    abort(403, 'You are not registered as a customer.');
+}
+
+        $orders = Order::where('customer_id')
             ->where('type', OrderType::CUSTOMER_ORDER)
             ->latest()
             ->paginate(10);
