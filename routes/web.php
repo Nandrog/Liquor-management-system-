@@ -35,7 +35,7 @@ use App\Http\Controllers\SetPasswordController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalesReportController;
-use App\Modules\Inventory\Http\Controllers\MaPurchaseOrderController;
+//use App\Modules\Inventory\Http\Controllers\MaPurchaseOrderController;
 
 
 
