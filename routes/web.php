@@ -18,6 +18,7 @@ use App\Modules\Inventory\Http\Controllers\MaStockLevelController;
 use App\Modules\Inventory\Http\Controllers\PoStockMovementController;
 use App\Modules\Inventory\Http\Controllers\PoSupplierMgtController;
 use App\Modules\Production\Http\Controllers\Manufacturer\ProductionController;
+use App\Modules\Inventory\Http\Controllers\MaPurchaseOrderController;
 use App\Modules\Product\Http\Controllers\ProductController;
 use App\Modules\Product\Http\Controllers\VendorProductController;
 use App\Modules\Orders\Http\Controllers\OrderController;
@@ -150,7 +151,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/chats', [ChatController::class, 'users'])->name('chat.page');
    
 
-});
+
 
     // --- ROLE-SPECIFIC FUNCTIONALITY ROUTES ---
 
@@ -172,7 +173,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     |--------------------------------------------------------------------------
     */
         // Example: Route::get('/inventory', [InventoryStockController::class, 'index'])->name('inventory.index');
-    });
+    
 
     // All routes for a Liquor Manager's specific actions.
 
@@ -450,7 +451,7 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::get('/notifications/mark-all-read', function () {
-        auth()->user()->unreadNotifications->markAsRead();
+        \Illuminate\Support\Facades\Auth::user()->unreadNotifications->markAsRead();
         return back();
     })->name('notifications.markAllRead');
 
