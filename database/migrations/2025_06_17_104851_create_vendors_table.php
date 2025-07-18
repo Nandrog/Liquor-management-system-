@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('vendors', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('name');
+            $table->string('contact');
             $table->timestamps();
         });
     }

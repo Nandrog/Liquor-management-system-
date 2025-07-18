@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Factory;
 use App\Models\User;
-use App\Models\Supplier;
+use App\Models\vendor;
 use App\Models\Customer;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -71,6 +71,14 @@ class UserSeeder extends Seeder
                     'remember_token' => Str::random(10),
                 ]
             );
+            if ($vendorUser->wasRecentlyCreated) {
+                vendor::firstOrCreate(
+                    [
+                        'name' => 'amos',
+                        'contact' => '256700987654',
+                    ]
+                );
+            }
             $vendorUser->assignRole(Role::findByName('Vendor'));
 
             // --- Customer User ---
@@ -92,8 +100,10 @@ class UserSeeder extends Seeder
                 Customer::firstOrCreate(
                     ['user_id' => $customerUser->id],
                     [
-                        'company_name' => 'Kampala Bar & Grill',
+                        'city' => 'Kampala',
+                        'state' => 'central',
                         'phone_number' => '256700987654',
+                        'location' => 'Kampala Bar & Grill',
                     ]
                 );
             }

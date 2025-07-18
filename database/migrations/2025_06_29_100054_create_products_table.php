@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();$table->string('name');
+            $table->string('image_filename')->nullable();
             $table->string('sku')->unique();
             //$table->string('type')->nullable();
             $table->text('description')->nullable();
@@ -20,6 +21,7 @@ return new class extends Migration
             $table->decimal('unit_price', 10, 2);
             $table->string('unit_of_measure');
             $table->integer('stock')->default(0)->nullable();
+             $table->boolean('is_featured')->default(false);
             $table->enum('type',['raw_material','finished_good'])->default('raw_material');
             $table->unsignedBigInteger('category_id');
             $table->foreign('category_id')->references('id')->on('categories')->nullable()->constrained()->onDelete('cascade');

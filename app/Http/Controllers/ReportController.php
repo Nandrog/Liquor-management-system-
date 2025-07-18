@@ -1,33 +1,32 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
-
+use App\Models\StockMovement;
+use App\Models\WorkDistribution\ShiftSchedule;
+use App\Models\WorkDistribution\Task;
 
 class ReportController extends Controller
 {
     /**
      * Generate a PDF report of the inventory for the current week.
-     * The report will include products updated this week, categorized by user role.
      */
-
     public function inventoryPdf()
     {
         $user = Auth::user();
         $role = $user->getRoleNames()->first();
 
-        // Define current week's date range (Monday to Sunday)
-        $startOfWeek = Carbon::now()->startOfWeek(); // Monday
-        $endOfWeek = Carbon::now()->endOfWeek();     // Sunday
+        $startOfWeek = Carbon::now()->startOfWeek();
+        $endOfWeek = Carbon::now()->endOfWeek();
 
-        // Get products updated this week
         $products = Product::with(['category', 'supplier', 'vendor'])
                     ->whereBetween('updated_at', [$startOfWeek, $endOfWeek])
                     ->get();
 
-        // Load view depending on user role
         switch ($role) {
             case 'Manufacturer':
                 $view = 'reports.inventory_manufacturer';
@@ -38,24 +37,23 @@ class ReportController extends Controller
             case 'Finance':
                 $view = 'reports.inventory_finance';
                 break;
-                case 'Liquor Manager':
-    // Get all categorized data
-    $manufacturerProducts = $products->where('type', 'finished_good');
-    $supplierProducts = $products->where('user_id', $user->id); // For all suppliers
-    $financeProducts = $products; // All products
+            case 'Liquor Manager':
+                $manufacturerProducts = $products->where('type', 'finished_good');
+                $supplierProducts = $products->where('user_id', $user->id);
+                $financeProducts = $products;
 
-    $view = 'reports.inventory_liquor_manager';
+                $view = 'reports.inventory_liquor_manager';
 
-    $pdf = Pdf::loadView($view, [
-        'manufacturerProducts' => $manufacturerProducts,
-        'supplierProducts' => $supplierProducts,
-        'financeProducts' => $financeProducts,
-        'roleName' => $role,
-        'startOfWeek' => $startOfWeek->format('Y-m-d'),
-        'endOfWeek' => $endOfWeek->format('Y-m-d'),
-    ]);
+                $pdf = Pdf::loadView($view, [
+                    'manufacturerProducts' => $manufacturerProducts,
+                    'supplierProducts' => $supplierProducts,
+                    'financeProducts' => $financeProducts,
+                    'roleName' => $role,
+                    'startOfWeek' => $startOfWeek->format('Y-m-d'),
+                    'endOfWeek' => $endOfWeek->format('Y-m-d'),
+                ]);
 
-    return $pdf->download("weekly_inventory_report_{$role}.pdf");
+                return $pdf->download("weekly_inventory_report_{$role}.pdf");
 
             default:
                 $view = 'reports.inventory_general';
@@ -71,16 +69,33 @@ class ReportController extends Controller
 
         return $pdf->download("weekly_inventory_report_{$role}.pdf");
     }
- public function index()
-{
-    $user = Auth::user();
-   $role = $user->getRoleNames()->first();
- 
 
-    return view('reports.index', compact('role'));
+    /**
+     * Reports index page.
+     */
+    public function index()
+    {
+        $user = Auth::user();
+        $role = $user->getRoleNames()->first();
+
+        return view('reports.index', compact('role'));
+    }
+
+    public function stockMovements()
+    {
+        $movements = StockMovement::with(['product', 'fromWarehouse', 'toWarehouse', 'employee'])->latest()->get();
+        return view('reports.stock-movements', compact('movements'));
+    }
+
+    public function shiftSchedules()
+    {
+        $shifts = ShiftSchedule::with('employee')->latest()->get();
+        return view('reports.shift-schedules', compact('shifts'));
+    }
+
+    public function taskPerformance()
+    {
+        $tasks = Task::with('employee')->latest()->get();
+        return view('reports.task-performance', compact('tasks'));
+    }
 }
-
-
-}
-
-

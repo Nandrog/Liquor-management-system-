@@ -8,11 +8,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+//use Spatie\MediaLibrary\InteractsWithMedia;
+//use Spatie\MediaLibrary\HasMedia;
 
-class Product extends Model
+
+class Product extends Model //implements HasMedia
 {
     use HasFactory;
-
+    //use InteractsWithMedia;
     /**
      * The attributes that are mass assignable.
      * These should match the columns in your products table migration.
@@ -107,7 +110,10 @@ public function usedInRecipes(): BelongsToMany
 return $this->belongsToMany(Recipe::class, 'recipe_materials', 'material_product_id', 'recipe_id');
 }
 
-
+public function vendorProducts(): HasMany
+    {
+        return $this->hasMany(VendorProduct::class);
+    }
 
 
 

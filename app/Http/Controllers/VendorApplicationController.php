@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Factory;
 use App\Models\VendorApplication;
 use App\Mail\VendorValidationResultMail;
 use Illuminate\Support\Facades\Mail;
@@ -71,36 +72,13 @@ class VendorApplicationController extends Controller
         }
 
         // ✅ Validation passed
+  // --- REPLACE WITH THIS BLOCK ---
         if (!empty($result) && in_array($result['status'], ['approved', 'passed'])) {
-
-            \App\Models\Vendor::create([
-                'name' => $request->vendor_name,
-                'contact' => $request->contact_email ?? 'unknown@example.com',
-            ]);
-
-            // Create or get existing user
-            $user = \App\Models\User::firstOrCreate(
-                ['email' => $request->contact_email],
-                [
-                    'name' => $request->vendor_name,
-                    'firstname' => $request->vendor_name,
-                    'lastname' => 'Vendor', // Default last name
-                    'username' => Str::slug($request->vendor_name) . rand(1000, 9999),
-                    'password' => bcrypt(Str::random(16)), // Temporary password
-                ]
-            );
-
-            // Assign the "Vendor" role if not already assigned
-            if (!$user->hasRole('Vendor')) {
-                $user->assignRole('Vendor');
-            }
-
-            // Generate a signed URL to set password
-            $setPasswordUrl = URL::signedRoute('password.set', ['user' => $user->id]);
-
-            // Redirect vendor to the password setup page
-            return redirect($setPasswordUrl);
-        }
+    
+    // Redirect the user to the dedicated vendor registration form,
+    // passing the approved application's ID in the URL.
+    return redirect()->route('vendor.registration.create', ['application' => $application->id]);
+}
 
         // ❌ Not approved: show result page
         return view('auth.vendor-application-result', [
