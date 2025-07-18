@@ -19,6 +19,12 @@ class AnalyticsController extends Controller
             ]);
         }
 
+        if ($user->hasRole('Supplier')) {
+            return view('analytics.supplier',[
+                'data' => $this->getProcurementData()
+            ]);
+        }
+
         if ($user->hasRole('Finance')) {
             return view('analytics.finance',[
                 'data' => $this->getFinanceData()
