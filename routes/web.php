@@ -200,12 +200,20 @@ Route::middleware(['auth', 'role:Liquor Manager|Finance|Procurement Officer'])
         Route::get('/stock-levels', [LmStockLevelController::class, 'index'])->name('stock_levels.index');
         Route::resource('items', LmItemController::class);
         Route::get('/purchase-orders', [MaPurchaseOrderController::class, 'index'])->name('purchase_orders.index');
+
+        Route::get('/tasks', [TaskController::class, 'index'])->name('work-distribution.task-list');
+        Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
+        Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
     });
 
         // All routes for a Finance's specific actions.
     Route::middleware(['role:Finance'])->prefix('finance')->name('finance.')->group(function () {
         Route::get('/items', [FiItemController::class, 'index'])->name('items.index');
         Route::patch('/items/{product}', [FiItemController::class, 'updatePrice'])->name('items.update_price');
+
+        Route::get('/tasks', [TaskController::class, 'index'])->name('work-distribution.task-list');
+        Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
+        Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
     });
 
         // All routes for a Customer's specific actions.
@@ -444,7 +452,7 @@ Route::middleware(['auth'])->group(function () {
     | Analytics
     |--------------------------------------------------------------------------
     */
-    Route::middleware(['auth', 'role:Finance|Liquor Manager|Procurement Officer'])->group(function () {
+    Route::middleware(['auth', 'role:Finance|Liquor Manager|Procurement Officer|Supplier'])->group(function () {
         Route::get('/analytics/dashboard', [AnalyticsController::class, 'dashboard'])->name('analytics.dashboard');
         Route::get('/analytics/menu', [AnalyticsController::class, 'analyticsMenu'])->name('analytics.menu');
         Route::get('/analytics/forecast', [AnalyticsController::class, 'forecast'])->name('analytics.forecast');
@@ -483,7 +491,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('password.set');
     });
 
-    Route::middleware(['auth', 'role:Finance|Liquor Manager'])->prefix('analytics')->group(function () {
+    Route::middleware(['auth', 'role:Finance|Liquor Manager|Supplier'])->prefix('analytics')->group(function () {
         Route::get('/dashboard', [AnalyticsController::class, 'analyticsMenu'])->name('analytics.menu');
         Route::get('/forecast', [AnalyticsController::class, 'forecast'])->name('analytics.forecast');
         Route::get('/segmentation', [AnalyticsController::class, 'segmentation'])->name('analytics.segmentation');

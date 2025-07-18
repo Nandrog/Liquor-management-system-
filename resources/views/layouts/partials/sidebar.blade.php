@@ -27,7 +27,7 @@
                 <li><a href="{{ route('reports.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports</a></li>
                 <li><a href="{{route('supplier.orders.paid')}}" class="nav-link"><i class="bi bi-truck me-2"></i> Orders paid</a></li>
                 {{--<li><a href="#" class="nav-link"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports</a></li>--}}
-                <li><a href="#" class="nav-link"><i class="bi bi-graph-up me-2"></i> Analytics</a></li>
+                <li><a href="{{ route('analytics.menu') }}" class="nav-link"><i class="bi bi-graph-up me-2"></i> Analytics</a></li>
             @endif
 
             @if($user && $user->hasRole('Manufacturer'))

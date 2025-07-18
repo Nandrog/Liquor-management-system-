@@ -66,12 +66,36 @@ class AnalyticsController extends Controller
 
     public function forecast()
     {
-        $response = Http::get('http://127.0.0.1:5000/api/forecast');
-        if ($response->successful()) {
-            return view('analytics.forecast', ['data' => $response->json()]);
+        //fetch actual sales data from orders table
+        $monthlyTotals = DB::table('orders')
+            ->selectRaw('MONTH(created_at) as month, SUM(total_amount) as total')
+            ->whereYear('created_at', now()->year)
+            ->groupBy('month')
+            ->pluck('total', 'month')
+            ->toArray();
+
+        //12month array, default 0 for missing months
+        $salesData = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $actualSales[] = round($monthlyTotals[$m] ?? 0, 2);
         }
 
-        abort(500, 'Forecast API unavailable');
+        //Call Flask ML API for forecasting
+        $response = Http::get('http://127.0.0.1:5000/api/forecast');
+        if (! $response->successful()) {
+            abort(500, 'Forecast API unavailable');
+        }
+
+        $forecastData = $response->json();
+
+        $data = [
+            'predicted_sales' => $forecastData['predicted_sales'],
+            'efficiency' => $forecastData['efficiency'],
+            'fulfillment_days' => $forecastData['fulfillment_days'],
+            'actual_sales' => $actualSales,
+        ];
+
+        return view('analytics.forecast', compact('data'));
     }
 
     private function getProcurementData()
