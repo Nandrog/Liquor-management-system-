@@ -2,100 +2,132 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB; // Required for DB::raw()
+use App\Models\Cart;
+use App\Models\Product;
+
+use App\Http\Controllers\Controller;
 
 class CartController extends Controller
 {
-    /**
-     * Display the contents of the shopping cart.
-     */
     public function index()
     {
-        // Retrieve the cart from the session.
-        $cart = session()->get('cart', []);
+        // Get the current user's ID
+        $userId = Auth::id();
 
-        // Return a view and pass the cart data to it.
-        // We will create this 'cart.index' view later.
-        return view('cart.index', compact('cart'));
+        // Fetch cart items for the user from the database.
+        // We use 'with('product')' to eager load the product details for each cart item.
+        // This is much more efficient than fetching the product for each item in a loop (avoids N+1 problem).
+        $cartItems = Cart::where('user_id', $userId)->with('product')->get();
+
+        // Calculate the subtotal.
+        $subtotal = $cartItems->sum(function ($item) {
+            // Ensure product and price exist to avoid errors
+            return optional($item->product)->unit_price * $item->quantity;
+        });
+
+        // The view name 'cart.index' should correspond to a file at:
+        // resources/views/cart/index.blade.php
+        return view('cart.index', [
+            'cartItems' => $cartItems,
+            'subtotal' => $subtotal
+        ]);
     }
 
     /**
-     * Add a product to the shopping cart.
-     * This is the method that will handle the "Add to Cart" button clicks.
+     * Add a product to the cart using an AJAX request.
+     * This method is called by the 'fetch' function on your storefront page.
      */
     public function add(Request $request)
     {
-        // Validate that a product_id was submitted.
+        // 1. Validate the incoming request.
         $request->validate(['product_id' => 'required|exists:products,id']);
 
+        $userId = Auth::id();
         $productId = $request->product_id;
-        $product = Product::findOrFail($productId);
 
-        // Get the current cart from the session, or create an empty array if it doesn't exist.
-        $cart = session()->get('cart', []);
+        // 2. Find an existing cart item for this user and product.
+        $cartItem = Cart::where('user_id', $userId)->where('product_id', $productId)->first();
 
-        // Check if the product is already in the cart.
-        if (isset($cart[$productId])) {
-            // If it is, just increment the quantity.
-            $cart[$productId]['quantity']++;
+        if ($cartItem) {
+            // If the item already exists, just increment the quantity.
+            $cartItem->increment('quantity');
         } else {
-            // If it's not, add it to the cart with a quantity of 1.
-            $cart[$productId] = [
-                "name" => $product->name,
-                "quantity" => 1,
-                "price" => $product->unit_price,
-                "image_url" => $product->image_url // Assumes the accessor exists on your Product model
-            ];
+            // If it's a new item, create it with quantity 1.
+            Cart::create([
+                'user_id' => $userId,
+                'product_id' => $productId,
+                'quantity' => 1,
+            ]);
         }
 
-        // Store the updated cart back into the session.
-        session()->put('cart', $cart);
+        // 3. Calculate the new total number of items in the user's cart for the header icon.
+        $cartTotal = Cart::where('user_id', $userId)->sum('quantity');
 
-        // Redirect back to the previous page (the liquor shelf) with a success message.
-        return redirect()->back()->with('success', 'Product added to cart successfully!');
+        // 4. Return a successful JSON response for the AJAX call.
+        return response()->json([
+            'success' => true,
+            'message' => 'Product added to cart successfully!',
+            'cart_total' => $cartTotal
+        ]);
     }
 
     /**
-     * Update the quantity of a specific item in the cart.
+     * Update the quantities of items in the cart.
+     * This is called when the "Update Cart" button is submitted from the cart page.
      */
     public function update(Request $request)
     {
-        // We expect 'quantities' to be an array of [product_id => new_quantity]
+        // Validate that we received an array of quantities.
         $request->validate(['quantities' => 'required|array']);
 
-        $cart = session()->get('cart', []);
+        $userId = Auth::id();
 
-        foreach ($request->quantities as $productId => $quantity) {
-            // If the quantity is 0 or less, remove the item. Otherwise, update it.
-            if (isset($cart[$productId])) {
+        foreach ($request->quantities as $cartId => $quantity) {
+            // Ensure the quantity is a positive integer.
+            $quantity = max(0, (int)$quantity);
+
+            // Find the cart item that belongs to the current user. This is a crucial security check.
+            $cartItem = Cart::where('id', $cartId)->where('user_id', $userId)->first();
+
+            if ($cartItem) {
                 if ($quantity > 0) {
-                    $cart[$productId]['quantity'] = $quantity;
+                    // If quantity is positive, update it.
+                    $cartItem->update(['quantity' => $quantity]);
                 } else {
-                    unset($cart[$productId]);
+                    // If quantity is 0, remove the item from the cart.
+                    $cartItem->delete();
                 }
             }
         }
-
-        session()->put('cart', $cart);
 
         return redirect()->route('cart.index')->with('success', 'Cart updated successfully!');
     }
 
     /**
-     * Remove a specific item from the cart.
+     * Remove an item completely from the cart.
+     * This method expects the cart item ID, not the product ID.
      */
     public function remove(Request $request)
     {
-        $request->validate(['product_id' => 'required|exists:products,id']);
+        // Validate that a cart_id was sent.
+        $request->validate(['cart_id' => 'required|integer|exists:carts,id']);
 
-        $cart = session()->get('cart', []);
+        $userId = Auth::id();
+        $cartId = $request->cart_id;
 
-        if (isset($cart[$request->product_id])) {
-            unset($cart[$request->product_id]);
-            session()->put('cart', $cart);
+        // Find the cart item, ensuring it belongs to the currently logged-in user
+        // before deleting it. This prevents one user from deleting another user's cart item.
+        $cartItem = Cart::where('id', $cartId)->where('user_id', $userId)->first();
+
+        if ($cartItem) {
+            $cartItem->delete();
+            return redirect()->route('cart.index')->with('success', 'Product removed from cart successfully!');
         }
 
-        return redirect()->route('cart.index')->with('success', 'Product removed from cart successfully!');
+        // If the item wasn't found (or didn't belong to the user), redirect with an error.
+        return redirect()->route('cart.index')->with('error', 'Item not found in cart.');
     }
 }

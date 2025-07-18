@@ -1,48 +1,151 @@
+<!-- resources/views/orders/show.blade.php -->
 <x-app-layout>
+    @push('styles')
+    <style>
+        .progress-track {
+            display: flex;
+            list-style-type: none;
+            padding: 0;
+            margin: 40px 0;
+            justify-content: space-between;
+            position: relative;
+        }
+        .progress-track::before {
+            content: '';
+            background-color: #ddd;
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            height: 4px;
+            width: 100%;
+            z-index: 1;
+        }
+        .progress-track::after {
+            content: '';
+            background-color: #28a745; /* Green color */
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            height: 4px;
+            width: var(--progress-width, 0%);
+            z-index: 2;
+            transition: width 0.5s ease;
+        }
+        .progress-step {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            width: 100px;
+        }
+        .progress-step .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ddd;
+            border: 3px solid #ddd;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 1.2rem;
+        }
+        .progress-step.active .step-icon {
+            background: #28a745;
+            border-color: #28a745;
+        }
+        .progress-step.completed .step-icon {
+            background: #28a745;
+            border-color: #28a745;
+        }
+        .progress-step .step-label {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .progress-step.active .step-label,
+        .progress-step.completed .step-label {
+            color: #000;
+            font-weight: bold;
+        }
+    </style>
+    @endpush
+
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Details for Order #{{ $order->id }}
+        <h2 class="h3 font-semibold text-xl text-gray-800 leading-tight">
+            Order Details
         </h2>
     </x-slot>
 
-    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-        <div class="px-4 py-5 sm:px-6">
-            <h3 class="text-lg leading-6 font-medium text-gray-900">Order Summary</h3>
-            <p class="mt-1 max-w-2xl text-sm text-gray-500">Placed on {{ $order->created_at->format('F j, Y, g:i a') }}</p>
-        </div>
-        <div class="border-t border-gray-200">
-            <dl>
-                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt class="text-sm font-medium text-gray-500">Vendor</dt>
-                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ $order->vendor->name }}</dd>
+    <div class="container py-5">
+        @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Order #{{ $order->order_number }}</span>
+                <span>Status: <span class="badge bg-primary">{{ Str::title($order->status) }}</span></span>
+            </div>
+            <div class="card-body">
+                <!-- Order Status Tracker -->
+                @php
+                    $statuses = ['pending', 'processing', 'in_transit', 'delivered'];
+                    $currentStatusIndex = array_search($order->status, $statuses);
+                    $progressWidth = ($currentStatusIndex / (count($statuses) - 1)) * 100;
+                @endphp
+                <ul class="progress-track" style="--progress-width: {{ $progressWidth }}%;">
+                    <li class="progress-step {{ $currentStatusIndex >= 0 ? 'completed' : '' }}">
+                        <div class="step-icon"><i class="bi bi-card-checklist"></i></div>
+                        <div class="step-label">Pending</div>
+                    </li>
+                    <li class="progress-step {{ $currentStatusIndex >= 1 ? 'completed' : '' }} {{ $currentStatusIndex == 1 ? 'active' : '' }}">
+                        <div class="step-icon"><i class="bi bi-gear"></i></div>
+                        <div class="step-label">Processing</div>
+                    </li>
+                    <li class="progress-step {{ $currentStatusIndex >= 2 ? 'completed' : '' }} {{ $currentStatusIndex == 2 ? 'active' : '' }}">
+                        <div class="step-icon"><i class="bi bi-truck"></i></div>
+                        <div class="step-label">In Transit</div>
+                    </li>
+                    <li class="progress-step {{ $currentStatusIndex >= 3 ? 'completed' : '' }} {{ $currentStatusIndex == 3 ? 'active' : '' }}">
+                        <div class="step-icon"><i class="bi bi-house-check-fill"></i></div>
+                        <div class="step-label">Delivered</div>
+                    </li>
+                </ul>
+
+                <hr class="my-5">
+
+                <!-- Order Items and Shipping Details -->
+                <div class="row">
+                    <div class="col-md-8">
+                        <h5>Order Items</h5>
+                        <table class="table">
+                            <tbody>
+                                @foreach($order->items as $item)
+                                <tr>
+                                    <td><img src="{{ asset($item->product->image_url) }}" width="60" alt=""></td>
+                                    <td>{{ $item->product->name }}</td>
+                                    <td>Quantity: {{ $item->quantity }}</td>
+                                    <td class="text-end">UGX {{ number_format($item->price * $item->quantity, 0) }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Shipping To</h5>
+                        <address>
+                            <strong>{{ $order->user->name }}</strong><br>
+                            {{ $order->shipping_address }}<br>
+                            {{ $order->city }}, {{ $order->postal_code }}<br>
+                            Phone: {{ $order->phone_number }}
+                        </address>
+                        <h5 class="mt-4">Total</h5>
+                        <h3>UGX {{ number_format($order->grand_total, 0) }}</h3>
+                    </div>
                 </div>
-                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt class="text-sm font-medium text-gray-500">Order Status</dt>
-                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ Str::title(str_replace('_', ' ', $order->status->value)) }}</dd>
-                </div>
-                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt class="text-sm font-medium text-gray-500">Order Total</dt>
-                    <dd class="mt-1 text-sm font-bold text-gray-900 sm:mt-0 sm:col-span-2">${{ number_format($order->total_amount, 2) }}</dd>
-                </div>
-                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt class="text-sm font-medium text-gray-500">Items Ordered</dt>
-                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        <ul role="list" class="border border-gray-200 rounded-md divide-y divide-gray-200">
-                            @foreach($order->items as $item)
-                            <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
-                                <div class="w-0 flex-1 flex items-center">
-                                    <span class="ml-2 flex-1 w-0 truncate">{{ $item->product->name }}</span>
-                                </div>
-                                <div class="ml-4 flex-shrink-0">
-                                    <span class="text-gray-500">Qty: {{ $item->quantity }}</span>
-                                    <span class="ml-4 font-medium">@ ${{ number_format($item->price, 2) }} each</span>
-                                </div>
-                            </li>
-                            @endforeach
-                        </ul>
-                    </dd>
-                </div>
-            </dl>
+            </div>
         </div>
     </div>
 </x-app-layout>

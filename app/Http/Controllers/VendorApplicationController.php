@@ -77,32 +77,14 @@ class VendorApplicationController extends Controller
             \Log::error('Email failed: ' . $e->getMessage());
         }
 
-        // ✅ Vendor approved
+        // ✅ Validation passed
+  // --- REPLACE WITH THIS BLOCK ---
         if (!empty($result) && in_array($result['status'], ['approved', 'passed'])) {
-            \App\Models\Vendor::create([
-                'name' => $request->vendor_name,
-                'contact' => $request->contact_email ?? 'unknown@example.com',
-            ]);
-
-            $user = \App\Models\User::firstOrCreate(
-                ['email' => $request->contact_email],
-                [
-                    'name' => $request->vendor_name,
-                    'firstname' => $request->vendor_name,
-                    'lastname' => 'Vendor',
-                    'username' => Str::slug($request->vendor_name) . rand(1000, 9999),
-                    'password' => bcrypt(Str::random(16)),
-                ]
-            );
-
-            if (!$user->hasRole('Vendor')) {
-                $user->assignRole('Vendor');
-            }
-
-            $setPasswordUrl = URL::signedRoute('password.set', ['user' => $user->id]);
-
-            return redirect($setPasswordUrl);
-        }
+     
+    // Redirect the user to the dedicated vendor registration form,
+    // passing the approved application's ID in the URL.
+    return redirect()->route('vendor.registration.create', ['application' => $application->id]);
+}
 
         // ❌ Vendor not approved — show result
         return view('auth.vendor-application-result', [
