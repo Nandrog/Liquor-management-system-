@@ -148,7 +148,19 @@ class DashboardController extends Controller
     $itemCard['route'] = route('finance.items.index');
     $itemCard['description'] = 'View and manage item pricing and valuation.';
     $cardsForUser[] = $itemCard;
-}
+
+    $Suppliercards = [
+        
+            'title' => 'Supplier Orders',
+            'description' => 'Track financial status of all purchase orders.',
+            'icon' => 'bi-receipt',
+            'route' => route('finance.orders.supplier_report'),
+            
+        
+    ];
+     $cardsForUser[] = $Suppliercards;
+    
+}   
         // Add more `elseif ($user->hasRole('...'))` blocks for other roles
 
         return view('inventory.dashboard', [

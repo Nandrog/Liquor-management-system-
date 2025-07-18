@@ -1,11 +1,19 @@
 <x-guest-layout>
+
+    @php
+        $employeeRoles = ['finance', 'supplier', 'manufacturer', 'liquor manager', 'procurement officer'];
+        $currentRole = request()->get('role', 'vendor');
+        $isEmployee = in_array($currentRole, $employeeRoles);
+
+    @endphp
+
     <div class="auth-card">
         <h2 class="text-lg font-bold">Set Your Password</h2>
 
         <form method="POST" action="{{ route('password.set.update', $user) }}">
             @csrf
                     {{-- Hidden input to pass the role to the controller --}}
-                    <input type="hidden" name="role" value="{{ $currentRole }}">
+                    <input type="hidden" name="role" value="{{ $user->getRoleNames()->first() }}">
 
                     <div class="row">
                         <!-- First Name -->
