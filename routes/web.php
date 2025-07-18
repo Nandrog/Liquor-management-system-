@@ -37,9 +37,11 @@ use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalesReportController;
 use App\Modules\Inventory\Http\Controllers\Finance\OrderReportController;
+//use App\Modules\Inventory\Http\Controllers\MaPurchaseOrderController;
 
 
-Route::prefix('work-distribution')->group(function () {
+
+Route::prefix ('work-distribution')->group(function () {
     // (Tasks above)
     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
     Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
@@ -210,7 +212,7 @@ Route::middleware(['auth', 'role:Liquor Manager|Finance|Procurement Officer'])
         Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
         Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
 
-       
+
     });
 
         // All routes for a Finance's specific actions.
@@ -374,6 +376,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/supplier/orders/{order}/edit', [SupplierOrderController::class, 'edit'])->name('orders.edit');
         Route::get('/suppliers/payments', [PaymentController::class, 'index'])
         ->name('payments.index');
+         Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
         // Route to handle the submission of the edit form
         Route::put('/supplier/orders/{order}', [SupplierOrderController::class, 'update'])->name('orders.update');
         Route::delete('/supplier/orders/{order}', [SupplierOrderController::class, 'destroy'])->name('orders.destroy');
@@ -407,6 +410,9 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('role:Vendor')->prefix('vendor')->name('vendor.')->group(function () {
         Route::resource('orders', VendorOrderController::class)->only(['index', 'show', 'create', 'store']);
         Route::resource('products', VendorProductController::class)->only(['index', 'edit', 'update']);
+        Route::get('/products', [VendorProductController::class, 'index'])->name('products.index');
+        Route::patch('/products/{product}', [VendorProductController::class, 'update'])->name('products.update');
+        Route::patch('/products/bulk-update', [VendorProductController::class, 'bulkUpdate'])->name('products.bulk-update');
     });
 
     /*
@@ -418,6 +424,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('browse/{vendor}', [CustomerOrderController::class, 'browse'])->name('browse');
         Route::get('orders', [CustomerOrderController::class, 'index'])->name('orders.index');
         Route::resource('orders', CustomerOrderController::class)->only(['index', 'show', 'create', 'store']);
+         // Route for showing the checkout page with the shipping form
+        Route::get('/checkout', [CustomerOrderController::class, 'create'])->name('checkout.create');
+
+    // Route for processing the checkout form submission
+        Route::post('/checkout', [CustomerOrderController::class, 'store'])->name('checkout.store');
+
     });
 
     /*
@@ -432,10 +444,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/stock-movements', [PoStockMovementController::class, 'index'])->name('stock_movements.index');
         Route::post('/stock-movements', [PoStockMovementController::class, 'store'])->name('stock_movements.store');
         Route::get('/supplier-overview', [PoSupplierMgtController::class, 'index'])->name('supplier.overview');
-    });Route::get('/tasks', [TaskController::class, 'index'])->name('work-distribution.task-list');
+    Route::get('/tasks', [TaskController::class, 'index'])->name('work-distribution.task-list');
         Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
         Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+        Route::middleware(['role:Procurement Officer'])->prefix('officer')->name('officer.')->group(function () {
+    Route::get('/work-distribution/tasks', [TaskController::class, 'index'])->name('work-distribution.task-list');
+});
 
+});
     /*
     |--------------------------------------------------------------------------
     | Finance Routes
@@ -464,6 +480,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/tasks', [TaskController::class, 'index'])->name('work-distribution.task-list');
         Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
         Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+
     });
 
     /*
@@ -471,7 +488,7 @@ Route::middleware(['auth'])->group(function () {
     | Analytics
     |--------------------------------------------------------------------------
     */
-    Route::middleware(['auth', 'role:Finance|Liquor Manager|Procurement Officer'])->group(function () {
+    Route::middleware(['auth', 'role:Finance|Liquor Manager|Procurement Officer|Supplier'])->group(function () {
         Route::get('/analytics/dashboard', [AnalyticsController::class, 'dashboard'])->name('analytics.dashboard');
         Route::get('/analytics/menu', [AnalyticsController::class, 'analyticsMenu'])->name('analytics.menu');
         Route::get('/analytics/forecast', [AnalyticsController::class, 'forecast'])->name('analytics.forecast');
@@ -510,7 +527,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('password.set');
     });
 
-    Route::middleware(['auth', 'role:Finance|Liquor Manager'])->prefix('analytics')->group(function () {
+    Route::middleware(['auth', 'role:Finance|Liquor Manager|Supplier'])->prefix('analytics')->group(function () {
         Route::get('/dashboard', [AnalyticsController::class, 'analyticsMenu'])->name('analytics.menu');
         Route::get('/forecast', [AnalyticsController::class, 'forecast'])->name('analytics.forecast');
         Route::get('/segmentation', [AnalyticsController::class, 'segmentation'])->name('analytics.segmentation');
@@ -547,10 +564,14 @@ Route::middleware(['auth'])->prefix('cart')->name('cart.')->group(function () {
     Route::post('/add', [CartController::class, 'add'])->name('add');
 
     // Route to update item quantities in the cart
-    Route::post('/update', [CartController::class, 'update'])->name('update');
-
+    Route::patch('/cart/update', [CartController::class, 'update'])->name('update');
     // Route to remove an item from the cart
+    Route::delete('/cart/remove', [CartController::class, 'remove'])->name('remove');
     Route::post('/remove', [CartController::class, 'remove'])->name('remove');
 
 });
     Route::post('/set-password/{user}', [SetPasswordController::class, 'update'])->name('password.set.update');
+
+    Route::prefix('officer')->name('officer.work-distribution.')->group(function () {
+    Route::get('/tasks', [TaskController::class, 'index'])->name('task-list');
+});

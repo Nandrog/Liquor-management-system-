@@ -110,7 +110,10 @@ public function usedInRecipes(): BelongsToMany
 return $this->belongsToMany(Recipe::class, 'recipe_materials', 'material_product_id', 'recipe_id');
 }
 
-
+public function vendorProducts(): HasMany
+    {
+        return $this->hasMany(VendorProduct::class);
+    }
 
 
 

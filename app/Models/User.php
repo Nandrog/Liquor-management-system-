@@ -110,5 +110,9 @@ class User extends Authenticatable
         return $this->hasMany(Order::class, 'user_id');
     }
 
+    public function customer(): HasOne
+{
+    return $this->hasOne(Customer::class);
+}
 
 }

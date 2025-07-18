@@ -2,6 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     {{-- ... meta tags, etc. ... --}}
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'LMS') }}</title>
      @vite(['resources/sass/app.scss',
     'resources/css/chat.css','resources/css/report.css','resources/js/app.js'])
