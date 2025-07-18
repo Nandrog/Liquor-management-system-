@@ -7,7 +7,7 @@
     <h2 class="h4 mb-3">Overview</h2>
     <div class="row">
         @forelse ($cards as $card)
-            <div class="col-12 col-md-6 col-lg-4 ">
+            <div class="col-12 col-md-6 col-lg-6 mb-4">
                 <x-dashboard-card
                     :title="$card['title']"
                     :description="$card['description']"
