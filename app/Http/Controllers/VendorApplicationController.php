@@ -27,7 +27,7 @@ class VendorApplicationController extends Controller
             'application_pdf' => ['required', 'file', 'mimes:pdf', 'max:2048'],
         ]);
 
-        // Store the uploaded PDF
+        // Store uploaded PDF
         $pdf = $request->file('application_pdf');
         $pdfPath = $pdf->store('pdfs', 'public');
 
@@ -37,20 +37,26 @@ class VendorApplicationController extends Controller
             'pdf_path' => $pdfPath,
         ]);
 
-        // Convert PDF to base64 and send to Java server
+        // Convert PDF to base64
         $pdfFullPath = Storage::disk('public')->path($pdfPath);
         $pdfBase64 = base64_encode(file_get_contents($pdfFullPath));
 
         $result = null;
+        $vendorValidationUrl = config('services.vendor_validation.url');
 
-        $response = Http::post(config('services.vendor_validation.url'), [
+        if (!$vendorValidationUrl) {
+            \Log::error('Missing vendor validation URL in config/services.php or .env');
+            abort(500, 'Vendor validation service URL not configured.');
+        }
+
+        $response = Http::post($vendorValidationUrl, [
             'vendor_name' => $request->vendor_name,
             'pdf_base64' => $pdfBase64,
         ]);
 
         if ($response->ok()) {
             $result = $response->json();
-            \Log::info('Java server response:', $result);
+            \Log::info('Java server response:', [$result]);
 
             $application->status = (string) ($result['status'] ?? 'pending');
             $application->visit_scheduled_for = $result['scheduled_visit'] ?? null;
@@ -71,59 +77,34 @@ class VendorApplicationController extends Controller
             \Log::error('Email failed: ' . $e->getMessage());
         }
 
-        // ✅ Validation passed
+        // ✅ Vendor approved
         if (!empty($result) && in_array($result['status'], ['approved', 'passed'])) {
-
             \App\Models\Vendor::create([
                 'name' => $request->vendor_name,
                 'contact' => $request->contact_email ?? 'unknown@example.com',
             ]);
 
-            // Create or get existing user
             $user = \App\Models\User::firstOrCreate(
                 ['email' => $request->contact_email],
                 [
                     'name' => $request->vendor_name,
                     'firstname' => $request->vendor_name,
-                    'lastname' => 'Vendor', // Default last name
+                    'lastname' => 'Vendor',
                     'username' => Str::slug($request->vendor_name) . rand(1000, 9999),
-                    'password' => bcrypt(Str::random(16)), // Temporary password
+                    'password' => bcrypt(Str::random(16)),
                 ]
             );
 
-            // Assign the "Vendor" role if not already assigned
             if (!$user->hasRole('Vendor')) {
                 $user->assignRole('Vendor');
             }
 
-            // Generate a signed URL to set password
             $setPasswordUrl = URL::signedRoute('password.set', ['user' => $user->id]);
 
-            // Redirect vendor to the password setup page
             return redirect($setPasswordUrl);
-
-/*
-        \App\Models\Vendor::firstOrCreate(
-        ['contact' => $request->contact_email],
-        ['name' => $request->vendor_name]
-    );
-
-    // This is the correct, readable way to do it.
-    return redirect()->route('register')
-        ->with('is_vendor_registration', true)
-        ->with('vendor_name', $request->vendor_name)
-        ->with('contact_email', $request->contact_email);\App\Models\Vendor::firstOrCreate(
-        ['contact' => $request->contact_email],
-        ['name' => $request->vendor_name]
-    );
-
-    return redirect()->route('register')
-        ->with('is_vendor_registration', true)
-        ->with('vendor_name', $request->vendor_name)
-        ->with('contact_email', $request->contact_email);*/
         }
 
-        // ❌ Not approved: show result page
+        // ❌ Vendor not approved — show result
         return view('auth.vendor-application-result', [
             'application' => $application,
         ]);

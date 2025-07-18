@@ -35,6 +35,12 @@ use App\Http\Controllers\SetPasswordController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalesReportController;
+use App\Http\Controllers\VendorValidationController;
+
+Route::get('/vendor/apply', [VendorValidationController::class, 'showForm'])->name('vendor.apply');
+Route::post('/vendor/apply', [VendorValidationController::class, 'submit'])->name('vendor.submit');
+
+
 
 
 
@@ -255,9 +261,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
     // Individual PDF report routes
-    Route::get('/reports/inventory', [ReportController::class, 'inventoryPdf'])->name('reports.inventory');
+    
     Route::get('/reports/sales', [ReportController::class, 'salesPdf'])->name('reports.sales');
     Route::get('/reports/vendor', [ReportController::class, 'vendorPdf'])->name('reports.vendor');
+Route::get('/reports/inventory', [ReportController::class, 'inventoryView'])->name('reports.inventory');
+Route::get('/reports/inventory/pdf', [ReportController::class, 'inventoryPdf'])->name('reports.inventory.pdf');
+
 
     // Charts or visual report data (optional)
     Route::get('/reports/sales/chart', [ReportController::class, 'salesChart'])->name('reports.sales.chart');
