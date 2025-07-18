@@ -9,7 +9,10 @@ use App\Models\Product;
 use App\Models\Message;
 use App\Models\StockMovement;
 use App\Models\WorkDistribution\Task;
-
+use App\Models\Order;
+use Carbon\Carbon;
+use App\Models\Recipe;
+use App\Models\WorkDistribution\ShiftSchedule;
 class DashboardController extends Controller
 {
     public function index()
@@ -41,9 +44,38 @@ class DashboardController extends Controller
 
     private function supplierDashboard()
     {
+
+        $messages = Message::where('receiver_id', Auth::id())->where('is_read',false)->count();
+        $itemsAvailable = Product::Where('type','raw_material')->count();
+        $orderspaid = Order::where('type','supplier_order')->where('status','paid')->where('supplier_id',Auth::id())->count();
+
         $cards = [
-            ['title' => 'Purchase Orders', 'description' => 'View incoming orders', 'icon' => 'bi-clipboard-check', 'route' => '#', 'count' => 5, 'count_label' => 'Pending'],
-            ['title' => 'My Products', 'description' => 'Manage your product listings', 'icon' => 'bi-box-seam', 'route' => '#', 'count' => 25, 'count_label' => 'Total'],
+            [
+                'title' => 'Make Invoice', 
+            'description' => 'Create invoices to supply products',
+            'icon' => 'bi-box-seam',
+            'route' =>route( 'supplier.orders.create'),
+            'count' => $itemsAvailable, 
+            'count_label' => 'Options to supply'
+        ],
+            [
+             'title' => 'Orders History',
+             'description' => 'View list of all orders made',
+             'icon' => 'bi-clipboard-check',
+             'route' =>route('supplier.orders.paid') ,
+             'count' => $orderspaid, 
+             'count_label' => 'Orders Paid'
+            ],
+
+            [
+                'title' => 'Chats',
+                'description' => 'Communicate with other users',
+                'icon' => 'bi-chat-left-text',
+                'route' => route('chat.page'),
+                'count' => $messages,
+                'count_label' => 'Unread Messages'
+
+            ],
         ];
         return view('supplier.dashboard', ['cards' => $cards]);
     }
@@ -80,7 +112,7 @@ class DashboardController extends Controller
             ],
             [
                 'title' => 'Forecast Analysis',
-                'description' => 'Aanalysis of stock trends and forecasts',
+                'description' => 'Analysis of stock trends and forecasts',
                 'icon' => 'bi-graph-up',
                 'route'=> route('analytics.forecast'),
                 'count' =>null,
@@ -92,7 +124,7 @@ class DashboardController extends Controller
                 'title' => 'Chats',
                 'description' => 'Communicate with other users',
                 'icon' => 'bi-chat-left-text',
-                'route' => route('messages.index'),
+                'route' => route('chat.page'),
                 'count' => $messages,
                 'count_label' => 'Unread Messages'
 
@@ -138,7 +170,7 @@ class DashboardController extends Controller
                 'title' => 'Chats',
                 'description' => 'Communicate with other users',
                 'icon' => 'bi-chat-left-text',
-                'route' => route('messages.index'),
+                'route' => route('chat.page'),
                 'count' => $messages,
                 'count_label' => 'Unread Messages'
             ],
@@ -158,11 +190,61 @@ class DashboardController extends Controller
 
     private function vendorDashboard() { return view('vendor.dashboard'); }
     private function customerDashboard() { return view('customer.dashboard'); }
-    private function manufacturerDashboard() { return view('manufacturer.dashboard'); }
+    private function manufacturerDashboard() { 
+
+         $messages = Message::where('receiver_id', Auth::id())->where('is_read',false)->count();
+         $shifts = ShiftSchedule::where('end_time', '<', Carbon::now())->get()->count();
+         $recipes = Recipe::count();
+         $sales = Order::where('type','!=','supplier_order')->where('status','paid')->count();
+
+        $cards =[
+           /* [
+                'title' => 'Sales Report',
+                'description' => 'View sales reports and analytics',
+                'icon' => 'bi-graph-up',
+                'route' => route('report.inventory_manufacturer'),
+                'count' => $sales, // Placeholder, can be replaced with actual count if needed
+                'count_label' => 'Sales made', // Placeholder, can be replaced with actual label if needed
+            
+            ],*/
+            [
+                'title' => 'Chats',
+                'description' => 'Communicate with other users',
+                'icon' => 'bi-chat-left-text',
+                'route' => route('chat.page'),
+                'count' => $messages,
+                'count_label' => 'Unread Messages'
+            ],
+            [
+                'title'=>'Worker Shift Management',
+                'description'=>'Manage worker shifts and schedules',
+                'icon'=>'bi-clipboard-check',
+                'route'=>route('manufacturer.work-distribution.shift-list'),
+                'count' =>$shifts,
+                'count_label' =>'Pending Tasks', 
+                'secondaryCount' => null,     // Default to null
+                'secondaryCountLabel' => null
+            ],
+            [
+                 'title' => 'Brew Liqour',
+                'description' => 'Manage product manufacturing processes',
+                'icon' => 'bi-gear',
+                'route' => route('manufacturer.production.index'), 
+                'count' => $recipes,
+                'count_label' => 'Products to make',
+            ]
+            
+        ];
+        
+        
+        return view('manufacturer.dashboard',['cards' => $cards]); }
     private function financeDashboard() { 
          
         $itemsAvailable = Product::whereHas('stockLevels', fn($q) => $q->where('quantity', '>', 0))->count();
-
+        $tasks=Task::where('status','pending')->count();
+        $messages = Message::where('receiver_id', Auth::id())->where('is_read',false)->count();
+        
+        
         $cards = [
             [
               'title' => 'Stock Levels',
@@ -171,6 +253,53 @@ class DashboardController extends Controller
                 'route' => route('finance.items.index'), // Assuming a shared stock levels route
                 'count' => $itemsAvailable,
                 'count_label' => 'Items Available',  
+            ],
+            [
+            'title' => 'Supplier Orders',
+            'description' => 'Track financial status of all purchase orders.',
+            'icon' => 'bi-receipt',
+            'route' => route('finance.orders.supplier_report'),
+            'count' => \App\Models\Order::where('type', 'supplier_order')->count(),
+            'count_label' => 'Total Orders',
+            ],
+            [
+                'title'=>'Task Master',
+                'description'=>'Monitor tasks and assign tasks',
+                'icon'=>'bi-clipboard-check',
+                'route'=>route('officer.work-distribution.task-list'),
+                'count' =>$tasks,
+                'count_label' =>'Pending Tasks', 
+                'secondaryCount' => null,     // Default to null
+                'secondaryCountLabel' => null
+            ],
+            [
+                'title' => 'Chats',
+                'description' => 'Communicate with other users',
+                'icon' => 'bi-chat-left-text',
+                'route' => route('chat.page'),
+                'count' => $messages,
+                'count_label' => 'Unread Messages'
+
+            ],
+            [
+                'title' => 'Financial Reports',
+                'description' => 'View financial reports and analytics',
+                'icon' => 'bi-graph-up',
+                'route' => route('reports.index'), // Assuming a route for financial reports
+                'count' => null, // Placeholder, can be replaced with actual count if needed
+                'count_label' => null, // Placeholder, can be replaced with actual label if needed
+                'secondaryCount' => null,     // Default to null
+                'secondaryCountLabel' => null
+            ],
+            [
+                'title' => 'Forecast Analysis',
+                'description' => 'Analysis of stock trends and forecasts',
+                'icon' => 'bi-graph-up',
+                'route'=> route('analytics.forecast'),
+                'count' =>null,
+                'count_label' => null,         // Default to null
+                'secondaryCount' => null,     // Default to null
+                'secondaryCountLabel' => null
             ]
         ];
         return view('finance.dashboard', ['cards'=>$cards]); 

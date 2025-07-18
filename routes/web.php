@@ -15,6 +15,7 @@ use App\Http\Controllers\WorkDistribution\TaskController;
 use App\Http\Controllers\WorkDistribution\ShiftController;
 use App\Modules\Communications\Http\Controllers\MessageController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\Auth\VendorRegistrationController;
 use App\Modules\Inventory\Http\Controllers\LmStockLevelController;
 use App\Modules\Inventory\Http\Controllers\MaPurchaseOrderController;
 use App\Modules\Inventory\Http\Controllers\LmItemController;
@@ -35,6 +36,7 @@ use App\Http\Controllers\SetPasswordController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalesReportController;
+use App\Modules\Inventory\Http\Controllers\Finance\OrderReportController;
 //use App\Modules\Inventory\Http\Controllers\MaPurchaseOrderController;
 
 
@@ -73,6 +75,9 @@ Route::get('/', function () {
 
 Route::get('vendor-application', [VendorApplicationController::class, 'create'])->name('vendor.application.create');
 Route::post('vendor-application', [VendorApplicationController::class, 'store'])->name('vendor.application.store');
+
+Route::get('/register/vendor/{application}', [VendorRegistrationController::class, 'create'])->name('vendor.registration.create');
+Route::post('/register/vendor', [VendorRegistrationController::class, 'store'])->name('vendor.registration.store');
 
 require __DIR__.'/auth.php';
 
@@ -214,6 +219,7 @@ Route::middleware(['auth', 'role:Liquor Manager|Finance|Procurement Officer'])
     Route::middleware(['role:Finance'])->prefix('finance')->name('finance.')->group(function () {
         Route::get('/items', [FiItemController::class, 'index'])->name('items.index');
         Route::patch('/items/{product}', [FiItemController::class, 'updatePrice'])->name('items.update_price');
+        Route::get('/supplier-orders', [OrderReportController::class, 'supplierOrders'])->name('orders.supplier_report');
 
         Route::get('/tasks', [TaskController::class, 'index'])->name('work-distribution.task-list');
         Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
@@ -231,6 +237,11 @@ Route::middleware(['auth', 'role:Liquor Manager|Finance|Procurement Officer'])
         Route::get('/stock-levels', [MaStockLevelController::class, 'index'])->name('stock_levels.index');
         Route::get('/production', [ProductionController::class, 'index'])->name('production.index');
         Route::post('/production', [ProductionController::class, 'store'])->name('production.store');
+
+        Route::get('/tasks', [ShiftController::class, 'index'])->name('work-distribution.shift-list');
+        Route::get('/tasks/create', [ShiftController::class, 'create'])->name('shift.create');
+        Route::post('/tasks', [ShiftController::class, 'store'])->name('shift.store');
+        Route::get('/reports/sales/weekly', [SalesReportController::class, 'weeklyReport'])->name('reports.sales.weekly');
     });
 
 
