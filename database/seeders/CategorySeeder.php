@@ -19,6 +19,7 @@ class CategorySeeder extends Seeder
         Category::firstOrCreate(['name' => 'Wine'], ['description' => 'Fermented grape beverages.']);
         Category::firstOrCreate(['name' => 'Packaging'], ['description' => 'Materials used for bottling and packaging, such as bottles, caps, and labels.']);
         Category::firstOrCreate(['name' => 'Ingredients'], ['description' => 'Raw materials used in the production process.']);
+         Category::firstOrCreate(['name' => 'Additives & Chemicals'],['description' => 'Raw materials used in the production process.']);
 
         $this->command->info('Categories seeded successfully!');
 

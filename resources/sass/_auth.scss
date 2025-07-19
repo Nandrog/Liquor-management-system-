@@ -89,6 +89,32 @@
     }
 }
 
+.auth-cards {
+    width: 100%;
+    max-width: 700px;
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    margin: auto;
+    margin-top: 130px;
+
+
+    &.auth-card-green {
+        background-color: #C8E6C9; // Light green from design
+        margin:auto;
+        margin-top: 130px;
+        
+    }
+    &.auth-card-green-border {
+        border: 2px solid #4CAF50;
+        background-color: white;
+    }
+    &.auth-card-yellow-border {
+        border: 2px solid #FFC107;
+        background-color: white;
+    }
+}
+
 .auth-title {
     font-size: 2rem;
     font-weight: 700;

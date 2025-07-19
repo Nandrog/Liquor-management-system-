@@ -1,8 +1,43 @@
 <x-guest-layout>
+    @php
+        
+        $currentRole = request()->get('role', 'vendor');
+        // This match expression is a clean way to map roles to theme classes.
+        $themeClass = match ($currentRole) {
+            'finance' => 'theme-finance',
+            'supplier' => 'theme-supplier',
+            'manufacturer' => 'theme-manufacturer',
+            'customer' => 'theme-customer',
+            'liquor manager' => 'theme-manager',
+            'procurement officer' => 'theme-officer',
+            'vendor' => 'theme-vendor',
+            default => 'theme-default',
+
+            
+        };
+
+        $imageName = match ($currentRole) {
+            'supplier' => 'supplier.jpg',
+            'manufacturer' => 'manufacturer.jpg',
+            'finance' => 'finance.jpg',
+            'customer' => 'customer.jpg',
+            'liquor manager' => 'manager.jpg',
+            'procurement officer' => 'officer.jpg',
+            'vendor' => 'vendor.jpg',
+
+            // Add other roles...
+            default => 'default.jpg',
+        };
+        $imageUrl = asset('images/auth/' . $imageName);
+    @endphp
     {{-- This assumes you have a theme class for vendors or a generic guest layout --}}
     <div class="d-flex auth-container">
         {{-- You can add a dynamic image here if you wish --}}
-        <div class="auth-image-panel"></div>
+        <div class="auth-image-panel">
+            <img src="{{ $imageUrl }}"
+                alt="A decorative image representing the {{ $currentRole }} role."
+                class="auth-image">
+        </div>
 
         <div class="auth-form-panel">
             <div class="auth-card theme-vendor">

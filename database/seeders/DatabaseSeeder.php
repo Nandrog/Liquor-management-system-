@@ -30,7 +30,9 @@ class DatabaseSeeder extends Seeder
             WarehouseSeeder::class,
             EmployeeSeeder::class,
             FactorySeeder::class,
-            UserSeeder::class, // Creates admin, supplier, manager etc.
+            UserSeeder::class, 
+            SupplierSeeder::class,
+            CustomerSeeder::class,
             CategorySeeder::class,
             VendorSeeder::class,
             ProductSeeder::class,

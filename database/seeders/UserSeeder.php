@@ -2,148 +2,97 @@
 
 namespace Database\Seeders;
 
-use App\Models\Factory;
 use App\Models\User;
-use App\Models\vendor;
-use App\Models\Customer;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Models\Role;
-use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
 {
+    /**
+     * Seed the application's users table.
+     */
     public function run(): void
     {
         DB::transaction(function () {
-            // --- Admin User ---
-            $adminUser = User::firstOrCreate(
-                ['username' => 'admin'],
-                [
-                    'firstname' => 'Admin',
-                    'lastname' => 'User',
-                    'email' => 'admin@lms.com',
-                    'employee_id' => 'EMP001',
-                    'password' => Hash::make('your-secure-password'),
-                    'email_verified_at' => now(),
-                    'remember_token' => Str::random(10),
-                ]
-            );
-            $adminUser->assignRole(Role::findByName('Admin'));
+            
+            // --- 1. SEED SINGLE USERS FOR EACH APPLICATION ROLE ---
+            $this->createUser('Admin', 'Admin', 'User', 'admin', 'admin@lms.com', 'EMP001');
+            $this->createUser('Liquor Manager', 'Sarah', 'Manager', 'sarahmanager', 'manager@lms.com', 'EMP002');
+            $this->createUser('Procurement Officer', 'Peter', 'Procure', 'peterprocure', 'procurement@lms.com', 'EMP003');
+            $this->createUser('Finance', 'Frank', 'Finance', 'frankfinance', 'finance@lms.com', 'EMP004');
+            $this->createUser('Manufacturer', 'John', 'Maker', 'johnmaker', 'manufacturer@lms.com', 'EMP101');
+            $this->createUser('Vendor', 'Capital', 'Vendor', 'capitalvendor', 'vendor@example.com');
+            
+            // --- 2. SEED MULTIPLE SUPPLIER USERS ---
+            $this->createUser('Supplier', 'Amos', 'Tindyebwa', 'amossupplier', 'supplier1@example.com');
+            $this->createUser('Supplier', 'Maria', 'Nankya', 'mariasupplier', 'supplier2@example.com');
+            $this->createUser('Supplier', 'David', 'Okello', 'davidsupplier', 'supplier3@example.com');
+            $this->createUser('Supplier', 'Esther', 'Mbabazi', 'esthersupplier', 'supplier4@example.com');
+            $this->createUser('Supplier', 'Peter', 'Muwanga', 'petersupplier', 'supplier5@example.com');
+            $this->createUser('Supplier', 'Sarah', 'Achen', 'sarahsupplier', 'supplier6@example.com');
+            $this->createUser('Supplier','Chemco','Uganda', 'chemcosupplier',  'supplier7@example.com'); 
+            $this->createUser( 'Supplier', 'Botanicals',  'Inc',  'botanicalssupplier', 'supplier8@example.com');
+    
+            // --- 3. SEED MULTIPLE CUSTOMER USERS ---
+            $customers = [
+                ['firstname' => 'Jane', 'lastname' => 'Doe', 'username' => 'janedoe', 'email' => 'customer1@example.com'],
+                ['firstname' => 'John', 'lastname' => 'Muwesi', 'username' => 'johnmuwesi', 'email' => 'customer2@example.com'],
+                ['firstname' => 'Brenda', 'lastname' => 'Nakato', 'username' => 'brendanakato', 'email' => 'customer3@example.com'],
+                ['firstname' => 'David', 'lastname' => 'Okello', 'username' => 'davidokello', 'email' => 'customer4@example.com'],
+            ];
 
-            // --- Supplier Users ---
-            $supplierUser = User::firstOrCreate(
-                ['username' => 'amossupplier'],
-                [
-                    'firstname' => 'Amos',
-                    'lastname' => 'Tindyebwa',
-                    'email' => 'supplier1@example.com',
-                    'password' => Hash::make('your-secure-password'),
-                    'email_verified_at' => now(),
-                    'remember_token' => Str::random(10),
-                ]
-            );
-            $supplierUser->assignRole(Role::findByName('Supplier'));
-
-            $supplierUser2 = User::firstOrCreate(
-                ['username' => 'mariasupplier'],
-                [
-                    'firstname' => 'Maria',
-                    'lastname' => 'Nankya',
-                    'email' => 'supplier2@example.com',
-                    'password' => Hash::make('your-secure-password'),
-                    'email_verified_at' => now(),
-                    'remember_token' => Str::random(10),
-                ]
-            );
-            $supplierUser2->assignRole(Role::findByName('Supplier'));
-
-            // --- Vendor User ---
-            $vendorUser = User::firstOrCreate(
-                ['username' => 'amosvendor'],
-                [
-                    'firstname' => 'Amos',
-                    'lastname' => 'Tindbwa',
-                    'email' => 'vendor@example.com',
-                    'password' => Hash::make('your-secure-password'),
-                    'email_verified_at' => now(),
-                    'remember_token' => Str::random(10),
-                ]
-            );
-            if ($vendorUser->wasRecentlyCreated) {
-                vendor::firstOrCreate(
-                    [
-                        'name' => 'amos',
-                        'contact' => '256700987654',
-                    ]
-                );
-            }
-            $vendorUser->assignRole(Role::findByName('Vendor'));
-
-            // --- Customer User ---
-            $customerUser = User::firstOrCreate(
-                ['username' => 'janedoe'],
-                [
-                    'firstname' => 'Jane',
-                    'lastname' => 'Doe',
-                    'email' => 'customer@example.com',
-                    'password' => Hash::make('your-secure-password'),
-                    'email_verified_at' => now(),
-                    'remember_token' => Str::random(10),
-                ]
-            );
-            $customerUser->assignRole(Role::findByName('Customer'));
-
-            // Create the customer's profile only if new user
-            if ($customerUser->wasRecentlyCreated) {
-                Customer::firstOrCreate(
-                    ['user_id' => $customerUser->id],
-                    [
-                        'city' => 'Kampala',
-                        'state' => 'central',
-                        'phone_number' => '256700987654',
-                        'location' => 'Kampala Bar & Grill',
-                    ]
+            foreach ($customers as $customerData) {
+                $this->createUser(
+                    'Customer',
+                    $customerData['firstname'],
+                    $customerData['lastname'],
+                    $customerData['username'],
+                    $customerData['email']
+                    // employeeId is correctly omitted here
                 );
             }
 
-            // --- Liquor Manager User ---
-            $managerUser = User::firstOrCreate(
-                ['username' => 'sarahmanager'],
-                [
-                    'firstname' => 'Sarah',
-                    'lastname' => 'Manager',
-                    'email' => 'manager@lms.com',
-                    'employee_id' => 'EMP002',
-                    'password' => Hash::make('your-secure-password'),
-                    'email_verified_at' => now(),
-                    'remember_token' => Str::random(10),
-                ]
-            );
-            $managerUser->assignRole(Role::findByName('Liquor Manager'));
+            // --- 4. ASSIGN MANUFACTURERS TO FACTORIES ---
+            $this->assignManufacturersToFactories();
 
-            // --- Manufacturer User ---
-            $factory = Factory::first();
-
-            if ($factory) {
-                $manufacturerUser = User::firstOrCreate(
-                    ['username' => 'johnmaker'],
-                    [
-                        'firstname' => 'John',
-                        'lastname' => 'Maker',
-                        'email' => 'manufacturer@lms.com',
-                        'employee_id' => 'EMP101',
-                        'factory_id' => $factory->id,
-                        'password' => Hash::make('your-secure-password'),
-                        'email_verified_at' => now(),
-                        'remember_token' => Str::random(10),
-                    ]
-                );
-                $manufacturerUser->assignRole(Role::findByName('Manufacturer'));
-            } else {
-                $this->command->warn('No factories found. Skipping Manufacturer user seeding.');
-            }
         });
+
+        $this->command->info('All required users, including multiple suppliers and customers, seeded successfully!');
+    }
+
+    /**
+     * A simple helper function to create a user and assign a role.
+     */
+    private function createUser(string $role, string $firstname, string $lastname, string $username, string $email, ?string $employeeId = null): void
+    {
+        $user = User::firstOrCreate(
+            ['email' => $email],
+            [
+                'firstname' => $firstname,
+                'lastname' => $lastname,
+                'username' => $username,
+                'email' => $email,
+                'password' => Hash::make('password'),
+                'employee_id' => $employeeId,
+                'email_verified_at' => now(),
+            ]
+        );
+
+        $user->assignRole($role);
+    }
+
+    /**
+     * Assign each manufacturer user to a random factory.
+     */
+    private function assignManufacturersToFactories(): void
+    {
+        $factories = \App\Models\Factory::pluck('id')->toArray();
+        $manufacturers = \App\Models\User::role('Manufacturer')->get();
+
+        foreach ($manufacturers as $manufacturer) {
+            $manufacturer->factory_id = $factories[array_rand($factories)];
+            $manufacturer->save();
+        }
     }
 }

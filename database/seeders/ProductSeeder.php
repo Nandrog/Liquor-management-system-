@@ -13,280 +13,118 @@ class ProductSeeder extends Seeder
 {
     public function run(): void
     {
+        // --- 1. GATHER DEPENDENCIES EFFICIENTLY ---
+        $categories = Category::pluck('id', 'name');
+        $vendors = Vendor::pluck('id', 'name');
+        $suppliers = User::role('Supplier')->pluck('id', 'username');
 
-        // Fetch all categories from the database to create a name => id lookup map.
-        // This is much more efficient than querying inside the loop.
-        $categories = Category::pluck('id', 'name')->all();
+        if ($categories->isEmpty() || $vendors->isEmpty() || $suppliers->isEmpty()) {
+            $this->command->error('Please seed Categories, Vendors, and Supplier Users before running the ProductSeeder.');
+            return;
+        }
+        $vendorNames = $vendors->keys()->toArray();
 
-        // The product data provided by you.
+        // --- 2. DEFINE ALL PRODUCTS IN A SINGLE, UNIFIED ARRAY ---
         $products = [
-            ['image' => "whiskey-bourbon.jpg", 'name' => "Oak Barrel Reserve Bourbon", 'price' => 95500, 'category' => "Whiskey"],
-            ['image' => "whiskey-single-malt.jpg", 'name' => "OBAN Single Malt Scotch Whisky", 'price' => 362000, 'category' => "Whiskey"],
-            ['image' => "Hinch-Peated-Single-Malt.jpg", 'name' => "Hinch's Peated Single Malt", 'price' => 762000, 'category' => "Whiskey"],
-            ['image' => "whiskey-single-malt.jpg", 'name' => "Smoky Peat Single Malt", 'price' => 162000, 'category' => "Whiskey"],
-            ['image' => "Hennessy.jpg", 'name' => "Hennessy VS Cognac", 'price' => 592000, 'category' => "Whiskey"],
-            ['image' => "uganda-waragi.jpg", 'name' => "Uganda Waragi premium", 'price' => 72000, 'category' => "Whiskey"],
-            ['image' => "Captain-morgan.jpg", 'name' => "Captain morgan premium", 'price' => 70000, 'category' => "Whiskey"],
-            ['image' => "uganda-waragi.jpg", 'name' => "Uganda Waragi lemon and ginger", 'price' => 82000, 'category' => "Whiskey"],
-            ['image' => "Jameson.jpg", 'name' => "Jameson Irish Whiskey", 'price' => 82000, 'category' => "Whiskey"],
-            ['image' => "black-label.jpg", 'name' => "Black Label Scotch Whisky", 'price' => 582000, 'category' => "Whiskey"],
-            ['image' => "red-label.jpg", 'name' => "Red Label Scotch Whisky", 'price' => 482000, 'category' => "Whiskey"],
-            ['image' => "grants.jpg", 'name' => "Grant's Family Reserve", 'price' => 92000, 'category' => "Whiskey"],
-            ['image' => "vodka-crystal.jpg", 'name' => "Arctic Crystal Vodka", 'price' => 78900, 'category' => "Vodka"],
-            ['image' => "grants.jpg", 'name' => "Grant's Family Reserve", 'price' => 92000, 'category' => "Whiskey"],
-            ['image' => "vodka-crystal.jpg", 'name' => "Arctic Crystal Vodka", 'price' => 78900, 'category' => "Vodka"],
-            ['image' => "gin-botanical.jpg", 'name' => "Botanical Garden Gin", 'price' => 84500, 'category' => "Gin"],
-            ['image' => "blue-label.jpg", 'name' => "blue label", 'price' => 78900, 'category' => "Vodka"],
-            ['image' => "bailey.jpg", 'name' => "Bailey", 'price' => 94500, 'category' => "Gin"],
-            ['image' => "Malibu.jpg", 'name' => "Malibu", 'price' => 79900, 'category' => "Vodka"],
-            ['image' => "bombay-sapphire.jpg", 'name' => "Bombay Sapphire", 'price' => 84700, 'category' => "Gin"],
-            ['image' => "bell-beer.jpg", 'name' => "Bell IPA 6-Pack", 'price' => 38900, 'category' => "Beer"],
-            ['image' => "tusker.jpg", 'name' => "Tusker 4-Pack", 'price' => 35500, 'category' => "Cider"],
-            ['image' => "nile.jpg", 'name' => "Nile special IPA 6-Pack", 'price' => 38900, 'category' => "Beer"],
-            ['image' => "smirnoff-4.jpg", 'name' => "Smirnoff 4-Pack", 'price' => 35500, 'category' => "Cider"],
-            ['image' => "smirnoff.jpg", 'name' => "Smirnoff 6-Pack", 'price' => 35500, 'category' => "Cider"],
-            ['image' => "club.jpg", 'name' => "Club Beer IPA 6-Pack", 'price' => 38900, 'category' => "Beer"],
-];
+            // --- Finished Goods (Merged List) ---
+            ['image' => "whiskey-bourbon.jpg",'name' => "Oak Barrel Reserve Bourbon", 'price' => 95500, 'category' => "Whiskey", 'type' => 'finished_good'],
+            ['image' => "whiskey-single-malt.jpg",'name' => "OBAN Single Malt Scotch Whisky", 'price' => 362000, 'category' => "Whiskey", 'type' => 'finished_good'],
+            ['image' => "Hennessy.jpg",'name' => "Hennessy VS Cognac", 'price' => 592000, 'category' => "Spirits", 'type' => 'finished_good'],
+            ['image' => "Jameson.jpg",'name' => "Jameson Irish Whiskey", 'price' => 82000, 'category' => "Whiskey", 'type' => 'finished_good'],
+            ['image' => "black-label.jpg",'name' => "Black Label Scotch Whisky", 'price' => 582000, 'category' => "Whiskey", 'type' => 'finished_good'],
+            ['image' => "vodka-crystal.jpg",'name' => "Arctic Crystal Vodka", 'price' => 78900, 'category' => "Vodka", 'type' => 'finished_good'],
+            ['image' => "gin-botanical.jpg", 'name' => "Botanical Garden Gin", 'price' => 84500, 'category' => "Gin", 'type' => 'finished_good'],
+            ['image' => "bell-beer.jpg",'name' => "Bell IPA 6-Pack", 'price' => 38900, 'category' => "Beer", 'type' => 'finished_good'],
+            ['image' => "tusker.jpg",'name' => "Tusker Lager 4-Pack", 'price' => 35500, 'category' => "Beer", 'type' => 'finished_good'],
+            ['image' => "Hinch-Peated-Single-Malt.jpg",'name' => "Hinch's Peated Single Malt", 'price' => 762000, 'category' => "Whiskey", 'type' => 'finished_good'],
+            ['image' => "whiskey-single-malt.jpg", 'name' => "Smoky Peat Single Malt", 'price' => 162000, 'category' => "Whiskey", 'type' => 'finished_good'],
+            ['image' => "uganda-waragi.jpg",'name' => "Uganda Waragi premium", 'price' => 72000, 'category' => "Spirits", 'type' => 'finished_good'],
+            ['image' => "Captain-morgan.jpg",'name' => "Captain morgan premium", 'price' => 70000, 'category' => "Spirits", 'type' => 'finished_good'],
+            ['image' => "uganda-waragi.jpg",'name' => "Uganda Waragi lemon and ginger", 'price' => 82000, 'category' => "Spirits", 'type' => 'finished_good'],
+            ['image' => "red-label.jpg",'name' => "Red Label Scotch Whisky", 'price' => 482000, 'category' => "Whiskey", 'type' => 'finished_good'],
+            ['image' => "grants.jpg", 'name' => "Grant's Family Reserve", 'price' => 92000, 'category' => "Whiskey", 'type' => 'finished_good'],
+            ['image' => "blue-label.jpg", 'name' => "blue label", 'price' => 78900, 'category' => "Vodka", 'type' => 'finished_good'],
+            ['image' => "bailey.jpg", 'name' => "Bailey", 'price' => 94500, 'category' => "Spirits", 'type' => 'finished_good'],
+            ['image' => "Malibu.jpg",'name' => "Malibu", 'price' => 79900, 'category' => "Spirits", 'type' => 'finished_good'],
+            ['image' => "bombay-sapphire.jpg",'name' => "Bombay Sapphire", 'price' => 84700, 'category' => "Gin", 'type' => 'finished_good'],
+            ['image' => "nile.jpg",'name' => "Nile special IPA 6-Pack", 'price' => 38900, 'category' => "Beer", 'type' => 'finished_good'],
+            ['image' => "smirnoff-4.jpg",'name' => "Smirnoff 4-Pack", 'price' => 35500, 'category' => "Cider", 'type' => 'finished_good'],
+            ['image' => "smirnoff.jpg", 'name' => "Smirnoff 6-Pack", 'price' => 35500, 'category' => "Cider", 'type' => 'finished_good'],
+            ['image' => "club.jpg",'name' => "Club Beer IPA 6-Pack", 'price' => 38900, 'category' => "Beer", 'type' => 'finished_good'],
 
+            // --- Raw Materials ---
+            ['name' => 'Molasses', 'price' => 2000, 'category' => 'Ingredients', 'supplier' => 'amossupplier', 'type' => 'raw_material'],
+            ['name' => 'Bananas', 'price' => 1000, 'category' => 'Ingredients', 'supplier' => 'amossupplier', 'type' => 'raw_material'],
+            ['name' => 'Sugar', 'price' => 3500, 'category' => 'Ingredients', 'supplier' => 'amossupplier', 'type' => 'raw_material'],
+            ['name' => 'High-Fructose Corn Syrup', 'price' => 4000, 'category' => 'Ingredients', 'supplier' => 'amossupplier', 'type' => 'raw_material'],
+            ['name' => 'Cassava', 'price' => 2000, 'category' => 'Ingredients', 'supplier' => 'amossupplier', 'type' => 'raw_material'],
 
-        foreach ($products as $index => $productData) {
+            ['name' => 'Juniper Berries', 'price' => 15000, 'category' => 'Ingredients', 'supplier' => 'botanicalssupplier', 'type' => 'raw_material'],
+            ['name' => 'Coriander', 'price' => 8000, 'category' => 'Ingredients', 'supplier' => 'botanicalssupplier', 'type' => 'raw_material'],
+            ['name' => 'Angelica Root', 'price' => 18000, 'category' => 'Ingredients', 'supplier' => 'botanicalssupplier', 'type' => 'raw_material'],
+            ['name' => 'Lemon Peel', 'price' => 4000, 'category' => 'Ingredients', 'supplier' => 'botanicalssupplier', 'type' => 'raw_material'],
+            ['name' => 'Orris Root', 'price' => 22000, 'category' => 'Ingredients', 'supplier' => 'botanicalssupplier', 'type' => 'raw_material'],
+            ['name' => 'Grains of Paradise', 'price' => 30000, 'category' => 'Ingredients', 'supplier' => 'botanicalssupplier', 'type' => 'raw_material'],
+            ['name' => 'Cubeb Berries', 'price' => 28000, 'category' => 'Ingredients', 'supplier' => 'botanicalssupplier', 'type' => 'raw_material'],
+            ['name' => 'Cassia Bark', 'price' => 12000, 'category' => 'Ingredients', 'supplier' => 'botanicalssupplier', 'type' => 'raw_material'],
+            ['name' => 'Almonds', 'price' => 9000, 'category' => 'Ingredients', 'supplier' => 'botanicalssupplier', 'type' => 'raw_material'],
+            ['name' => 'Licorice', 'price' => 11000, 'category' => 'Ingredients', 'supplier' => 'botanicalssupplier', 'type' => 'raw_material'],
+            ['name' => 'Hops', 'price' => 25000, 'category' => 'Ingredients', 'supplier' => 'botanicalssupplier', 'type' => 'raw_material'],
 
-            // Find the category ID from our lookup map.
-            $categoryId = $categories[$productData['category']] ?? null;
+            ['name' => 'Peat', 'price' => 5000, 'category' => 'Ingredients', 'supplier' => 'mariasupplier', 'type' => 'raw_material'],
+            ['name' => 'Charcoal', 'price' => 2500, 'category' => 'Ingredients', 'supplier' => 'davidsupplier', 'type' => 'raw_material'],
 
-            // Skip this product if its category doesn't exist.
-            if (!$categoryId) {
-                $this->command->error("Category '{$productData['category']}' not found for product '{$productData['name']}'. Skipping.");
-                continue;
-            }
-
-            // Intelligently guess the unit of measure.
-            $unit = Str::contains($productData['name'], ['Pack', '6-Pack', '4-Pack']) ? 'Pack' : 'Bottle';
-
-            $isFeatured = ($index >= 1);
-
-            // Create the product using only the columns that exist in your table.
-            Product::create([
-                'name'              => $productData['name'],
-                'sku'               => Str::slug($productData['name']) . '-' . Str::lower(Str::random(4)),
-                'description'       => 'A fine ' . $productData['name'] . '.',
-                'unit_price'        => $productData['price'],
-                'unit_of_measure'   => $unit,
-                'stock'             => rand(25, 200), // Assign some random stock
-                'reorder_level'     => 10,
-                'type'              => 'finished_good',
-                'category_id'       => $categoryId,
-                'is_featured'       => $isFeatured,
-                'image_filename'    => $productData['image'],
-                // 'user_id' and 'vendor_id' are nullable, so we can leave them empty for now.
-            ]);
-        }
-
-        $this->command->info('Products have been seeded successfully!');
-
-        $supplier1 = User::where('email', 'supplier1@example.com')->first();
-        $supplier2 = User::where('email', 'supplier2@example.com')->first();
-        $vendor = Vendor::first();
-        $category = Category::first();
-        if (!$vendor) {
-            $this->command->error('No vendor found. Please seed vendors first.');
-            return;
-        }
-
-        if (!$category) {
-            $this->command->error('No category found. Please seed categories first.');
-            return;
-        }
-
-        // --- Finished Goods ---
-        $finishedGoods = [
-            [
-                'sku' => 'FG-UWG-750',
-                'name' => 'Uganda Waragi 750ml',
-                'type' => 'finished_good',
-                'unit_price' => 25000,
-                'unit_of_measure' => 'bottle',
-                'vendor_id' => $vendor->id,
-            ],
-            [
-                'sku' => 'FG-BELL-500',
-                'name' => 'Bell Lager 500ml',
-                'type' => 'finished_good',
-                'unit_price' => 3500,
-                'unit_of_measure' => 'bottle',
-                'vendor_id' => $vendor->id,
-            ],
-            [
-                 'sku' => 'FG-TUSK-500',
-                 'name' => 'Tusker Lager 500ml',
-                 'type' => 'finished_good',
-                 'unit_price' => 3300,
-                 'unit_of_measure' => 'bottle',
-                 'vendor_id' => $vendor->id,
-            ],
-[
-    'sku' => 'FG-MALT-330',
-    'name' => 'Malta Guinness 330ml',
-    'type' => 'finished_good',
-    'unit_price' => 2800,
-    'unit_of_measure' => 'can',
-    'vendor_id' => $vendor->id,
-],
-            [
-    'sku' => 'FG-GIN-250',
-    'name' => 'Craft Gin 250ml',
-    'type' => 'finished_good',
-    'unit_price' => 12000,
-    'unit_of_measure' => 'bottle',
-    'vendor_id' => $vendor->id,
-],
-[
-    'sku' => 'FG-GIN-750',
-    'name' => 'Craft Gin 750ml',
-    'type' => 'finished_good',
-    'unit_price' => 27000,
-    'unit_of_measure' => 'bottle',
-    'vendor_id' => $vendor->id,
-],
-[
-    'sku' => 'FG-RUM-500',
-    'name' => 'Dark Rum 500ml',
-    'type' => 'finished_good',
-    'unit_price' => 18000,
-    'unit_of_measure' => 'bottle',
-    'vendor_id' => $vendor->id,
-],
-[
-    'sku' => 'FG-VODKA-375',
-    'name' => 'Triple Distilled Vodka 375ml',
-    'type' => 'finished_good',
-    'unit_price' => 15000,
-    'unit_of_measure' => 'bottle',
-    'vendor_id' => $vendor->id,
-],
-[
-    'sku' => 'FG-WHISKY-750',
-    'name' => 'Blended Whisky 750ml',
-    'type' => 'finished_good',
-    'unit_price' => 35000,
-    'unit_of_measure' => 'bottle',
-    'vendor_id' => $vendor->id,
-],
-[
-    'sku' => 'FG-BRNDY-500',
-    'name' => 'Fruit Brandy 500ml',
-    'type' => 'finished_good',
-    'unit_price' => 22000,
-    'unit_of_measure' => 'bottle',
-    'vendor_id' => $vendor->id,
-],
-
+            ['name' => 'Glass Bottles 750ml', 'price' => 500, 'category' => 'Packaging', 'supplier' => 'petersupplier', 'type' => 'raw_material'],
+            ['name' => 'Glass Bottles 500ml', 'price' => 500, 'category' => 'Packaging', 'supplier' => 'petersupplier', 'type' => 'raw_material'],
+            ['name' => 'Bottle Caps', 'price' => 50, 'category' => 'Packaging', 'supplier' => 'petersupplier', 'type' => 'raw_material'],
+            ['name' => 'Paper Labels', 'price' => 20, 'category' => 'Packaging', 'supplier' => 'sarahsupplier', 'type' => 'raw_material'],
+            
+            ['name' => 'Spirit Caramel', 'price' => 15000, 'category' => 'Additives & Chemicals', 'supplier' => 'chemcosupplier', 'type' => 'raw_material'],
+            ['name' => 'Activated Carbon', 'price' => 10000, 'category' => 'Additives & Chemicals', 'supplier' => 'chemcosupplier', 'type' => 'raw_material'],
+            ['name' => 'Gypsum (Calcium Sulfate)', 'price' => 5000, 'category' => 'Additives & Chemicals', 'supplier' => 'chemcosupplier', 'type' => 'raw_material'],
+            ['name' => 'Calcium Chloride', 'price' => 6000, 'category' => 'Additives & Chemicals', 'supplier' => 'chemcosupplier', 'type' => 'raw_material'],
+            ['name' => 'Epsom Salt (Magnesium Sulfate)', 'price' => 5500, 'category' => 'Additives & Chemicals', 'supplier' => 'chemcosupplier', 'type' => 'raw_material'],
+            ['name' => 'Campden Tablets', 'price' => 200, 'category' => 'Additives & Chemicals', 'supplier' => 'chemcosupplier', 'type' => 'raw_material'],
+            ['name' => 'Irish Moss / Whirlfloc', 'price' => 300, 'category' => 'Additives & Chemicals', 'supplier' => 'chemcosupplier', 'type' => 'raw_material'],
+            ['name' => 'Citric Acid', 'price' => 7000, 'category' => 'Additives & Chemicals', 'supplier' => 'chemcosupplier', 'type' => 'raw_material'],
+            ['name' => 'Lactic Acid', 'price' => 8000, 'category' => 'Additives & Chemicals', 'supplier' => 'chemcosupplier', 'type' => 'raw_material'],
+            ['name' => 'Potassium Sorbate', 'price' => 9000, 'category' => 'Additives & Chemicals', 'supplier' => 'chemcosupplier', 'type' => 'raw_material'],
+            ['name' => 'Yeast', 'price' => 3000, 'category' => 'Additives & Chemicals', 'supplier' => 'chemcosupplier', 'type' => 'raw_material'],
+            
+            ['name' => 'Corn', 'price' => 2500, 'category' => 'Ingredients', 'supplier' => 'amossupplier', 'type' => 'raw_material'],
+            ['name' => 'Rye', 'price' => 2700, 'category' => 'Ingredients', 'supplier' => 'amossupplier', 'type' => 'raw_material'],
+            ['name' => 'Malted Barley', 'price' => 3200, 'category' => 'Ingredients', 'supplier' => 'amossupplier', 'type' => 'raw_material'],
+            ['name' => 'Unmalted Barley', 'price' => 3000, 'category' => 'Ingredients', 'supplier' => 'amossupplier', 'type' => 'raw_material'],
+            ['name' => 'Wheat', 'price' => 2200, 'category' => 'Ingredients', 'supplier' => 'amossupplier', 'type' => 'raw_material'],
         ];
 
-        foreach ($finishedGoods as $product) {
-            Product::firstOrCreate(
-                ['sku' => $product['sku']],
+        // --- 3. LOOP AND CREATE/UPDATE PRODUCTS IN THE DATABASE ---
+        foreach ($products as $productData) {
+            // Set defaults for finished goods if not specified
+            $type = $productData['type'] ?? 'raw_material';
+            $uom = $productData['uom'] ?? (Str::contains($productData['name'], ['Pack']) ? 'Pack' : 'Bottle');
+            
+            // Randomly assign a vendor to finished goods
+          $vendorName = $type === 'finished_good' ? $vendorNames[array_rand($vendorNames)] : null;
+
+            Product::updateOrCreate(
+                // Use a generated SKU as the unique identifier to prevent duplicates
+                ['sku' => Str::slug($productData['name'])],
                 [
-                    'name' => $product['name'],
-                    'type' => $product['type'],
-                    'unit_price' => $product['unit_price'],
-                    'unit_of_measure' => $product['unit_of_measure'],
-                    'category_id' => $category->id,
-                    'vendor_id' => $product['vendor_id'],
+                    'name'              => $productData['name'],
+                    'description'       => 'High quality ' . $productData['name'],
+                    'unit_price'        => $productData['price'],
+                    'unit_of_measure'   => $uom,
+                    'reorder_level'     => rand(10, 50),
+                    'type'              => $type,
+                    'category_id'       => $categories->get($productData['category']),
+                    'vendor_id'         => $vendors->get($vendorName),
+                    'user_id'           => $suppliers->get($productData['supplier'] ?? null),
+                    'image_filename' => $productData['image'] ?? null,
                 ]
             );
         }
 
-        // --- Raw Materials ---
-        $rawMaterials = [
-            ['sku' => 'RM-MOL-01', 'name' => 'Molasses', 'price' => 2000, 'uom' => 'kg', 'supplier_id' => $supplier1->id],
-            ['sku' => 'RM-BAN-01', 'name' => 'Bananas', 'price' => 1000, 'uom' => 'kg', 'supplier_id' => $supplier1->id],
-            ['sku' => 'RM-CIT-P-01', 'name' => 'Citrus Peels', 'price' => 800, 'uom' => 'kg', 'supplier_id' => $supplier1->id],
-            ['sku' => 'RM-JUN-B-01', 'name' => 'Juniper Berries', 'price' => 15000, 'uom' => 'kg', 'supplier_id' => $supplier1->id],
-            ['sku' => 'RM-CHR-01', 'name' => 'Charcoal', 'price' => 2500, 'uom' => 'kg', 'supplier_id' => $supplier2->id],
-            ['sku' => 'RM-CIT-A-01', 'name' => 'Citric Acid', 'price' => 6000, 'uom' => 'kg', 'supplier_id' => $supplier2->id],
-            ['sku' => 'RM-BOT-750', 'name' => 'Glass Bottles 750ml', 'price' => 500, 'uom' => 'unit', 'supplier_id' => $supplier2->id],
-            ['sku' => 'RM-CAP-01', 'name' => 'Bottle Caps', 'price' => 50, 'uom' => 'unit', 'supplier_id' => $supplier2->id],
-            ['sku' => 'RM-LBL-01', 'name' => 'Paper Labels', 'price' => 20, 'uom' => 'unit', 'supplier_id' => $supplier2->id],
-            [
-    'sku' => 'RM-MASH-01',
-    'name' => 'Fermentation Mash (Banana-Cassava Mix)',
-    'price' => 1500,
-    'uom' => 'kg',
-    'supplier_id' => $supplier1->id,
-],
-[
-    'sku' => 'RM-MALT-01',
-    'name' => 'Barley Malt',
-    'price' => 2500,
-    'uom' => 'kg',
-    'supplier_id' => $supplier1->id,
-],
-[
-    'sku' => 'RM-YEAST-01',
-    'name' => 'Distillers Yeast',
-    'price' => 18000,
-    'uom' => 'kg',
-    'supplier_id' => $supplier1->id,
-],
-[
-    'sku' => 'RM-SPR-ALC-01',
-    'name' => 'Neutral Spirit Alcohol',
-    'price' => 12000,
-    'uom' => 'litre',
-    'supplier_id' => $supplier2->id,
-],
-[
-    'sku' => 'RM-OAK-01',
-    'name' => 'Oak Chips (Aging)',
-    'price' => 5000,
-    'uom' => 'kg',
-    'supplier_id' => $supplier2->id,
-],
-[
-    'sku' => 'RM-GLS750',
-    'name' => 'Liquor Bottles 750ml',
-    'price' => 600,
-    'uom' => 'unit',
-    'supplier_id' => $supplier2->id,
-],
-[
-    'sku' => 'RM-CAPS-ALC',
-    'name' => 'Metallic Bottle Caps',
-    'price' => 100,
-    'uom' => 'unit',
-    'supplier_id' => $supplier2->id,
-],
-[
-    'sku' => 'RM-ESSNC-GIN',
-    'name' => 'Gin Botanical Essence',
-    'price' => 20000,
-    'uom' => 'litre',
-    'supplier_id' => $supplier2->id,
-],
-[
-    'sku' => 'RM-FLTR-01',
-    'name' => 'Carbon Filtration Media',
-    'price' => 15000,
-    'uom' => 'kg',
-    'supplier_id' => $supplier2->id,
-],
-
-        ];
-
-        foreach ($rawMaterials as $material) {
-            Product::firstOrCreate(
-                ['sku' => $material['sku']],
-                [
-                    'name' => $material['name'],
-                    'type' => 'raw_material',
-                    'unit_price' => $material['price'],
-                    'unit_of_measure' => $material['uom'],
-                    'category_id' => $category->id,
-                    // Uncomment this line only if products table has a `supplier_id` column
-                    // 'supplier_id' => $material['supplier_id'],
-                ]
-            );
-        }
+        $this->command->info('Products table seeded successfully with unified data!');
     }
 }
