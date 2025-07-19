@@ -12,9 +12,6 @@ use App\Models\WorkDistribution\Task;
 
 class ReportController extends Controller
 {
-    /**
-     * Generate a PDF report of the inventory for the current week.
-     */
     public function inventoryPdf()
     {
         $user = Auth::user();
@@ -70,9 +67,6 @@ class ReportController extends Controller
         return $pdf->download("weekly_inventory_report_{$role}.pdf");
     }
 
-    /**
-     * Reports index page.
-     */
     public function index()
     {
         $user = Auth::user();
@@ -86,16 +80,26 @@ class ReportController extends Controller
         $movements = StockMovement::with(['product', 'fromWarehouse', 'toWarehouse', 'employee'])->latest()->get();
         return view('reports.stock-movements', compact('movements'));
     }
-
     public function shiftSchedules()
-    {
-        $shifts = ShiftSchedule::with('employee')->latest()->get();
-        return view('reports.shift-schedules', compact('shifts'));
-    }
+{
+    $shifts = ShiftSchedule::with('employee')->latest()->get();
 
+    // Group by employee name and count shifts
+    $shiftCounts = ShiftSchedule::with('employee')
+        ->get()
+        ->groupBy(fn ($shift) => $shift->employee->name ?? 'N/A')
+        ->map(fn ($group) => $group->count());
+
+    return view('reports.shift-schedules', compact('shifts', 'shiftCounts'));
+}
     public function taskPerformance()
     {
         $tasks = Task::with('employee')->latest()->get();
-        return view('reports.task-performance', compact('tasks'));
+
+        $taskStatusCounts = Task::select('status', \DB::raw('count(*) as count'))
+                                ->groupBy('status')
+                                ->pluck('count', 'status');
+
+        return view('reports.task-performance', compact('tasks', 'taskStatusCounts'));
     }
 }

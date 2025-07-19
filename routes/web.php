@@ -172,6 +172,7 @@ Route::middleware(['auth', 'role:Liquor Manager|Finance|Procurement Officer'])
         Route::get('/stock-movements', [ReportController::class, 'stockMovements'])->name('stock_movements');
         Route::get('/shift-schedules', [ReportController::class, 'shiftSchedules'])->name('shift_schedules');
         Route::get('/task-performance', [ReportController::class, 'taskPerformance'])->name('task_performance');
+        Route::get('/reports/shift-schedules', [ReportController::class, 'shiftSchedules'])->name('reports.shift_schedules');
     });
 
 
@@ -272,7 +273,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports/vendor', [ReportController::class, 'vendorPdf'])->name('reports.vendor');
 Route::get('/reports/inventory', [ReportController::class, 'inventoryView'])->name('reports.inventory');
 Route::get('/reports/inventory/pdf', [ReportController::class, 'inventoryPdf'])->name('reports.inventory.pdf');
-
 
     // Charts or visual report data (optional)
     Route::get('/reports/sales/chart', [ReportController::class, 'salesChart'])->name('reports.sales.chart');
