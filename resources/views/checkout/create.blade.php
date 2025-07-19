@@ -16,17 +16,32 @@
                     <hr>
                     <div class="mb-3">
                         <label for="shipping_address" class="form-label">Address</label>
-                        <input class="auth-input" type="text" class="form-control" id="shipping_address" name="shipping_address" required>
+                        <input class="auth-input @error('shipping_address') is-invalid @enderror" type="text" class="form-control" id="shipping_address" name="shipping_address" required>
+                        @error('shipping_address')
+        <div class="invalid-feedback d-block">
+            {{ $message }}
+        </div>
+    @enderror
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="city" class="form-label">City</label>
-                            <input class="auth-input" type="text" class="form-control" id="city" name="city" required>
+                            <input class="auth-input  @error('city') is-invalid @enderror" type="text" class="form-control" id="city" name="city" required>
+                            @error('city')
+        <div class="invalid-feedback d-block">
+            {{ $message }}
+        </div>
+    @enderror
                         </div>
                     </div>
                     <div class="mb-3">
                         <label for="phone_number" class="form-label">Phone Number</label>
-                        <input class="auth-input" type="tel" class="form-control" id="phone_number" name="phone_number" required>
+                        <input class="auth-input  @error('phone_number') is-invalid @enderror" type="tel" class="form-control" id="phone_number" name="phone_number" required>
+                        @error('phone_number')
+        <div class="invalid-feedback d-block">
+            {{ $message }}
+        </div>
+    @enderror
                     </div>
                 </div>
 
