@@ -195,6 +195,7 @@ Route::middleware(['auth', 'role:Liquor Manager|Finance|Procurement Officer'])
     |--------------------------------------------------------------------------
     */
         // Example: Route::get('/inventory', [InventoryStockController::class, 'index'])->name('inventory.index');
+    
 
 
     // All routes for a Liquor Manager's specific actions.
@@ -511,6 +512,7 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::get('/notifications/mark-all-read', function () {
+        \Illuminate\Support\Facades\Auth::user()->unreadNotifications->markAsRead();
         if (Auth::check()) {
             Auth::user()->unreadNotifications->markAsRead();
         }
