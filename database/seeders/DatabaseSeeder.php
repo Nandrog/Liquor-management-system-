@@ -39,12 +39,9 @@ class DatabaseSeeder extends Seeder
             RecipeSeeder::class,
             StockLevelSeeder::class,
             StockMovementSeeder::class,
-<<<<<<< HEAD
             
-=======
 
             OrderSeeder::class,
->>>>>>> 2c4d09ff3509a6aae495f98def620ae30ca6d92a
 
             VendorProductSeeder::class,
         ]);
