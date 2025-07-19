@@ -74,12 +74,26 @@ class ReportController extends Controller
 
         return view('reports.index', compact('role'));
     }
-
     public function stockMovements()
-    {
-        $movements = StockMovement::with(['product', 'fromWarehouse', 'toWarehouse', 'employee'])->latest()->get();
-        return view('reports.stock-movements', compact('movements'));
+{
+    $movements = StockMovement::with(['product', 'fromWarehouse', 'toWarehouse', 'employee'])->latest()->get();
+
+    // Group by warehouse and count movements per day
+    $data = StockMovement::selectRaw('DATE(created_at) as date, from_warehouse_id, COUNT(*) as count')
+                ->groupBy('date', 'from_warehouse_id')
+                ->with('fromWarehouse')
+                ->get()
+                ->groupBy('from_warehouse_id');
+
+    // Prepare chart data
+    $chartData = [];
+    foreach ($data as $warehouseId => $group) {
+        $warehouseName = optional($group->first()->fromWarehouse)->name ?? 'Unknown';
+        $chartData[$warehouseName] = $group->pluck('count', 'date')->toArray();
     }
+
+    return view('reports.stock-movements', compact('movements', 'chartData'));
+}
     public function shiftSchedules()
 {
     $shifts = ShiftSchedule::with('employee')->latest()->get();
@@ -102,4 +116,17 @@ class ReportController extends Controller
 
         return view('reports.task-performance', compact('tasks', 'taskStatusCounts'));
     }
+    public function inventoryView()
+{
+    $products = Product::with('category')->get();
+
+    // Count products per category
+    $productCounts = $products->groupBy(fn ($p) => $p->category->name ?? 'Uncategorized')
+                              ->map(fn ($group) => $group->count());
+
+    return view('reports.inventory-chart', [
+        'products' => $products,
+        'productCounts' => $productCounts
+    ]);
+}
 }

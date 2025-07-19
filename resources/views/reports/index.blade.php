@@ -35,6 +35,10 @@
                 🚚 Stock Movement Report
             </a>
 
+            <a href="{{ route('reports.inventory_chart') }}" class="button" style="margin-left: 10px;" target="_blank">
+                📊 Inventory Category Chart
+            </a>
+
             <a href="{{ route('reports.inventory.pdf') }}" class="button" style="margin-left: 10px;" target="_blank">
                 📄 Download Weekly Inventory Report
             </a>
