@@ -27,7 +27,7 @@ class VendorApplicationController extends Controller
             'application_pdf' => ['required', 'file', 'mimes:pdf', 'max:2048'],
         ]);
 
-        // Store the uploaded PDF
+        // Store uploaded PDF
         $pdf = $request->file('application_pdf');
         $pdfPath = $pdf->store('pdfs', 'public');
 
@@ -37,20 +37,26 @@ class VendorApplicationController extends Controller
             'pdf_path' => $pdfPath,
         ]);
 
-        // Convert PDF to base64 and send to Java server
+        // Convert PDF to base64
         $pdfFullPath = Storage::disk('public')->path($pdfPath);
         $pdfBase64 = base64_encode(file_get_contents($pdfFullPath));
 
         $result = null;
+        $vendorValidationUrl = config('services.vendor_validation.url');
 
-        $response = Http::post(config('services.vendor_validation.url'), [
+        if (!$vendorValidationUrl) {
+            \Log::error('Missing vendor validation URL in config/services.php or .env');
+            abort(500, 'Vendor validation service URL not configured.');
+        }
+
+        $response = Http::post($vendorValidationUrl, [
             'vendor_name' => $request->vendor_name,
             'pdf_base64' => $pdfBase64,
         ]);
 
         if ($response->ok()) {
             $result = $response->json();
-            \Log::info('Java server response:', $result);
+            \Log::info('Java server response:', [$result]);
 
             $application->status = (string) ($result['status'] ?? 'pending');
             $application->visit_scheduled_for = $result['scheduled_visit'] ?? null;
@@ -74,13 +80,13 @@ class VendorApplicationController extends Controller
         // ✅ Validation passed
   // --- REPLACE WITH THIS BLOCK ---
         if (!empty($result) && in_array($result['status'], ['approved', 'passed'])) {
-    
+     
     // Redirect the user to the dedicated vendor registration form,
     // passing the approved application's ID in the URL.
     return redirect()->route('vendor.registration.create', ['application' => $application->id]);
 }
 
-        // ❌ Not approved: show result page
+        // ❌ Vendor not approved — show result
         return view('auth.vendor-application-result', [
             'application' => $application,
         ]);

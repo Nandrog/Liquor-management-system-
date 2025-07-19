@@ -172,6 +172,7 @@ Route::middleware(['auth', 'role:Liquor Manager|Finance|Procurement Officer'])
         Route::get('/stock-movements', [ReportController::class, 'stockMovements'])->name('stock_movements');
         Route::get('/shift-schedules', [ReportController::class, 'shiftSchedules'])->name('shift_schedules');
         Route::get('/task-performance', [ReportController::class, 'taskPerformance'])->name('task_performance');
+        Route::get('/reports/shift-schedules', [ReportController::class, 'shiftSchedules'])->name('reports.shift_schedules');
     });
 
 
@@ -195,6 +196,7 @@ Route::middleware(['auth', 'role:Liquor Manager|Finance|Procurement Officer'])
     |--------------------------------------------------------------------------
     */
         // Example: Route::get('/inventory', [InventoryStockController::class, 'index'])->name('inventory.index');
+    
 
 
     // All routes for a Liquor Manager's specific actions.
@@ -266,10 +268,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
     // Individual PDF report routes
-    Route::get('/reports/inventory', [ReportController::class, 'inventoryPdf'])->name('reports.inventory');
+    
     Route::get('/reports/sales', [ReportController::class, 'salesPdf'])->name('reports.sales');
     Route::get('/reports/vendor', [ReportController::class, 'vendorPdf'])->name('reports.vendor');
-
+Route::get('/reports/inventory', [ReportController::class, 'inventoryView'])->name('reports.inventory');
+Route::get('/reports/inventory/pdf', [ReportController::class, 'inventoryPdf'])->name('reports.inventory.pdf');
+Route::get('/reports/inventory/chart', [ReportController::class, 'inventoryView'])->name('reports.inventory_chart');
     // Charts or visual report data (optional)
     Route::get('/reports/sales/chart', [ReportController::class, 'salesChart'])->name('reports.sales.chart');
 });
@@ -511,6 +515,7 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::get('/notifications/mark-all-read', function () {
+        \Illuminate\Support\Facades\Auth::user()->unreadNotifications->markAsRead();
         if (Auth::check()) {
             Auth::user()->unreadNotifications->markAsRead();
         }

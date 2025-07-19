@@ -18,7 +18,7 @@ use Database\Seeders\ProductSeeder;
 use Database\Seeders\RecipeSeeder;
 use Database\Seeders\StockLevelSeeder;
 use Database\Seeders\StockMovementSeeder;
-use Database\Seeders\OrderSeeder;
+
 
 
 class DatabaseSeeder extends Seeder
@@ -39,8 +39,12 @@ class DatabaseSeeder extends Seeder
             RecipeSeeder::class,
             StockLevelSeeder::class,
             StockMovementSeeder::class,
-             
+<<<<<<< HEAD
+            
+=======
+
             OrderSeeder::class,
+>>>>>>> 2c4d09ff3509a6aae495f98def620ae30ca6d92a
 
             VendorProductSeeder::class,
         ]);
