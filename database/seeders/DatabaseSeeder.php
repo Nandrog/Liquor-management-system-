@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
             RecipeSeeder::class,
             StockLevelSeeder::class,
             StockMovementSeeder::class,
-             
+
             OrderSeeder::class,
 
             VendorProductSeeder::class,

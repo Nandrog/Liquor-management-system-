@@ -1,77 +1,65 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl">Sales Forecast</h2>
+        <h2 class="font-semibold text-xl">Sales Forecast by Liquor</h2>
     </x-slot>
 
     <div class="p-6 space-y-6">
-        {{-- Summary --}}
         <div class="bg-white shadow p-4 rounded">
-            <h4 class="text-lg font-semibold mb-2">Next 3 Months (Predicted Sales)</h4>
-            <ul class="list-disc list-inside text-gray-700">
-                @foreach ($data['predicted_sales'] as $sale)
-                    <li>${{ number_format($sale, 2) }}</li>
-                @endforeach
-            </ul>
-
-            <p class="mt-4"><strong>Efficiency:</strong> {{ $data['efficiency'] }}%</p>
-            <p><strong>Avg Fulfillment Days:</strong> {{ $data['fulfillment_days'] }}</p>
+            <h4 class="text-lg font-semibold mb-2">Forecast Summary</h4>
+            <p><strong>Efficiency:</strong> {{ $efficiency }}%</p>
+            <p><strong>Avg Fulfillment Days:</strong> {{ $fulfillment_days }}</p>
         </div>
 
-        {{-- Chart --}}
         <div class="bg-white shadow p-4 rounded">
-            <h4 class="text-lg font-semibold mb-4">Forecast vs Actual Sales</h4>
-            <canvas id="forecastChart" width="600" height="300"></canvas>
+            <h4 class="text-lg font-semibold mb-4">Weekly Sales by Liquor</h4>
+            <canvas id="liquorSalesChart" width="800" height="400"></canvas>
         </div>
     </div>
 
-    {{-- Chart.js CDN --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // 1) months labels
-        const labels = [
-            'Jan','Feb','Mar','Apr','May','Jun',
-            'Jul','Aug','Sep','Oct','Nov','Dec',
-            'Next 1','Next 2','Next 3'
-        ];
+        const ctx = document.getElementById('liquorSalesChart').getContext('2d');
 
-        // 2) inject PHP arrays
-        const actualSales    = @json($data['actual_sales']);
-        const forecastedSales= @json($data['predicted_sales']);
-
-        // 3) build Chart.js dataset
-        const ctx = document
-            .getElementById('forecastChart')
-            .getContext('2d');
+        const labels = @json($weeks);
+        const datasets = @json($datasets);
 
         new Chart(ctx, {
-            type: 'line',
+            type: 'bar',
             data: {
                 labels: labels,
-                datasets: [
-                    {
-                        label: 'Actual Sales',
-                        data: actualSales,
-                        borderColor: 'rgb(37,99,235)',
-                        fill: false,
-                        tension: 0.3
-                    },
-                    {
-                        label: 'Forecasted Sales',
-                        data: [
-                            ...Array(actualSales.length).fill(null),
-                            ...forecastedSales
-                        ],
-                        borderColor: 'rgb(234,88,12)',
-                        borderDash: [5,5],
-                        fill: false,
-                        tension: 0.3
-                    }
-                ]
+                datasets: datasets
             },
             options: {
                 responsive: true,
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                },
+                stacked: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Weekly Sales by Liquor'
+                    },
+                    legend: {
+                        position: 'top',
+                    },
+                },
                 scales: {
-                    y: { beginAtZero: false }
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Sales Amount (USD)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Week'
+                        }
+                    }
                 }
             }
         });
