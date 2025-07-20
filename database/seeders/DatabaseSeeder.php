@@ -19,7 +19,9 @@ use Database\Seeders\RecipeSeeder;
 use Database\Seeders\StockLevelSeeder;
 use Database\Seeders\StockMovementSeeder;
 use Database\Seeders\OrderSeeder;
-
+use Database\Seeders\VendorProductSeeder;
+use Database\Seeders\TaskSeeder;
+use Database\Seeders\ShiftScheduleSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -37,10 +39,10 @@ class DatabaseSeeder extends Seeder
             RecipeSeeder::class,
             StockLevelSeeder::class,
             StockMovementSeeder::class,
-
+            TaskSeeder::class,
             OrderSeeder::class,
-
             VendorProductSeeder::class,
+            ShiftScheduleSeeder::class,
         ]);
 
         // ✅ Create a test user with password to avoid error
