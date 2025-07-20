@@ -41,6 +41,8 @@ class DatabaseSeeder extends Seeder
             OrderSeeder::class,
 
             VendorProductSeeder::class,
+            OrderItemSeeder::class,
+
         ]);
 
         // ✅ Create a test user with password to avoid error

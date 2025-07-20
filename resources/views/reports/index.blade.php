@@ -40,22 +40,41 @@
         @endif
     </div>
 
-    {{-- Sales Report Example --}}
-    <div class="box mb-4">
-        <h3>Sales Reports</h3>
+    {{-- Sales Report --}}
+   
 
-        @if (array_intersect($roles, ['Manufacturer', 'Supplier', 'Finance', 'Liquor Manager']))
-            <a href="{{ route('reports.sales.weekly') }}"
-               class="button" target="_blank">
-                📈 View Weekly Sales Report
-            </a>
-            <a href="{{ route('reports.sales.weekly.pdf') }}"
-               class="button" style="background-color: #007BFF; margin-left: 10px;" target="_blank">
-                📥 Download Weekly Sales Report (PDF)
-            </a>
-        @else
-            <p style="color: #666; font-style: italic;">You do not have access to sales reports.</p>
-        @endif
+{{-- This @hasrole directive is a SECURITY feature. 
+     It ensures that only users with these roles will see this card.
+     Make sure the roles match the ones in your controller. --}}
+
+
+{{-- The @hasrole security check is still here and is very important --}}
+@hasrole('Liquor Manager|Finance|Supplier')
+
+<div class="report-card">
+    
+    <h3>Sales Reports</h3>
+
+    <p>View or download the weekly sales summary report.</p>
+
+    <div class="report-card-actions">
+        
+        {{-- Link to VIEW the report, styled as a primary button --}}
+        <a href="{{ route('reports.weekly_summary.show') }}" class="btn btn-primary">
+            View Report
+        </a>
+
+        {{-- Link to DOWNLOAD the report, styled as a success button --}}
+        <a href="{{ route('reports.weekly_summary.download') }}" class="btn btn-success">
+            Download PDF
+        </a>
+
     </div>
+
+</div>
+
+@endhasrole
+
+   
 
 </x-app-layout>

@@ -534,10 +534,27 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/forecast', [AnalyticsController::class, 'forecast'])->name('analytics.forecast');
         Route::get('/segmentation', [AnalyticsController::class, 'segmentation'])->name('analytics.segmentation');
 });
-    Route::middleware(['auth'])->group(function () {
-    Route::get('/reports/sales/weekly', [SalesReportController::class, 'weeklyReport'])->name('reports.sales.weekly');
-    Route::get('/reports/sales/weekly/pdf', [SalesReportController::class, 'downloadWeeklyPdf'])->name('reports.sales.weekly.pdf');
+   // Route::middleware(['auth'])->group(function () {
+   // Route::get('/reports/sales/weekly', [SalesReportController::class, 'weeklyReport'])->name('reports.sales.weekly');
+   // Route::get('/reports/sales/weekly/pdf', [SalesReportController::class, 'downloadWeeklyPdf'])->name('reports.sales.weekly.pdf');
+//});
+
+// in routes/web.php
+
+
+
+// ... other routes
+
+Route::middleware(['auth'])->group(function () {
+    // This route will show the report in the browser
+    Route::get('/reports/weekly-summary', [SalesReportController::class, 'showWeeklySummaryReport'])
+         ->name('reports.weekly_summary.show');
+
+    // This route will download the report as a PDF
+    Route::get('/reports/weekly-summary/download', [SalesReportController::class, 'downloadWeeklySummaryReport'])
+         ->name('reports.weekly_summary.download');
 });
+
 
 
 Route::get('/set-password/{user}', [SetPasswordController::class, 'show'])
