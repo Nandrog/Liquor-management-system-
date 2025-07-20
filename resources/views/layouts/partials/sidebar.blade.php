@@ -30,7 +30,7 @@
             @endif
 
             @if($user && $user->hasRole('Manufacturer'))
-            
+
                 <li><a href="{{ route('inventory.dashboard') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Inventory</a></li>
                 <li><a href="{{ route('manufacturer.orders.index') }}" class="nav-link"><i class="bi bi-truck me-2"></i> Orders</a></li>
                 <li><a href="{{ route('reports.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports</a></li>
@@ -43,7 +43,7 @@
             @endif
 
             @if($user && $user->hasRole('Finance'))
-                
+
                 <li><a href="{{ route('inventory.dashboard') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Inventory</a></li>
                 {{--<li><a href="{{ route('manufacturer.orders.delivery') }}" class="nav-link"><i class="bi bi-truck me-2"></i> Orders</a></li>--}}
                 <li><a href="{{ route('reports.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports</a></li>
@@ -52,6 +52,7 @@
             @if($user && $user->hasRole('Vendor'))
                 <li><a href="{{ route('inventory.dashboard') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Inventory</a></li>
                 <li><a href="{{ route('vendor.orders.index') }}" class="nav-link"><i class="bi bi-truck me-2"></i> Orders</a></li>
+                <li><a href="{{ route('vendor.orders.create') }}" class="nav-link workforce-toggle"><i class="bi bi-people-fill me-2"></i> place order</a></li>
                 <li><a href="{{route('vendor.products.index')}}" class="nav-link"><i class="bi bi-box-seam me-2"></i> vendor products</a></li>
             @endif
 

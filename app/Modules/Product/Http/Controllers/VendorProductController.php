@@ -29,7 +29,7 @@ class VendorProductController extends Controller
 
         return view('vendor.products.index', compact('vendorProducts', 'vendor'));
     }
-
+/*
     public function update(Request $request, Vendor $vendor)
     {
         // This controller action is simplified. A better approach would be a dedicated Form Request.
@@ -45,6 +45,25 @@ class VendorProductController extends Controller
             );
         }
 
+        return redirect()->route('vendor.products.index')->with('success', 'Retail prices updated.');
+    }
+*/
+    public function update(Request $request, VendorProduct $product)
+    {
+        // Authorization: Ensure the product being updated belongs to the logged-in vendor.
+        if ($product->vendor_id !== Auth::user()->vendor->id) {
+            abort(403, 'UNAUTHORIZED ACTION');
+        }
+
+        $request->validate([
+            'retail_price' => 'required|numeric|min:0',
+        ]);
+
+        $product->update([
+            'retail_price' => $request->retail_price,
+        ]);
+
+        //return back()->with('success', 'Price updated successfully!');
         return redirect()->route('vendor.products.index')->with('success', 'Retail prices updated.');
     }
 
