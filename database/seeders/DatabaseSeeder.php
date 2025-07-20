@@ -41,11 +41,6 @@ class DatabaseSeeder extends Seeder
             RecipeSeeder::class,
             StockLevelSeeder::class,
             StockMovementSeeder::class,
-            
-
-            TaskSeeder::class,
-            OrderSeeder::class,
-
             TaskSeeder::class,
             OrderSeeder::class, 
             VendorProductSeeder::class,

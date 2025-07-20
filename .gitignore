@@ -20,6 +20,7 @@
 /storage/pail
 /vendor
 /src/main/resources/
+/ml-service
 Homestead.json
 Homestead.yaml
 Thumbs.db
