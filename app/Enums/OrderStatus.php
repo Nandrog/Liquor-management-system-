@@ -32,6 +32,7 @@ enum OrderStatus: string
             self::PROCESSING => 'Processing',
             self::COMPLETED => 'Completed',
             self::CANCELLED => 'Cancelled',
+            self::IN_TRANSIT => 'In Transit',
         };
 }
 }

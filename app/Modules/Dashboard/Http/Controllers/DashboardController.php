@@ -198,8 +198,56 @@ class DashboardController extends Controller
      }
 
 
-    private function vendorDashboard() { return view('vendor.dashboard'); }
-    private function customerDashboard() { return view('customer.dashboard'); }
+    private function vendorDashboard() { 
+        $messages = Message::where('receiver_id', Auth::id())->where('is_read',false)->count();
+        $cards = [
+            [
+                'title' => 'Place Orders',
+                'description' => 'Make orders for products you supply',
+                'icon' => 'bi-box-seam',
+                'route' => route('vendor.orders.create'),
+                'count' => Product::where('type', 'finished_good')->count(),
+                'count_label' => 'Products Available'
+            ],
+            [
+                'title' => 'Orders History',
+                'description' => 'View list of all orders made',
+                'icon' => 'bi-clipboard-check',
+                'route' => route('vendor.orders.index'),
+                'count' => Order::where('type', 'vendor_order')->count(),
+                'count_label' => 'Orders Made'
+            ],
+            [
+                'title' => 'Chats',
+                'description' => 'Communicate with other users',
+                'icon' => 'bi-chat-left-text',
+                'route' => route('chat.page'),
+                'count' => $messages,
+                'count_label' => 'Unread Messages'
+            ]
+        ];
+        
+        
+        
+        return view('vendor.dashboard',['cards'=>$cards]); }
+    private function customerDashboard() { 
+        
+        // Fetch the currently authenticated user
+        $user = auth()->user();
+        
+         $featuredProducts = Product::where('type', 'finished_good')
+            ->whereHas('stockLevels', function ($query) {
+                $query->where('quantity', '>', 0); // Only show products that are in stock
+            })
+            ->inRandomOrder() // Show a random selection each time
+            ->take(4)         // Limit to a maximum of 4 products
+            ->get();
+
+        
+        
+        
+        
+        return view('customer.dashboard',['user' => $user,'featuredProducts'=>$featuredProducts]); }
     private function manufacturerDashboard() { 
 
          $messages = Message::where('receiver_id', Auth::id())->where('is_read',false)->count();
