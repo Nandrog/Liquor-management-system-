@@ -7,8 +7,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB; // Required for DB::raw()
 use App\Models\Cart;
 use App\Models\Product;
+use App\Models\Order;
 
 use App\Http\Controllers\Controller;
+use App\Enums\OrderType;
 
 class CartController extends Controller
 {
@@ -130,4 +132,27 @@ class CartController extends Controller
         // If the item wasn't found (or didn't belong to the user), redirect with an error.
         return redirect()->route('cart.index')->with('error', 'Item not found in cart.');
     }
+
+    public function indexs()
+{
+   // The middleware has already ensured a vendor profile exists.
+    $vendor = Auth::user()->vendor;
+
+    // This is the crucial query.
+    $orders = Order::query()
+        // 1. Get orders assigned to this vendor.
+        ->where('vendor_id', $vendor->id)
+
+        // 2. CRITICAL: Filter to only show orders placed BY customers.
+        ->where('type', OrderType::CUSTOMER_ORDER) // Use your OrderType Enum
+
+        // 3. Eager load relationships for display efficiency.
+        ->with(['user', 'items.product']) // 'user' here is the customer who placed the order
+
+        // 4. Order and paginate the results.
+        ->latest()
+        ->paginate(15);
+
+    return view('vendor.orders.indexs', compact('orders', 'vendor'));
+}
 }

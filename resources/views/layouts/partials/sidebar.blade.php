@@ -54,6 +54,8 @@
                 <li><a href="{{ route('vendor.orders.index') }}" class="nav-link"><i class="bi bi-truck me-2"></i> Orders</a></li>
                 <li><a href="{{ route('vendor.orders.create') }}" class="nav-link workforce-toggle"><i class="bi bi-people-fill me-2"></i> place order</a></li>
                 <li><a href="{{route('vendor.products.index')}}" class="nav-link"><i class="bi bi-box-seam me-2"></i> vendor products</a></li>
+                 <li><a href="{{ route('vendor.orders.indexs') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Customer orders</a></li>
+                <li><a href="{{route('vendor.carts.lookup')}}" class="nav-link"><i class="bi bi-box-seam me-2"></i>Customer search</a></li>
             @endif
 
             {{-- Customer --}}

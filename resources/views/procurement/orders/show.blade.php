@@ -8,7 +8,7 @@
     <p><strong>Vendor:</strong> {{ $order->vendor->name }}</p>
     <p><strong>Status:</strong> {{ $order->status->value }}</p>
     <p><strong>Total:</strong> ${{ number_format($order->total_amount, 2) }}</p>
-    
+
     @if($errors->any())
         <div class="text-red-500">{{ $errors->first() }}</div>
     @endif
@@ -29,13 +29,14 @@
             @csrf
             @method('PATCH')
             <input type="hidden" name="status" value="confirmed">
-            <button type="submit" class="bg-green-500 text-white p-2 rounded">Confirm & Deduct Stock</button>
+            <button type="submit" class="bg-green-500 text-white p-2 rounded auth-button-green auth-button">Confirm & Deduct Stock</button>
         </form>
+        <br>
         <form action="{{ route('procurement.orders.update', $order) }}" method="POST">
             @csrf
             @method('PATCH')
             <input type="hidden" name="status" value="rejected">
-            <button type="submit" class="bg-red-500 text-white p-2 rounded">Reject & Refund</button>
+            <button type="submit" class="bg-red-500 text-white p-2 rounded auth-button-yellow auth-button">Reject & Refund</button>
         </form>
     </div>
     @endif

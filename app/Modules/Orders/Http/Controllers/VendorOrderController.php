@@ -4,6 +4,7 @@ namespace App\Modules\Orders\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\Cart;
 use App\Models\Product;
 use App\Models\VendorProduct; // We will need this for the approval step
 use App\Enums\ProductType;
@@ -14,6 +15,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request; // Use the base Request for create()
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\User;
 use Illuminate\Support\Str;
 
 class VendorOrderController extends Controller
@@ -230,5 +232,38 @@ public function store(Request $request) // Use the base Request
             return redirect()->back()->with('error', 'There was a problem processing your payment. Please try again.');
         }
     }
+
+    public function showCustomerCartLookup(Request $request)
+    {
+        $customer = null;
+        $cartItems = collect(); // Use an empty collection by default
+
+        // Check if a search query has been submitted
+        if ($request->has('search_query')) {
+            $query = $request->input('search_query');
+
+            // Find the customer by email or name.
+            // We also ensure they have the 'Customer' role.
+            $customer = User::role('Customer')
+                            ->where(function ($q) use ($query) {
+                                $q->where('email', 'like', "%{$query}%")
+                                  ->orWhere('name', 'like', "%{$query}%");
+                            })
+                            ->first();
+
+            if ($customer) {
+                // If a customer is found, get their cart items
+                $cartItems = Cart::where('user_id', $customer->id)->with('product')->get();
+            } else {
+                // If no customer is found, redirect back with an error message
+                return redirect()->route('vendor.carts.lookup')
+                                 ->with('error', "No customer found for '{$query}'.");
+            }
+        }
+
+        // Pass the customer and their cart items (or empty defaults) to the view
+        return view('vendor.carts.show', compact('customer', 'cartItems'));
+    }
+
 }
 
