@@ -14,7 +14,7 @@
             default => 'theme-default',
         };
     @endphp
-    <div class="auth-card {{$themeClass}}">
+    <div class="auth-cards {{$themeClass}}">
         <h2 class="auth-title ">Application Submitted</h2>
 
         <div class="mt-4">

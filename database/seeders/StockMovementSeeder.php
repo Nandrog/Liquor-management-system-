@@ -2,56 +2,47 @@
 
 namespace Database\Seeders;
 
+use Illuminate\Database\Seeder;
 use App\Models\StockMovement;
 use App\Models\Product;
 use App\Models\Warehouse;
 use App\Models\WorkDistribution\Employee;
-use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 
 class StockMovementSeeder extends Seeder
 {
-    public function run(): void
+    public function run()
     {
-        if (Product::count() == 0) {
-            Product::factory()->count(5)->create();
+        $products = Product::pluck('id');
+        $warehouses = Warehouse::pluck('warehouse_id');
+        $employees = Employee::pluck('id'); // optional if employee_id is needed
+
+        foreach ($products as $productId) {
+            $numMovements = rand(3, 6);
+
+            for ($i = 0; $i < $numMovements; $i++) {
+                $randomDate = Carbon::now()
+                    ->subDays(rand(0, 30))
+                    ->setTime(rand(6, 18), rand(0, 59));
+
+                // Pick two different warehouse IDs
+                $fromWarehouse = $warehouses->random();
+                do {
+                    $toWarehouse = $warehouses->random();
+                } while ($toWarehouse === $fromWarehouse);
+
+                StockMovement::create([
+                    'product_id' => $productId,
+                    'from_warehouse_id' => $fromWarehouse,
+                    'to_warehouse_id' => $toWarehouse,
+                    'employee_id' => $employees->random(),
+                    'quantity' => rand(10, 100),
+                    'moved_at' => $randomDate,
+                    'notes' => 'Auto-generated stock movement',
+                    'created_at' => $randomDate,
+                    'updated_at' => $randomDate,
+                ]);
+            }
         }
-
-        if (Warehouse::count() < 2) {
-            Warehouse::factory()->count(2)->create();
-        }
-
-        if (Employee::count() == 0) {
-            $this->command->warn('No employees found. Please seed employees first.');
-            return;
-        }
-
-        $product = Product::inRandomOrder()->first();
-        $fromWarehouse = Warehouse::inRandomOrder()->first();
-
-        $toWarehouse = Warehouse::where('warehouse_id', '!=', $fromWarehouse->warehouse_id)
-                                ->inRandomOrder()
-                                ->first();
-
-        if (!$toWarehouse) {
-            $this->command->warn('Not enough warehouses to create stock movements.');
-            return;
-        }
-
-        $employee = Employee::inRandomOrder()->first();
-
-        for ($i = 1; $i <= 5; $i++) {
-            StockMovement::create([
-                'product_id' => $product->id,
-                'from_warehouse_id' => $fromWarehouse->warehouse_id,
-                'to_warehouse_id' => $toWarehouse->warehouse_id,
-                'quantity' => rand(10, 100),
-                'moved_at' => Carbon::now()->addDays($i),
-                'employee_id' => $employee->employee_id,
-                'notes' => 'Test stock move #' . $i,
-            ]);
-        }
-
-        $this->command->info('✅ Stock Movements seeded!');
     }
 }

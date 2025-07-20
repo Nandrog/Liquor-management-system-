@@ -109,6 +109,30 @@
 
                                 <button type="submit" class="auth-button-green auth-button">Confirm & Update Inventory</button>
                             </form>
+                             @php
+                    $statuses = ['pending', 'processing', 'in_transit', 'delivered', 'cancelled'];
+                    $currentStatusIndex = array_search($order->status->value, $statuses);
+                    // Prevent division by zero if there's only one status
+                    $progressWidth = (count($statuses) > 1) ? ($currentStatusIndex / (count($statuses) - 1)) * 100 : 100;
+                    if ($order->status->value === 'cancelled') { $progressWidth = 0; }
+                @endphp
+                <ul class="progress-track" style="--progress-width: {{ $progressWidth }}%;">
+                    @foreach ($statuses as $index => $status)
+                        @if($status !== 'cancelled')
+                            <li class="progress-step {{ $currentStatusIndex >= $index ? 'completed' : '' }}">
+                                <div class="step-icon">
+                                    @if($status === 'pending') <i class="bi bi-card-checklist"></i>
+                                    @elseif($status === 'processing') <i class="bi bi-gear"></i>
+                                    @elseif($status === 'in_transit') <i class="bi bi-truck"></i>
+                                    @elseif($status === 'delivered') <i class="bi bi-house-check-fill"></i>
+                                    @endif
+                                </div>
+                                <div class="step-label">{{ Str::title($status) }}</div>
+                            </li>
+                        @endif
+                    @endforeach
+                </ul>
+                <hr class="my-4">
                         </div>
                     @endif
 

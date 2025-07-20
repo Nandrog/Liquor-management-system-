@@ -1,0 +1,54 @@
+// Main product card container
+.product-card {
+    background-color: #f8f9fa; // A very light, soft gray (Bootstrap's $gray-100)
+    border-radius: 1rem;       // 16px rounded corners
+    transition: all 0.3s ease-in-out;
+    overflow: hidden;          // Crucial for making the clip-path work
+    border: 1px solid #e9ecef; // A subtle border
+
+    &:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12) !important;
+    }
+}
+
+// Wrapper for the image, this is where the oval shape is created
+.product-card-image-wrapper {
+    height: 280px;
+    // This is the magic property for the oval shape at the bottom.
+    // It creates an ellipse that is wider than it is tall, centered at the bottom.
+    clip-path: ellipse(75% 100% at 50% 100%);
+}
+
+// The <img> tag itself
+.product-card-img {
+    width: 100%;
+    height: 100%;
+    // Ensures the image fills the clipped area without being stretched or distorted.
+    object-fit: cover;
+}
+
+// Styling for the text content
+.product-card .card-body {
+    padding: 1.5rem; // Add more generous padding
+}
+
+.product-card .card-title {
+    font-weight: 600;      // Bolder title
+    font-size: 1.15rem;
+    color: #212529;      // A dark, rich text color
+    margin-bottom: 0.5rem;
+}
+
+.product-card .card-text {
+    font-size: 0.9rem;
+    color: #6c757d;      // Lighter color for the description
+    margin-bottom: 1rem;
+}
+
+.product-card .card-price {
+    font-size: 1.25rem;
+    font-weight: 700;      // Make the price bold and prominent
+    color: #343a40;
+    text-align: left;      // Align to the left as per the design
+}

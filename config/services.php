@@ -46,4 +46,7 @@ return [
     'vendor_validation' => [
         'url' => env('VENDOR_VALIDATION_API_URL'),
     ],
+    'ml_api' => [
+    'url' => env('ML_API_URL'),
+],
 ];

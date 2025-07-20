@@ -51,7 +51,6 @@
                                             #{{ $order->id }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{-- NOTE: For performance, eager load the user in the controller ->with('user') --}}
                                             {{ $order->user->name ?? 'N/A' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -61,15 +60,16 @@
                                             UGX{{ number_format($order->total_amount, 2) }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
+                                            {{-- MODIFICATION: Changed the Enum cases to match the standard PascalCase naming --}}
                                             <span @class([
                                                 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                                                // Vendor orders will typically be in 'pending_approval' not 'pending'
-                                                'bg-yellow-100 text-yellow-800' => $order->status === \App\Enums\OrderStatus::PendingApproval || $order->status === \App\Enums\OrderStatus::Pending,
-                                                'bg-green-100 text-green-800' => $order->status === \App\Enums\OrderStatus::Confirmed,
-                                                'bg-red-100 text-red-800' => $order->status === \App\Enums\OrderStatus::Rejected,
-                                                'bg-blue-100 text-blue-800' => $order->status === \App\Enums\OrderStatus::Paid,
-                                                'bg-purple-100 text-purple-800' => $order->status === \App\Enums\OrderStatus::Shipped,
+                                                'bg-yellow-100 text-yellow-800' => $order->status === \App\Enums\OrderStatus::PENDING_APPROVAL || $order->status === \App\Enums\OrderStatus::PENDING,
+                                                'bg-green-100 text-green-800' => $order->status === \App\Enums\OrderStatus::CONFIRMED,
+                                                'bg-red-100 text-red-800' => $order->status === \App\Enums\OrderStatus::REJECTED,
+                                                'bg-blue-100 text-blue-800' => $order->status === \App\Enums\OrderStatus::PAID,
+                                                'bg-purple-100 text-purple-800' => $order->status === \App\Enums\OrderStatus::DELIVERED,
                                             ])>
+                                                {{-- This part was already correct. It replaces underscores with spaces and capitalizes words. --}}
                                                 {{ ucwords(str_replace('_', ' ', $order->status->value)) }}
                                             </span>
                                         </td>

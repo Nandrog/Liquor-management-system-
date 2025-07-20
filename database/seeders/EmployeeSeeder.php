@@ -5,13 +5,17 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use App\Models\WorkDistribution\Employee;
+use App\Models\User;
+use Spatie\Permission\Models\Role;
 
 class EmployeeSeeder extends Seeder
 {
     public function run(): void
     {
-        // Get warehouses mapped by name => warehouse_id
         $warehouses = DB::table('warehouses')->pluck('warehouse_id', 'name');
+
+        // Ensure the "Employee" role exists
+        Role::firstOrCreate(['name' => 'Employee']);
 
         $employees = [
             [
@@ -42,8 +46,7 @@ class EmployeeSeeder extends Seeder
                 'skillset'     => 'Stock Auditing, Documentation',
                 'warehouse_id' => $warehouses['Jinja Regional Hub'] ?? null,
             ],
-
-            // New Casual Employees
+            // Casual Employees
             [
                 'name'         => 'Brenda Achieng',
                 'role'         => 'Casual Employee',
@@ -87,48 +90,47 @@ class EmployeeSeeder extends Seeder
                 'warehouse_id' => $warehouses['Kampala Central Warehouse'] ?? null,
             ],
             [
-    'name'         => 'Josephine Tumusiime',
-    'role'         => 'Casual Employee',
-    'email'        => 'josephine@casuals.com',
-    'skillset'     => 'Data Entry, Filing Vouchers',
-    'warehouse_id' => $warehouses['Kampala Central Warehouse'] ?? null,
-],
-[
-    'name'         => 'Martin Ssewanyana',
-    'role'         => 'Casual Employee',
-    'email'        => 'martin@casuals.com',
-    'skillset'     => 'Receipt Sorting, Cash Log Handling',
-    'warehouse_id' => $warehouses['Jinja Regional Hub'] ?? null,
-],
-[
-    'name'         => 'Doreen Nakato',
-    'role'         => 'Casual Employee',
-    'email'        => 'doreen@casuals.com',
-    'skillset'     => 'Invoice Matching, Ledger Support',
-    'warehouse_id' => $warehouses['Kampala Central Warehouse'] ?? null,
-],
-[
-    'name'         => 'Samuel Mugisha',
-    'role'         => 'Casual Employee',
-    'email'        => 'samuel@casuals.com',
-    'skillset'     => 'Document Verification, Account Filing',
-    'warehouse_id' => $warehouses['Jinja Regional Hub'] ?? null,
-],
-[
-    'name'         => 'Linda Kabagambe',
-    'role'         => 'Casual Employee',
-    'email'        => 'linda@casuals.com',
-    'skillset'     => 'Payment Vouchers, Excel Entry',
-    'warehouse_id' => $warehouses['Kampala Central Warehouse'] ?? null,
-],
-[
-    'name'         => 'George Nsubuga',
-    'role'         => 'Casual Employee',
-    'email'        => 'george@casuals.com',
-    'skillset'     => 'Records Update, Manual Ledger Work',
-    'warehouse_id' => $warehouses['Jinja Regional Hub'] ?? null,
-],
-
+                'name'         => 'Josephine Tumusiime',
+                'role'         => 'Casual Employee',
+                'email'        => 'josephine@casuals.com',
+                'skillset'     => 'Data Entry, Filing Vouchers',
+                'warehouse_id' => $warehouses['Kampala Central Warehouse'] ?? null,
+            ],
+            [
+                'name'         => 'Martin Ssewanyana',
+                'role'         => 'Casual Employee',
+                'email'        => 'martin@casuals.com',
+                'skillset'     => 'Receipt Sorting, Cash Log Handling',
+                'warehouse_id' => $warehouses['Jinja Regional Hub'] ?? null,
+            ],
+            [
+                'name'         => 'Doreen Nakato',
+                'role'         => 'Casual Employee',
+                'email'        => 'doreen@casuals.com',
+                'skillset'     => 'Invoice Matching, Ledger Support',
+                'warehouse_id' => $warehouses['Kampala Central Warehouse'] ?? null,
+            ],
+            [
+                'name'         => 'Samuel Mugisha',
+                'role'         => 'Casual Employee',
+                'email'        => 'samuel@casuals.com',
+                'skillset'     => 'Document Verification, Account Filing',
+                'warehouse_id' => $warehouses['Jinja Regional Hub'] ?? null,
+            ],
+            [
+                'name'         => 'Linda Kabagambe',
+                'role'         => 'Casual Employee',
+                'email'        => 'linda@casuals.com',
+                'skillset'     => 'Payment Vouchers, Excel Entry',
+                'warehouse_id' => $warehouses['Kampala Central Warehouse'] ?? null,
+            ],
+            [
+                'name'         => 'George Nsubuga',
+                'role'         => 'Casual Employee',
+                'email'        => 'george@casuals.com',
+                'skillset'     => 'Records Update, Manual Ledger Work',
+                'warehouse_id' => $warehouses['Jinja Regional Hub'] ?? null,
+            ],
         ];
 
         foreach ($employees as $employee) {
@@ -137,10 +139,27 @@ class EmployeeSeeder extends Seeder
                 continue;
             }
 
+            // Create employee
             Employee::firstOrCreate(
                 ['email' => $employee['email']],
                 $employee
             );
+
+            // Create matching user for login/roles
+            $user = User::firstOrCreate(
+                ['email' => $employee['email']],
+                [
+                    'username'  => explode('@', $employee['email'])[0],
+                    'firstname' => explode(' ', $employee['name'])[0],
+                    'lastname'  => explode(' ', $employee['name'])[1] ?? '',
+                    'password'  => bcrypt('password'),
+                ]
+            );
+
+            // Assign the Employee role
+            if (!$user->hasRole('Employee')) {
+                $user->assignRole('Employee');
+            }
         }
     }
 }

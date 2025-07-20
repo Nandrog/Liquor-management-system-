@@ -47,7 +47,17 @@ class DashboardController extends Controller
 
         $messages = Message::where('receiver_id', Auth::id())->where('is_read',false)->count();
         $itemsAvailable = Product::Where('type','raw_material')->count();
-        $orderspaid = Order::where('type','supplier_order')->where('status','paid')->where('supplier_id',Auth::id())->count();
+        
+        // Get the supplier record for the current user
+        $supplier = \App\Models\Supplier::where('user_id', Auth::id())->first();
+
+        $orderspaid = 0;
+        if ($supplier) {
+            $orderspaid = Order::where('type', 'supplier_order')
+                ->where('status', 'paid')
+                ->where('supplier_id', $supplier->id)
+                ->count();
+        }
 
         $cards = [
             [
@@ -188,8 +198,56 @@ class DashboardController extends Controller
      }
 
 
-    private function vendorDashboard() { return view('vendor.dashboard'); }
-    private function customerDashboard() { return view('customer.dashboard'); }
+    private function vendorDashboard() { 
+        $messages = Message::where('receiver_id', Auth::id())->where('is_read',false)->count();
+        $cards = [
+            [
+                'title' => 'Place Orders',
+                'description' => 'Make orders for products you supply',
+                'icon' => 'bi-box-seam',
+                'route' => route('vendor.orders.create'),
+                'count' => Product::where('type', 'finished_good')->count(),
+                'count_label' => 'Products Available'
+            ],
+            [
+                'title' => 'Orders History',
+                'description' => 'View list of all orders made',
+                'icon' => 'bi-clipboard-check',
+                'route' => route('vendor.orders.index'),
+                'count' => Order::where('type', 'vendor_order')->count(),
+                'count_label' => 'Orders Made'
+            ],
+            [
+                'title' => 'Chats',
+                'description' => 'Communicate with other users',
+                'icon' => 'bi-chat-left-text',
+                'route' => route('chat.page'),
+                'count' => $messages,
+                'count_label' => 'Unread Messages'
+            ]
+        ];
+        
+        
+        
+        return view('vendor.dashboard',['cards'=>$cards]); }
+    private function customerDashboard() { 
+        
+        // Fetch the currently authenticated user
+        $user = auth()->user();
+        
+         $featuredProducts = Product::where('type', 'finished_good')
+            ->whereHas('stockLevels', function ($query) {
+                $query->where('quantity', '>', 0); // Only show products that are in stock
+            })
+            ->inRandomOrder() // Show a random selection each time
+            ->take(4)         // Limit to a maximum of 4 products
+            ->get();
+
+        
+        
+        
+        
+        return view('customer.dashboard',['user' => $user,'featuredProducts'=>$featuredProducts]); }
     private function manufacturerDashboard() { 
 
          $messages = Message::where('receiver_id', Auth::id())->where('is_read',false)->count();
@@ -243,19 +301,19 @@ class DashboardController extends Controller
         $itemsAvailable = Product::whereHas('stockLevels', fn($q) => $q->where('quantity', '>', 0))->count();
         $tasks=Task::where('status','pending')->count();
         $messages = Message::where('receiver_id', Auth::id())->where('is_read',false)->count();
-        
+        $sales=Order::whereIn('type', ['vendor_order', 'customer_order'])->count();
         
         $cards = [
+             [
+        'title' => 'Sales Orders Tracking',
+        'description' => 'Track revenue from customers and vendors.',
+        'icon' => 'bi-graph-up-arrow',
+        'route' => route('finance.orders.sales_report'),
+        'count' => $sales,
+        'count_label' => 'Total Sales Orders',
+    ],
             [
-              'title' => 'Stock Levels',
-                'description' => 'View detailed stock levels.',
-                'icon' => 'bi-clipboard-data',
-                'route' => route('finance.items.index'), // Assuming a shared stock levels route
-                'count' => $itemsAvailable,
-                'count_label' => 'Items Available',  
-            ],
-            [
-            'title' => 'Supplier Orders',
+            'title' => 'Supplier Orders Tracking',
             'description' => 'Track financial status of all purchase orders.',
             'icon' => 'bi-receipt',
             'route' => route('finance.orders.supplier_report'),
@@ -300,7 +358,8 @@ class DashboardController extends Controller
                 'count_label' => null,         // Default to null
                 'secondaryCount' => null,     // Default to null
                 'secondaryCountLabel' => null
-            ]
+            ],
+        
         ];
         return view('finance.dashboard', ['cards'=>$cards]); 
     }

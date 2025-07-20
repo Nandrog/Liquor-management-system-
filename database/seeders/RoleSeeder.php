@@ -32,6 +32,8 @@ class RoleSeeder extends Seeder
                 'name' => $role,
                 'guard_name' => 'web', // Always specify the guard
             ]);
+            Role::firstOrCreate(['name' => 'Employee', 'guard_name' => 'web']);
+        Role::firstOrCreate(['name' => 'Admin', 'guard_name' => 'web']);
         }
     }
 }

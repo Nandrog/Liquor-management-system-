@@ -38,7 +38,7 @@ class AuthenticatedSessionController extends Controller
             'Manufacturer' => route('manufacturer.stock_levels.index'),
             'Procurement' => route('officer.stock_movements.index'),
             'Supplier' => route('supplier.inventory.index'),
-            'Customer' => route('customer.dashboard', absolute: false),
+            'Customer' => route('customer.browse', absolute: false),
             default => route('dashboard'),
         };
 

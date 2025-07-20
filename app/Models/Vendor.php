@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Vendor extends Model
 {
-    protected $fillable = ['name','contact'];
+    protected $fillable = ['user_id','name','contact'];
 
     public function products()
     {
@@ -17,4 +18,14 @@ class Vendor extends Model
 {
     return $this->belongsTo(User::class);
 }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function vendorProducts()
+    {
+        return $this->hasMany(VendorProduct::class);
+    }
 }

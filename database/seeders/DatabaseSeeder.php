@@ -19,7 +19,9 @@ use Database\Seeders\RecipeSeeder;
 use Database\Seeders\StockLevelSeeder;
 use Database\Seeders\StockMovementSeeder;
 use Database\Seeders\OrderSeeder;
-
+use Database\Seeders\VendorProductSeeder;
+use Database\Seeders\TaskSeeder;
+use Database\Seeders\ShiftScheduleSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -30,19 +32,21 @@ class DatabaseSeeder extends Seeder
             WarehouseSeeder::class,
             EmployeeSeeder::class,
             FactorySeeder::class,
-            UserSeeder::class, // Creates admin, supplier, manager etc.
+            UserSeeder::class, 
+            SupplierSeeder::class,
+            CustomerSeeder::class,
             CategorySeeder::class,
             VendorSeeder::class,
             ProductSeeder::class,
             RecipeSeeder::class,
             StockLevelSeeder::class,
-            StockMovementSeeder::class,
-             
-            OrderSeeder::class,
-
+           // StockMovementSeeder::class,
+            TaskSeeder::class,
+            OrderSeeder::class, 
             VendorProductSeeder::class,
             OrderItemSeeder::class,
 
+            ShiftScheduleSeeder::class,
         ]);
 
         // ✅ Create a test user with password to avoid error

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Enums\PaymentStatus; 
 
 class Order extends Model
 {
@@ -23,6 +24,9 @@ class Order extends Model
     protected $casts = [
         'type' => \App\Enums\OrderType::class,
         'status' => \App\Enums\OrderStatus::class,
+        'payment_status' => PaymentStatus::class,
+        'delivered_at'   => 'datetime',
+        'paid_at'        => 'datetime',
     ];
 
     public function user()
@@ -68,5 +72,9 @@ class Order extends Model
     {
          return $this->belongsToMany(Product::class, 'order_items') // <-- Add table name
                 ->withPivot('quantity', 'price');
+    }
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class);
     }
 }

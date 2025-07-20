@@ -1,8 +1,7 @@
-<!-- resources/views/index.blade.php -->
 <x-app-layout>
     <x-slot name="header">
         <h2 style="font-weight: bold; font-size: 1.25rem; color: #2d3748;">
-            Dashboard
+            📊 Reports Dashboard
         </h2>
     </x-slot>
 
@@ -12,31 +11,39 @@
 
     {{-- Workforce Reports --}}
     <div class="box mb-4">
-        <h3>Workforce Reports</h3>
+        <h3 style="font-size: 1.1rem; font-weight: bold;">🧑‍💼 Workforce Reports</h3>
 
-        @if (array_intersect($roles, ['Finance', 'Liquor Manager', 'Procurement Officer']))
+        @if (array_intersect($roles, ['Finance', 'Liquor Manager', 'Procurement Officer','Manufacturer']))
             <a href="{{ route('reports.task_performance') }}" class="button" target="_blank">
-                ✅ View Task Performance Report
+                ✅ Task Performance Report
             </a>
 
             <a href="{{ route('reports.shift_schedules') }}" class="button" style="margin-left: 10px;" target="_blank">
-                🕒 View Shift Schedule Report
+                🕒 Shift Schedule Report
             </a>
         @else
-            <p style="color: #666; font-style: italic;">You do not have access to workforce reports.</p>
+            <p style="color: #666; font-style: italic;">No access to workforce reports.</p>
         @endif
     </div>
 
-    {{-- Inventory Report --}}
+    {{-- Inventory Reports --}}
     <div class="box mb-4">
-        <h3>Inventory Reports</h3>
+        <h3 style="font-size: 1.1rem; font-weight: bold;">📦 Inventory Reports</h3>
 
         @if (array_intersect($roles, ['Manufacturer', 'Supplier', 'Finance', 'Liquor Manager']))
             <a href="{{ route('reports.stock_movements') }}" class="button" target="_blank">
-                🚚 View Stock Movement Report
+                🚚 Stock Movement Report
+            </a>
+
+            <a href="{{ route('reports.inventory_chart') }}" class="button" style="margin-left: 10px;" target="_blank">
+                📊 Inventory Category Chart
+            </a>
+
+            <a href="{{ route('reports.inventory.pdf') }}" class="button" style="margin-left: 10px;" target="_blank">
+                📄 Download Weekly Inventory Report
             </a>
         @else
-            <p style="color: #666; font-style: italic;">You do not have access to inventory reports.</p>
+            <p style="color: #666; font-style: italic;">No access to inventory reports.</p>
         @endif
     </div>
 
@@ -54,6 +61,9 @@
 <div class="report-card">
     
     <h3>Sales Reports</h3>
+    {{-- Sales Reports --}}
+    <div class="box mb-4">
+        <h3 style="font-size: 1.1rem; font-weight: bold;">💰 Sales Reports</h3>
 
     <p>View or download the weekly sales summary report.</p>
 
