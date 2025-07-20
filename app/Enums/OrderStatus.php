@@ -20,9 +20,12 @@ enum OrderStatus: string
     public function label(): string
     {
         return match ($this) {
+            self::PENDING => 'Pending',
             self::PENDING_APPROVAL => 'Pending Approval',
-            self::CONFIRMED => 'Confirmed (Awaiting Delivery)',
+            self::CONFIRMED => 'Confirmed',
             self::REJECTED => 'Rejected',
+            self::PAID => 'Paid',
+            self::REFUNDED => 'Refunded',
             self::DELIVERING => 'Delivering',
             self::DELIVERED => 'Delivered',
             self::PROCESSING => 'Processing',

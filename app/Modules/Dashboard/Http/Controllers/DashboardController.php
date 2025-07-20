@@ -253,19 +253,19 @@ class DashboardController extends Controller
         $itemsAvailable = Product::whereHas('stockLevels', fn($q) => $q->where('quantity', '>', 0))->count();
         $tasks=Task::where('status','pending')->count();
         $messages = Message::where('receiver_id', Auth::id())->where('is_read',false)->count();
-        
+        $sales=Order::whereIn('type', ['vendor_order', 'customer_order'])->count();
         
         $cards = [
+             [
+        'title' => 'Sales Orders Tracking',
+        'description' => 'Track revenue from customers and vendors.',
+        'icon' => 'bi-graph-up-arrow',
+        'route' => route('finance.orders.sales_report'),
+        'count' => $sales,
+        'count_label' => 'Total Sales Orders',
+    ],
             [
-              'title' => 'Stock Levels',
-                'description' => 'View detailed stock levels.',
-                'icon' => 'bi-clipboard-data',
-                'route' => route('finance.items.index'), // Assuming a shared stock levels route
-                'count' => $itemsAvailable,
-                'count_label' => 'Items Available',  
-            ],
-            [
-            'title' => 'Supplier Orders',
+            'title' => 'Supplier Orders Tracking',
             'description' => 'Track financial status of all purchase orders.',
             'icon' => 'bi-receipt',
             'route' => route('finance.orders.supplier_report'),
@@ -310,7 +310,8 @@ class DashboardController extends Controller
                 'count_label' => null,         // Default to null
                 'secondaryCount' => null,     // Default to null
                 'secondaryCountLabel' => null
-            ]
+            ],
+        
         ];
         return view('finance.dashboard', ['cards'=>$cards]); 
     }

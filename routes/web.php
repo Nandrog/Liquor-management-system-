@@ -37,6 +37,7 @@ use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalesReportController;
 use App\Modules\Inventory\Http\Controllers\Finance\OrderReportController;
+use App\Modules\Inventory\Http\Controllers\FiOrderReportController;
 //use App\Modules\Inventory\Http\Controllers\MaPurchaseOrderController;
 
 
@@ -222,7 +223,7 @@ Route::middleware(['auth', 'role:Liquor Manager|Finance|Procurement Officer'])
         Route::get('/items', [FiItemController::class, 'index'])->name('items.index');
         Route::patch('/items/{product}', [FiItemController::class, 'updatePrice'])->name('items.update_price');
         Route::get('/supplier-orders', [OrderReportController::class, 'supplierOrders'])->name('orders.supplier_report');
-
+        Route::get('/sales-orders-report', [FiOrderReportController::class, 'salesOrders'])->name('orders.sales_report');
         Route::get('/tasks', [TaskController::class, 'index'])->name('work-distribution.task-list');
         Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
         Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');

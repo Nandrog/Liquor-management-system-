@@ -36,14 +36,15 @@ class VendorSeeder extends Seeder
         $user1 = \App\Models\User::firstOrCreate([
             'email' => 'amos@example.com'
         ], [
-            'name' => 'Amos Tindbwa',
+            'firstname' => 'Amos',
+            'lastname' => 'Tindbwa',
+            'username' => 'amostindbwa',
             'password' => bcrypt('password123')
         ]);
 
         Vendor::create([
-                'user_id'      => $user1->id, // <-- CRITICAL: Use the new user's ID
-                'name'         => 'amos', // Or 'Amos Tindbwa'
-                'company_name' => 'Amos Fine Spirits',
+                'user_id'      => $user1->getKey(), // <-- Use getKey() for user ID
+                'name'         => 'Amos Fine Spirits', // Or 'Amos Tindbwa'
                 'contact'      => '256700987654',
             ]);
             

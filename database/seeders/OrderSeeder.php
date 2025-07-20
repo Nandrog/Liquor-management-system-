@@ -59,6 +59,20 @@ class OrderSeeder extends Seeder
                     $finishedGoods->random(rand(1, 2)) // Assign 1 to 2 random finished goods
                 );
             }
+
+            // --- CREATE 15 SAMPLE VENDOR ORDERS ---
+            $vendors = \App\Models\Vendor::all();
+            for ($i = 0; $i < 15; $i++) {
+                $vendor = $vendors->random();
+                $user = $vendor->user;
+                $this->createOrder(
+                    $user, // The user creating the order
+                    OrderType::VENDOR_ORDER,
+                    OrderStatus::cases()[array_rand(OrderStatus::cases())],
+                    ['vendor_id' => $vendor->getKey()],
+                    $finishedGoods->random(rand(1, 2))
+                );
+            }
         });
 
         $this->command->info('Orders and Order Items seeded successfully!');
@@ -70,7 +84,7 @@ class OrderSeeder extends Seeder
     private function createOrder(User $creator, OrderType $type, OrderStatus $status, array $attributes, $products)
     {
         $orderData = array_merge([
-            'user_id' => $creator->id,
+            'user_id' => $creator->getKey(),
             'type' => $type,
             'status' => $status,
             'order_number' => strtoupper($type->value) . '-' . now()->format('Ymd') . '-' . uniqid(),
