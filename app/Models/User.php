@@ -95,9 +95,9 @@ class User extends Authenticatable
         return $this->hasOne(Supplier::class);
     }
 
-    public function vendor(): BelongsTo
+    public function vendor(): HasOne
     {
-        return $this->belongsTo(Vendor::class);
+        return $this->hasOne(Vendor::class, 'user_id', 'id');
     }
 
     public function productionPlant(): BelongsTo

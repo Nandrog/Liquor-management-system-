@@ -196,7 +196,7 @@ Route::middleware(['auth', 'role:Liquor Manager|Finance|Procurement Officer'])
     |--------------------------------------------------------------------------
     */
         // Example: Route::get('/inventory', [InventoryStockController::class, 'index'])->name('inventory.index');
-    
+
 
 
     // All routes for a Liquor Manager's specific actions.
@@ -413,10 +413,17 @@ Route::middleware(['auth'])->group(function () {
     // 4. Vendor Routes (Placing Orders)
     Route::middleware('role:Vendor')->prefix('vendor')->name('vendor.')->group(function () {
         Route::resource('orders', VendorOrderController::class)->only(['index', 'show', 'create', 'store']);
+         Route::get('orders', [VendorOrderController::class, 'index'])->name('orders.index');
         Route::resource('products', VendorProductController::class)->only(['index', 'edit', 'update']);
         Route::get('/products', [VendorProductController::class, 'index'])->name('products.index');
         Route::patch('/products/{product}', [VendorProductController::class, 'update'])->name('products.update');
+         Route::get('/orders/{order}', [VendorOrderController::class, 'show'])->name('orders.show');
         Route::patch('/products/bulk-update', [VendorProductController::class, 'bulkUpdate'])->name('products.bulk-update');
+        // Route to show the payment page for a specific order
+        Route::get('/orders/{order}/payment', [VendorOrderController::class, 'showPaymentPage'])->name('orders.payment.create');
+
+        // Route to process the payment (this would interact with a payment gateway)
+        Route::post('/orders/{order}/payment', [VendorOrderController::class, 'processPayment'])->name('orders.payment.store');
     });
 
     /*

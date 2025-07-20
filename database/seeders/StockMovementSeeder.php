@@ -13,20 +13,31 @@ class StockMovementSeeder extends Seeder
     public function run()
     {
         $products = Product::pluck('id');
-        $warehouses = Warehouse::pluck('warehouse_id'); // ✅ updated to match your schema
+        $warehouses = Warehouse::pluck('warehouse_id');
 
         foreach ($products as $productId) {
-            $numMovements = rand(3, 7); // varying number of movements per product
+            $numMovements = rand(3, 6);
 
             for ($i = 0; $i < $numMovements; $i++) {
-                StockMovement::create([
-                    'product_id' => $productId,
-                    'warehouse_id' => $warehouses->random(), // ✅ updated
-                    'quantity' => rand(1, 100),
-                    'movement_type' => collect(['in', 'out', 'transfer'])->random(),
-                    'created_at' => Carbon::now()->subDays(rand(0, 30)),
-                    'updated_at' => now(),
-                ]);
+                $randomDate = Carbon::now()
+                    ->subDays(rand(0, 30))
+                    ->setTime(rand(6, 18), rand(0, 59));
+
+                // Create instance, disable timestamps, set fields manually
+                $movement = new StockMovement();
+                $movement->product_id = $productId;
+                $movement->warehouse_id = $warehouses->random();
+                $movement->quantity = rand(10, 100);
+                $movement->movement_type = collect(['in', 'out', 'transfer'])->random();
+
+                // Set varying date values
+                $movement->created_at = $randomDate;
+                $movement->updated_at = $randomDate;
+
+                // ❗ Prevent Laravel from overriding timestamps
+                $movement->timestamps = false;
+
+                $movement->save();
             }
         }
     }
