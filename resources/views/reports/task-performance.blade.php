@@ -34,61 +34,67 @@
 
     {{-- ✅ Chart.js --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    const ctx = document.getElementById('taskStatusChart').getContext('2d');
-    const taskStatusChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: {!! json_encode($taskStatusCounts->keys()) !!},
-            datasets: [{
-                label: 'Number of Tasks',
-                data: {!! json_encode($taskStatusCounts->values()) !!},
-                backgroundColor: '#007bff',
-                borderRadius: 6,
-                barThickness: 40,
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: false },
-                title: {
-                    display: true,
-                    text: '',
-                    font: {
-                        size: 18,
-                        weight: 'bold'
-                    }
-                }
+    <script>
+        const ctx = document.getElementById('taskStatusChart').getContext('2d');
+
+        const taskStatusChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode($taskStatusCounts->keys()) !!},
+                datasets: [{
+                    label: 'Number of Tasks',
+                    data: {!! json_encode($taskStatusCounts->values()) !!},
+                    backgroundColor: [
+                        '#4CAF50', // completed
+                        '#FFC107', // in_progress
+                        '#F44336', // overdue
+                        '#2196F3'  // pending
+                    ],
+                    borderRadius: 6,
+                    barThickness: 40,
+                }]
             },
-            scales: {
-                y: {
-                    beginAtZero: true,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
                     title: {
                         display: true,
-                        text: 'Number of Employees',
+                        text: '',
                         font: {
-                            size: 14,
+                            size: 18,
                             weight: 'bold'
                         }
-                    },
-                    ticks: {
-                        precision: 0,
-                        stepSize: 1
                     }
                 },
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Tasks Distributed by Status',
-                        font: {
-                            size: 14,
-                            weight: 'bold'
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Employees',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            }
+                        },
+                        ticks: {
+                            precision: 0,
+                            stepSize: 1
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Tasks Distributed by Status',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            }
                         }
                     }
                 }
             }
-        }
-    });
-</script>
+        });
+    </script>
 </x-app-layout>

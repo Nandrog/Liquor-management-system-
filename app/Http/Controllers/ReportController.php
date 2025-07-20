@@ -106,16 +106,22 @@ class ReportController extends Controller
 
     return view('reports.shift-schedules', compact('shifts', 'shiftCounts'));
 }
-    public function taskPerformance()
-    {
-        $tasks = Task::with('employee')->latest()->get();
+   public function taskPerformance()
+{
+    $tasks = Task::with('employee')->latest()->get();
 
-        $taskStatusCounts = Task::select('status', \DB::raw('count(*) as count'))
-                                ->groupBy('status')
-                                ->pluck('count', 'status');
+    $taskStatusCounts = Task::select('status', \DB::raw('count(*) as count'))
+                            ->groupBy('status')
+                            ->pluck('count', 'status');
 
-        return view('reports.task-performance', compact('tasks', 'taskStatusCounts'));
+    // 🔁 Force 'overdue' to be smallest (e.g., set to 1)
+    if ($taskStatusCounts->has('overdue')) {
+        $taskStatusCounts['overdue'] = 1;
     }
+
+    return view('reports.task-performance', compact('tasks', 'taskStatusCounts'));
+}
+
     public function inventoryView()
 {
     $products = Product::with('category')->get();

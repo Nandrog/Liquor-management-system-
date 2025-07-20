@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use App\Models\StockMovement;
 use App\Models\Product;
 use App\Models\Warehouse;
+use App\Models\WorkDistribution\Employee;
 use Illuminate\Support\Carbon;
 
 class StockMovementSeeder extends Seeder
@@ -14,6 +15,7 @@ class StockMovementSeeder extends Seeder
     {
         $products = Product::pluck('id');
         $warehouses = Warehouse::pluck('warehouse_id');
+        $employees = Employee::pluck('id'); // optional if employee_id is needed
 
         foreach ($products as $productId) {
             $numMovements = rand(3, 6);
@@ -23,21 +25,23 @@ class StockMovementSeeder extends Seeder
                     ->subDays(rand(0, 30))
                     ->setTime(rand(6, 18), rand(0, 59));
 
-                // Create instance, disable timestamps, set fields manually
-                $movement = new StockMovement();
-                $movement->product_id = $productId;
-                $movement->warehouse_id = $warehouses->random();
-                $movement->quantity = rand(10, 100);
-                $movement->movement_type = collect(['in', 'out', 'transfer'])->random();
+                // Pick two different warehouse IDs
+                $fromWarehouse = $warehouses->random();
+                do {
+                    $toWarehouse = $warehouses->random();
+                } while ($toWarehouse === $fromWarehouse);
 
-                // Set varying date values
-                $movement->created_at = $randomDate;
-                $movement->updated_at = $randomDate;
-
-                // ❗ Prevent Laravel from overriding timestamps
-                $movement->timestamps = false;
-
-                $movement->save();
+                StockMovement::create([
+                    'product_id' => $productId,
+                    'from_warehouse_id' => $fromWarehouse,
+                    'to_warehouse_id' => $toWarehouse,
+                    'employee_id' => $employees->random(),
+                    'quantity' => rand(10, 100),
+                    'moved_at' => $randomDate,
+                    'notes' => 'Auto-generated stock movement',
+                    'created_at' => $randomDate,
+                    'updated_at' => $randomDate,
+                ]);
             }
         }
     }

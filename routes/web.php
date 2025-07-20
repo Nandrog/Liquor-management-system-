@@ -165,7 +165,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/chats', [ChatController::class, 'users'])->name('chat.page');
 
 
-Route::middleware(['auth', 'role:Liquor Manager|Finance|Procurement Officer'])
+Route::middleware(['auth', 'role:Liquor Manager|Finance|Procurement Officer|Manufacturer'])
     ->prefix('reports')
     ->name('reports.')
     ->group(function () {

@@ -13,7 +13,7 @@
     <div class="box mb-4">
         <h3 style="font-size: 1.1rem; font-weight: bold;">🧑‍💼 Workforce Reports</h3>
 
-        @if (array_intersect($roles, ['Finance', 'Liquor Manager', 'Procurement Officer']))
+        @if (array_intersect($roles, ['Finance', 'Liquor Manager', 'Procurement Officer','Manufacturer']))
             <a href="{{ route('reports.task_performance') }}" class="button" target="_blank">
                 ✅ Task Performance Report
             </a>
