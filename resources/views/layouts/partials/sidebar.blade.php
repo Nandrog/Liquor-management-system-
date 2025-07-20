@@ -12,8 +12,8 @@
     <nav class="sidebar-nav">
         <ul class="list-unstyled">
             {{-- Common Links --}}
-            <li>
-                <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+            <li class="">
+                <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard')}}">
                     <i class="bi bi-house-door-fill me-2"></i> Home
                 </a>
             </li>

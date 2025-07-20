@@ -47,7 +47,17 @@ class DashboardController extends Controller
 
         $messages = Message::where('receiver_id', Auth::id())->where('is_read',false)->count();
         $itemsAvailable = Product::Where('type','raw_material')->count();
-        $orderspaid = Order::where('type','supplier_order')->where('status','paid')->where('supplier_id',Auth::id())->count();
+        
+        // Get the supplier record for the current user
+        $supplier = \App\Models\Supplier::where('user_id', Auth::id())->first();
+
+        $orderspaid = 0;
+        if ($supplier) {
+            $orderspaid = Order::where('type', 'supplier_order')
+                ->where('status', 'paid')
+                ->where('supplier_id', $supplier->id)
+                ->count();
+        }
 
         $cards = [
             [
