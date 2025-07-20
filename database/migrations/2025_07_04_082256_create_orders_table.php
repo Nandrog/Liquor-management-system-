@@ -23,6 +23,7 @@ class CreateOrdersTable extends Migration
 
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('customer_id')->nullable()->constrained('customers')->onDelete('cascade');
 
             $table->string('shipping_address')->nullable();
             $table->string('city')->nullable();
@@ -30,6 +31,7 @@ class CreateOrdersTable extends Migration
 
             $table->string('status');
             $table->timestamp('delivered_at')->nullable();
+           
             $table->timestamp('paid_at')->nullable();
             $table->decimal('total_amount', 10, 2)->default(0);
             $table->string('payment_status')->default('pending');

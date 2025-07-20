@@ -32,6 +32,22 @@ class VendorSeeder extends Seeder
                                 'contact' => '00809097656'
     ]);
 
+        // Retrieve or create a user for the vendor
+        $user1 = \App\Models\User::firstOrCreate([
+            'email' => 'amos@example.com'
+        ], [
+            'firstname' => 'Amos',
+            'lastname' => 'Tindbwa',
+            'username' => 'amostindbwa',
+            'password' => bcrypt('password123')
+        ]);
+
+        Vendor::create([
+                'user_id'      => $user1->getKey(), // <-- Use getKey() for user ID
+                'name'         => 'Amos Fine Spirits', // Or 'Amos Tindbwa'
+                'contact'      => '256700987654',
+            ]);
+            
         // This command will output a message to your console when seeding is successful.
         $this->command->info('Vendors table seeded successfully!');
     }

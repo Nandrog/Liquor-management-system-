@@ -37,6 +37,7 @@ use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalesReportController;
 use App\Modules\Inventory\Http\Controllers\Finance\OrderReportController;
+use App\Modules\Inventory\Http\Controllers\FiOrderReportController;
 //use App\Modules\Inventory\Http\Controllers\MaPurchaseOrderController;
 
 
@@ -196,7 +197,7 @@ Route::middleware(['auth', 'role:Liquor Manager|Finance|Procurement Officer'])
     |--------------------------------------------------------------------------
     */
         // Example: Route::get('/inventory', [InventoryStockController::class, 'index'])->name('inventory.index');
-    
+
 
 
     // All routes for a Liquor Manager's specific actions.
@@ -222,7 +223,7 @@ Route::middleware(['auth', 'role:Liquor Manager|Finance|Procurement Officer'])
         Route::get('/items', [FiItemController::class, 'index'])->name('items.index');
         Route::patch('/items/{product}', [FiItemController::class, 'updatePrice'])->name('items.update_price');
         Route::get('/supplier-orders', [OrderReportController::class, 'supplierOrders'])->name('orders.supplier_report');
-
+        Route::get('/sales-orders-report', [FiOrderReportController::class, 'salesOrders'])->name('orders.sales_report');
         Route::get('/tasks', [TaskController::class, 'index'])->name('work-distribution.task-list');
         Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
         Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
@@ -268,7 +269,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
     // Individual PDF report routes
-    
+
     Route::get('/reports/sales', [ReportController::class, 'salesPdf'])->name('reports.sales');
     Route::get('/reports/vendor', [ReportController::class, 'vendorPdf'])->name('reports.vendor');
 Route::get('/reports/inventory', [ReportController::class, 'inventoryView'])->name('reports.inventory');
@@ -413,10 +414,19 @@ Route::middleware(['auth'])->group(function () {
     // 4. Vendor Routes (Placing Orders)
     Route::middleware('role:Vendor')->prefix('vendor')->name('vendor.')->group(function () {
         Route::resource('orders', VendorOrderController::class)->only(['index', 'show', 'create', 'store']);
+        Route::get('orders', [VendorOrderController::class, 'index'])->name('orders.index');
+        Route::get('Customer-orders', [CartController::class, 'indexs'])->name('orders.indexs');
         Route::resource('products', VendorProductController::class)->only(['index', 'edit', 'update']);
         Route::get('/products', [VendorProductController::class, 'index'])->name('products.index');
+        Route::get('/customer-carts', [VendorOrderController::class, 'showCustomerCartLookup'])->name('carts.lookup');
         Route::patch('/products/{product}', [VendorProductController::class, 'update'])->name('products.update');
+        Route::get('/orders/{order}', [VendorOrderController::class, 'show'])->name('orders.show');
         Route::patch('/products/bulk-update', [VendorProductController::class, 'bulkUpdate'])->name('products.bulk-update');
+        // Route to show the payment page for a specific order
+        Route::get('/orders/{order}/payment', [VendorOrderController::class, 'showPaymentPage'])->name('orders.payment.create');
+
+        // Route to process the payment (this would interact with a payment gateway)
+        Route::post('/orders/{order}/payment', [VendorOrderController::class, 'processPayment'])->name('orders.payment.store');
     });
 
     /*

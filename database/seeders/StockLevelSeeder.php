@@ -22,7 +22,7 @@ class StockLevelSeeder extends Seeder
                         'product_id' => $product->id,
                     ],
                     [
-                        'quantity' => rand(50, 500),
+                        'quantity' => rand(500, 1000),
                     ]
                 );
             }

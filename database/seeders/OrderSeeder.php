@@ -1,176 +1,122 @@
 <?php
-/*
+
 namespace Database\Seeders;
 
+use App\Enums\OrderStatus;
+use App\Enums\OrderType;
+use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
-use App\Models\OrderItem;
+use App\Models\Supplier;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-//use Carbon\Carbon;
-use App\Models\Supplier;
-use App\Models\User;
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
-use Illuminate\Support\Carbon;
 
 class OrderSeeder extends Seeder
 {
     public function run(): void
     {
-        if (User::count() == 0) {
-            $this->command->warn('No users found. Please seed users first.');
+        // --- PREPARE DATA ---
+        // Get the actors (users, suppliers, customers)
+        $procurementOfficer = User::role('Procurement Officer')->first();
+        $liquorManager = User::role('Liquor Manager')->first();
+        
+        // Get Supplier PROFILES, not users
+        $suppliers = Supplier::all();
+        $customers = Customer::all();
+
+        // Get Products to add to orders
+        $rawMaterials = Product::where('type', 'raw_material')->get();
+        $finishedGoods = Product::where('type', 'finished_good')->get();
+
+        // --- VALIDATE DATA ---
+        if ($suppliers->isEmpty() || $customers->isEmpty() || $rawMaterials->isEmpty() || $finishedGoods->isEmpty()) {
+            $this->command->warn('Skipping OrderSeeder due to missing base data (Suppliers, Customers, or Products).');
             return;
         }
 
-        // Supplier is nullable, so no error if none exists
-        $suppliers = Supplier::pluck('id')->toArray();
-        $users = User::pluck('id')->toArray();
-
-        $statuses = ['pending', 'processing', 'completed', 'cancelled'];
-        $paymentStatuses = ['pending', 'paid', 'failed'];
-
-        for ($i = 1; $i <= 15; $i++) {
-            $supplierId = count($suppliers) > 0 ? $suppliers[array_rand($suppliers)] : null;
-            $userId = $users[array_rand($users)];
-
-            Order::create([
-                'supplier_id'     => $supplierId,
-                'type'            => ['purchase', 'return', 'transfer'][array_rand(['purchase', 'return', 'transfer'])],
-                'user_id'         => $userId,
-                'status'          => $statuses[array_rand($statuses)],
-                'delivered_at'    => rand(0,1) ? Carbon::now()->subDays(rand(0, 10)) : null,
-                'paid_at'         => rand(0,1) ? Carbon::now()->subDays(rand(0, 10)) : null,
-                'total_amount'    => rand(1000, 50000),
-                'payment_status'  => $paymentStatuses[array_rand($paymentStatuses)],
-                'transaction_id'  => rand(0,1) ? 'txn_' . Str::random(10) : null,
-            ]);
-        }
-
-        $this->command->info('✅ Orders seeded!');
-
-        // Additional seeding logic for orders
-        $statuses = ['pending', 'completed', 'cancelled', 'processing'];
-        $paymentStatuses = ['paid', 'unpaid', 'refunded'];
-
-        // Generate orders
-        $baseDate = Carbon::now()->subWeeks(52);
-
-        // Get all user IDs once
-        $userIds = User::pluck('id')->toArray();
-
-        for ($i = 0; $i < 52; $i++) {
-            $weekDate = (clone $baseDate)->addWeeks($i);
-
-            for($j = 0; $j < rand(3, 10); $j++){
-                DB::table('orders')->insert([
-                    'user_id' => $userIds[array_rand($userIds)],
-                    'status' => $statuses[array_rand($statuses)],
-                    'total_amount' => rand(1000, 50000) / 100, // amounts between 10.00 and 500.00
-                    'payment_status' => $paymentStatuses[array_rand($paymentStatuses)],
-                    'created_at' => $weekDate->copy()->addDays(rand(0, 6))->addHours(rand(0, 23))->addMinutes(rand(0, 59)),
-                    'updated_at' => now(),
-                ]);
+        // Use a transaction for safety
+        DB::transaction(function () use ($procurementOfficer, $liquorManager, $suppliers, $customers, $rawMaterials, $finishedGoods) {
+            
+            // --- CREATE 20 SAMPLE SUPPLIER ORDERS (PURCHASE ORDERS) ---
+            for ($i = 0; $i < 20; $i++) {
+                $this->createOrder(
+                    $procurementOfficer, // The user creating the order
+                    OrderType::SUPPLIER_ORDER,
+                    OrderStatus::cases()[array_rand(OrderStatus::cases())], // Pick a random status from the Enum
+                    ['supplier_id' => $suppliers->random()->id], // Assign a random Supplier
+                    $rawMaterials->random(rand(1, 3)) // Assign 1 to 3 random raw materials
+                );
             }
-        }
+
+            // --- CREATE 30 SAMPLE CUSTOMER ORDERS (SALES ORDERS) ---
+            for ($i = 0; $i < 30; $i++) {
+                $this->createOrder(
+                    $liquorManager, // The user creating the order
+                    OrderType::CUSTOMER_ORDER,
+                    OrderStatus::cases()[array_rand(OrderStatus::cases())], // Pick a random status
+                    ['customer_id' => $customers->random()->id], // Assign a random Customer
+                    $finishedGoods->random(rand(1, 2)) // Assign 1 to 2 random finished goods
+                );
+            }
+
+            // --- CREATE 15 SAMPLE VENDOR ORDERS ---
+            $vendors = \App\Models\Vendor::all();
+            for ($i = 0; $i < 15; $i++) {
+                $vendor = $vendors->random();
+                $user = $vendor->user;
+                $this->createOrder(
+                    $user, // The user creating the order
+                    OrderType::VENDOR_ORDER,
+                    OrderStatus::cases()[array_rand(OrderStatus::cases())],
+                    ['vendor_id' => $vendor->getKey()],
+                    $finishedGoods->random(rand(1, 2))
+                );
+            }
+        });
+
+        $this->command->info('Orders and Order Items seeded successfully!');
     }
-}
-*/
-namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\Product;
-use App\Models\User;
-use App\Models\Supplier;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Str;
-
-class OrderSeeder extends Seeder
-{
-    public function run(): void
+    /**
+     * A helper function to create a single order with its items.
+     */
+    private function createOrder(User $creator, OrderType $type, OrderStatus $status, array $attributes, $products)
     {
-        if (User::count() == 0) {
-            $this->command->warn('No users found. Please seed users first.');
-            return;
+        $orderData = array_merge([
+            'user_id' => $creator->getKey(),
+            'type' => $type,
+            'status' => $status,
+            'order_number' => strtoupper($type->value) . '-' . now()->format('Ymd') . '-' . uniqid(),
+            'payment_status' => ['pending', 'paid', 'failed'][array_rand(['pending', 'paid', 'failed'])],
+        ], $attributes);
+        
+        // Add paid_at and delivered_at dates for appropriate statuses
+        if (in_array($status, [OrderStatus::PAID, OrderStatus::DELIVERED, OrderStatus::REFUNDED])) {
+            $orderData['paid_at'] = now()->subDays(rand(1, 30));
+        }
+        if ($status === OrderStatus::DELIVERED) {
+            $orderData['delivered_at'] = now()->subDays(rand(0, 5));
         }
 
-        $productIds = Product::pluck('id')->toArray();
-        $userIds = User::pluck('id')->toArray();
-        $supplierIds = Supplier::pluck('id')->toArray();
+        $order = Order::create($orderData);
 
-        if (count($productIds) === 0) {
-            $this->command->warn('No products found. Please seed products first.');
-            return;
-        }
-
-        $statuses = ['pending', 'processing', 'completed', 'cancelled'];
-        $paymentStatuses = ['pending', 'paid', 'failed', 'unpaid', 'refunded'];
-
-        // 🔹 1. Create 15 random orders
-        for ($i = 0; $i < 15; $i++) {
-            $order = Order::create([
-                'supplier_id'     => count($supplierIds) ? $supplierIds[array_rand($supplierIds)] : null,
-                'type'            => ['purchase', 'return', 'transfer'][array_rand([0,1,2])],
-                'user_id'         => $userIds[array_rand($userIds)],
-                'status'          => $statuses[array_rand($statuses)],
-                'delivered_at'    => rand(0,1) ? Carbon::now()->subDays(rand(0, 10)) : null,
-                'paid_at'         => rand(0,1) ? Carbon::now()->subDays(rand(0, 10)) : null,
-                'total_amount'    => rand(1000, 50000),
-                'payment_status'  => $paymentStatuses[array_rand($paymentStatuses)],
-                'transaction_id'  => rand(0,1) ? 'txn_' . Str::random(10) : null,
+        // --- Create Order Items and Calculate Total ---
+        $totalAmount = 0;
+        foreach ($products as $product) {
+            $quantity = rand(5, 50);
+            $price = $product->unit_price;
+            $subtotal = $quantity * $price;
+            
+            $order->items()->create([
+                'product_id' => $product->id,
+                'quantity' => $quantity,
+                'price' => $price,
             ]);
 
-            // Add 1–5 random products to each order
-            $numItems = rand(1, 5);
-            for ($j = 0; $j < $numItems; $j++) {
-                OrderItem::create([
-                    'order_id'   => $order->id,
-                    'product_id' => $productIds[array_rand($productIds)],
-                    'quantity'   => rand(1, 10),
-                    'price'      => rand(1000, 10000) / 100,
-                ]);
-            }
+            $totalAmount += $subtotal;
         }
 
-        // 🔹 2. Create weekly orders for 52 weeks
-        $baseDate = Carbon::now()->subWeeks(52);
-
-        for ($i = 0; $i < 52; $i++) {
-            $weekDate = (clone $baseDate)->addWeeks($i);
-
-            //vary number of orders per week
-            $numOrders = intval(500 +sin($i / 6.0) * 400);
-
-            //$numOrders = rand(3, 10);
-            for ($j = 0; $j < $numOrders; $j++) {
-                $order = Order::create([
-                    'supplier_id'     => count($supplierIds) ? $supplierIds[array_rand($supplierIds)] : null,
-                    'type'            => ['purchase', 'return', 'transfer'][array_rand([0,1,2])],
-                    'user_id'         => $userIds[array_rand($userIds)],
-                    'status'          => $statuses[array_rand($statuses)],
-                    'delivered_at'    => rand(0,1) ? $weekDate->copy()->addDays(rand(0, 6)) : null,
-                    'paid_at'         => rand(0,1) ? $weekDate->copy()->addDays(rand(0, 6)) : null,
-                    'total_amount'    => rand(1000, 50000),
-                    'payment_status'  => $paymentStatuses[array_rand($paymentStatuses)],
-                    'transaction_id'  => rand(0,1) ? 'txn_' . Str::random(10) : null,
-                    'created_at'      => $weekDate->copy()->addDays(rand(0, 6))->addHours(rand(0, 23))->addMinutes(rand(0, 59)),
-                    'updated_at'      => now(),
-                ]);
-
-                // Add 1–4 order items per order
-                $numItems = rand(1, 4);
-                for ($k = 0; $k < $numItems; $k++) {
-                    OrderItem::create([
-                        'order_id'   => $order->id,
-                        'product_id' => $productIds[array_rand($productIds)],
-                        'quantity'   => rand(1, 8),
-                        'price'      => rand(500, 2000) / 100,
-                    ]);
-                }
-            }
-        }
-
-        $this->command->info('✅ Orders and order items seeded successfully!');
+        $order->update(['total_amount' => $totalAmount]);
     }
 }
