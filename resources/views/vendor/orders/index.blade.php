@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="h3 font-semibold text-xl text-gray-800 leading-tight">
-            Your Customer Orders
+            Your Vendor Orders
         </h2>
     </x-slot>
 
@@ -12,7 +12,7 @@
 
         <div class="card">
             <div class="card-header">
-                <h4>Incoming Orders</h4>
+                <h4>        Out-Going Orders</h4>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -20,7 +20,7 @@
                         <thead>
                             <tr>
                                 <th>Order #</th>
-                                <th>Customer Name</th>
+                                <th>vendor Name</th>
                                 <th>Status</th>
                                 <th>Total Amount</th>
                                 <th>Date Placed</th>
@@ -72,7 +72,7 @@
                             @empty
                                 <tr>
                                     <td colspan="6" class="text-center py-4">
-                                        <p>You have not received any orders yet.</p>
+                                        <p>You have not placed any orders yet.</p>
                                     </td>
                                 </tr>
                             @endforelse
