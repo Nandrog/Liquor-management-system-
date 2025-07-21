@@ -5,7 +5,7 @@
     <title>{{ config('app.name', 'LMS') }}</title>
 
     {{-- ✅ Add Favicon (Logo in browser tab) --}}
-    <link rel="icon" href="{{ asset('images/liquor-logo.jpg') }}" type="image/jpeg">
+    <link rel="icon" href="{{ asset('images/liquor logo.jpg') }}" type="image/jpeg">
 
     {{-- Styles and Scripts --}}
     @vite([
