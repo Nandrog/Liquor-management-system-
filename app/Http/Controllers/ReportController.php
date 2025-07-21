@@ -135,4 +135,10 @@ class ReportController extends Controller
         'productCounts' => $productCounts
     ]);
 }
+public function salesWeekly()
+{
+    // Sample data or logic to return a sales report
+    return view('reports.sales-weekly'); // Make sure this Blade view exists
+}
+
 }
