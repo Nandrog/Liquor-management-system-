@@ -21,4 +21,6 @@ use Illuminate\Database\Eloquent\Model;
     return $this->belongsTo(\App\Models\Sale::class, 'order_id');
 }
 
+
+
 }

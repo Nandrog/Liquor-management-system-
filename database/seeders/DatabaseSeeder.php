@@ -44,6 +44,8 @@ class DatabaseSeeder extends Seeder
             TaskSeeder::class,
             OrderSeeder::class, 
             VendorProductSeeder::class,
+            OrderItemSeeder::class,
+
             ShiftScheduleSeeder::class,
         ]);
 
