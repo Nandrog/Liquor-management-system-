@@ -22,7 +22,7 @@
                             </p>
                         </div>
                         <div class="text-right">
-                            <p><strong>Payment Status:</strong> {{ ucfirst($order->payment_status) }}</p>
+                            <p><strong>Payment Status:</strong> {{ ucfirst($order->payment_status->value) }}</p>
                             <p><strong>Total Amount:</strong>
                                 <span class="font-bold text-lg">UGX {{ number_format($order->total_amount, 2) }}</span>
                             </p>
