@@ -7,7 +7,7 @@
 
     <p><strong>Vendor:</strong> {{ $order->vendor->name }}</p>
     <p><strong>Status:</strong> {{ $order->status->value }}</p>
-    <p><strong>Total:</strong> ${{ number_format($order->total_amount, 2) }}</p>
+    <p><strong>Total:</strong> UGX{{ number_format($order->total_amount, 2) }}</p>
 
     @if($errors->any())
         <div class="text-red-500">{{ $errors->first() }}</div>

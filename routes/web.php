@@ -382,10 +382,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/supplier/orders/{order}/edit', [SupplierOrderController::class, 'edit'])->name('orders.edit');
         Route::get('/suppliers/payments', [PaymentController::class, 'index'])
         ->name('payments.index');
-         Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+        Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
         // Route to handle the submission of the edit form
         Route::put('/supplier/orders/{order}', [SupplierOrderController::class, 'update'])->name('orders.update');
         Route::delete('/supplier/orders/{order}', [SupplierOrderController::class, 'destroy'])->name('orders.destroy');
+        Route::put('/supplier-orders/{order}', [SupplierOrderController::class, 'update'])->name('orders.update');
         Route::get('orders/{order}', [SupplierOrderController::class, 'show'])->name('orders.show');
         Route::patch('orders/{order}', [SupplierOrderController::class, 'update'])->name('orders.update');
     });

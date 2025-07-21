@@ -31,12 +31,12 @@
                             @forelse ($orders as $order)
                                 <tr>
                                     <td>
-                                        <a href="{{ route('vendor.orders.show', $order) }}" class="fw-bold text-decoration-none">{{ $order->order_number }}</a>
+                                        <a href="{{ route('vendor.orders.show', $order) }}" class="fw-bold text-decoration-none">{{ $order->order_number ?? $order->id }}</a>
                                     </td>
                                     <td>
-                                        {{-- We can access the customer's name via the 'user' relationship --}}
-                                        {{ $order->user->name }}<br>
-                                        <small class="text-muted">{{ $order->user->email }}</small>
+                                        {{-- Using optional() is safer in case a user record is ever missing --}}
+                                        {{ optional($order->user)->name }}<br>
+                                        <small class="text-muted">{{ optional($order->user)->email }}</small>
                                     </td>
                                     <td>
                                         {{ $order->created_at->format('M d, Y') }}
@@ -45,20 +45,19 @@
                                         UGX {{ number_format($order->total_amount, 0) }}
                                     </td>
                                     <td>
-                                        {{-- A styled badge for the order status --}}
                                         <span class="badge
-                                            {{-- MODIFICATION 1: Use the full Enum case for safer comparison --}}
-                                            @switch($order->status)
-                                                @case(App\Enums\OrderStatus::PENDING) bg-warning text-dark @break
-                                                @case(App\Enums\OrderStatus::PROCESSING) bg-info text-dark @break
-                                                @case(App\Enums\OrderStatus::IN_TRANSIT) bg-primary @break
-                                                @case(App\Enums\OrderStatus::DELIVERED) bg-success @break
-                                                @case(App\Enums\OrderStatus::CANCELLED) bg-danger @break
+                                            {{-- MODIFICATION 1: Comparing the Enum's ->value is more reliable --}}
+                                            @switch($order->status->value)
+                                                @case('pending') bg-warning text-dark @break
+                                                @case('processing') bg-info text-dark @break
+                                                @case('in_transit') bg-primary @break
+                                                @case('delivered') bg-success @break
+                                                @case('cancelled') bg-danger @break
                                                 @default bg-secondary
                                             @endswitch
                                         ">
-                                            {{-- MODIFICATION 2: Access the string ->value of the Enum object --}}
-                                            {{ Str::title($order->status->value) }}
+                                            {{-- MODIFICATION 2: Using Str::title on the ->value gives consistent output --}}
+                                            {{ Str::title(str_replace('_', ' ', $order->status->value)) }}
                                         </span>
                                     </td>
                                     <td>
@@ -79,7 +78,6 @@
                 </div>
             </div>
             <div class="card-footer">
-                {{-- Render pagination links --}}
                 {{ $orders->links() }}
             </div>
         </div>
