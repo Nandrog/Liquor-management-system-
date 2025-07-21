@@ -5,7 +5,7 @@
     <title>{{ config('app.name', 'LMS') }}</title>
 
     {{-- ✅ Add Favicon (Logo in browser tab) --}}
-    <link rel="icon" href="{{ asset('images/liquor logo.jpg') }}" type="image/jpeg">
+    <link rel="icon" href="{{ asset('images/liquor-logo.jpg') }}" type="image/jpeg">
 
     {{-- Styles and Scripts --}}
     @vite([
@@ -38,12 +38,7 @@
             {{-- Header --}}
             @include('layouts.partials.header')
 
-            {{-- ✅ Logo Under Welcome/Header --}}
-            <div class="text-center py-3">
-                <img src="{{ asset('images/liquor logo.jpg') }}" 
-                     alt="Liquor Logo" 
-                     style="max-height: 80px; max-width: 200px;">
-            </div>
+           
 
             <!-- Page Content -->
             <main class="container-fluid py-4">
