@@ -82,13 +82,22 @@ class User extends Authenticatable
         return $this->hasOne(Customer::class);
     }
 
-    public function suppliedPurchases(): HasMany
+    public function supplierProfile(): HasOne
     {
-        // This tells Eloquent: "Look at the 'purchases' table. Find all records
-        // where the 'supplier_id' column on that table matches the 'id'
-        // of this User model."
-        return $this->hasMany(Order::class, 'supplier_id', 'id');
+        return $this->hasOne(Supplier::class, 'user_id');
     }
+
+    public function suppliedPurchases(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
+    {
+        return $this->hasManyThrough(
+            \App\Models\Order::class,
+            \App\Models\Supplier::class,
+            'user_id',      // Foreign key on Supplier table...
+            'supplier_id',  // Foreign key on Order table...
+            'id',           // Local key on User table...
+            'id'            // Local key on Supplier table...
+        );
+    }    
 
     public function supplier(): HasOne
     {
