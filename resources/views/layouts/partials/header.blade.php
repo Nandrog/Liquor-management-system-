@@ -2,6 +2,11 @@
 
 <header class="top-header d-flex justify-content-between align-items-center px-4 py-2">
     
+    {{-- LOGO added here --}}
+    <a href="{{ url('/') }}" class="d-flex align-items-center me-3">
+        <img src="{{ asset('images/liquor logo.jpg') }}" alt="Liquor Logo" style="max-height: 50px;">
+    </a>
+
     {{-- NEW: Slogan and Hamburger Icon for Mobile --}}
     <div class="d-flex align-items-center">
         <i class="bi bi-list me-2 d-md-none sidebar-toggle-btn"></i> {{-- Hamburger icon for mobile --}}

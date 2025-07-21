@@ -244,7 +244,8 @@ Route::middleware(['auth', 'role:Liquor Manager|Finance|Procurement Officer|Manu
         Route::get('/tasks', [ShiftController::class, 'index'])->name('work-distribution.shift-list');
         Route::get('/tasks/create', [ShiftController::class, 'create'])->name('shift.create');
         Route::post('/tasks', [ShiftController::class, 'store'])->name('shift.store');
-        Route::get('/reports/sales/weekly', [SalesReportController::class, 'weeklyReport'])->name('reports.sales.weekly');
+        Route::get('/reports/sales/weekly', [ReportController::class, 'weeklySales'])->name('reports.sales.weekly');
+
     });
 
 
@@ -566,6 +567,10 @@ Route::middleware(['auth'])->group(function () {
     // This route will download the report as a PDF
     Route::get('/reports/weekly-summary/download', [SalesReportController::class, 'downloadWeeklySummaryReport'])
          ->name('reports.weekly_summary.download');
+
+Route::get('/reports/sales/weekly', [SalesReportController::class, 'showWeeklySummaryReport'])->name('reports.sales.weekly');
+Route::get('/reports/sales/weekly/download', [SalesReportController::class, 'downloadWeeklySummaryReport'])->name('reports.sales.weekly.download');
+
 });
 
 

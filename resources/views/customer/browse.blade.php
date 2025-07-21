@@ -17,13 +17,13 @@
                 <div class="border p-4 rounded-lg shadow">
                     <h3 class="text-lg font-bold">{{ $vendorProduct->product->name }}</h3>
                     <p class="text-gray-600">{{ $vendorProduct->product->description }}</p>
-                    <p class="text-2xl font-light my-2">${{ number_format($vendorProduct->retail_price, 2) }}</p>
+                    <p class="text-2xl font-light my-2">UGX{{ number_format($vendorProduct->retail_price, 2) }}</p>
 
                     <div class="mt-4">
                         <label for="product_{{ $vendorProduct->product_id }}" class="block text-sm font-medium text-gray-700">Quantity:</label>
-                        <input type="number" 
+                        <input type="number"
                                id="product_{{ $vendorProduct->product_id }}"
-                               name="products[{{ $vendorProduct->product_id }}][quantity]" 
+                               name="products[{{ $vendorProduct->product_id }}][quantity]"
                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                min="0"
                                value="0">

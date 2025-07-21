@@ -25,7 +25,7 @@
                     <td class="px-6 py-4 whitespace-nowrap">#{{ $order->id }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $order->created_at->toFormattedDateString() }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $order->vendor->name ?? 'N/A' }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${{ number_format($order->total_amount, 2) }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">UGX{{ number_format($order->total_amount, 2) }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                             {{ Str::title(str_replace('_', ' ', $order->status->value)) }}
