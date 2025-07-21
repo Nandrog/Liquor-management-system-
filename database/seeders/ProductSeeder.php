@@ -102,10 +102,35 @@ class ProductSeeder extends Seeder
         foreach ($products as $productData) {
             // Set defaults for finished goods if not specified
             $type = $productData['type'] ?? 'raw_material';
-            $uom = $productData['uom'] ?? (Str::contains($productData['name'], ['Pack']) ? 'Pack' : 'Bottle');
-            
+            // Assign appropriate unit of measure
+            if (isset($productData['uom'])) {
+                $uom = $productData['uom'];
+            } elseif ($type === 'finished_good') {
+                if (Str::contains($productData['name'], ['Pack', '6-Pack', '4-Pack'])) {
+                    $uom = 'Pack';
+                } elseif (Str::contains($productData['name'], ['Bottle', 'Vodka', 'Whisky', 'Gin', 'Cognac', 'Beer', 'Cider', 'Spirits'])) {
+                    $uom = 'Bottle';
+                } else {
+                    $uom = 'Unit';
+                }
+            } elseif ($type === 'raw_material') {
+                if (Str::contains($productData['name'], ['Sugar', 'Molasses', 'High-Fructose Corn Syrup', 'Bananas', 'Cassava'])) {
+                    $uom = 'Kg';
+                } elseif (Str::contains($productData['name'], ['Yeast', 'Citric Acid', 'Lactic Acid', 'Potassium Sorbate', 'Spirit Caramel', 'Activated Carbon', 'Gypsum', 'Calcium Chloride', 'Epsom Salt', 'Campden Tablets', 'Irish Moss', 'Additives', 'Chemicals'])) {
+                    $uom = 'Kg';
+                } elseif (Str::contains($productData['name'], ['Glass Bottles', 'Bottle Caps', 'Paper Labels'])) {
+                    $uom = 'Piece';
+                } elseif (Str::contains($productData['name'], ['Juniper Berries', 'Coriander', 'Angelica Root', 'Lemon Peel', 'Orris Root', 'Grains of Paradise', 'Cubeb Berries', 'Cassia Bark', 'Almonds', 'Licorice', 'Hops', 'Peat', 'Charcoal', 'Corn', 'Rye', 'Malted Barley', 'Unmalted Barley', 'Wheat'])) {
+                    $uom = 'Kg';
+                } else {
+                    $uom = 'Unit';
+                }
+            } else {
+                $uom = 'Unit';
+            }
+
             // Randomly assign a vendor to finished goods
-          $vendorName = $type === 'finished_good' ? $vendorNames[array_rand($vendorNames)] : null;
+            $vendorName = $type === 'finished_good' ? $vendorNames[array_rand($vendorNames)] : null;
 
             Product::updateOrCreate(
                 // Use a generated SKU as the unique identifier to prevent duplicates
