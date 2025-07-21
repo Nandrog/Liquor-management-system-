@@ -5,6 +5,19 @@
         </h2>
     </x-slot>
 
+    @push('styles')
+    <style>
+        .progress-track { display: flex; list-style-type: none; padding: 0; margin: 40px 0; justify-content: space-between; position: relative; }
+        .progress-track::before { content: ''; background-color: #ddd; position: absolute; top: 50%; left: 0; transform: translateY(-50%); height: 4px; width: 100%; z-index: 1; }
+        .progress-track::after { content: ''; background-color: #0d6efd; /* Blue color for progress */ position: absolute; top: 50%; left: 0; transform: translateY(-50%); height: 4px; width: var(--progress-width, 0%); z-index: 2; transition: width 0.5s ease; }
+        .progress-step { position: relative; z-index: 3; text-align: center; width: 100px; }
+        .progress-step .step-icon { width: 40px; height: 40px; border-radius: 50%; background: #ddd; border: 3px solid #ddd; display: inline-flex; justify-content: center; align-items: center; color: #fff; font-size: 1.2rem; }
+        .progress-step.completed .step-icon { background: #0d6efd; border-color: #0d6efd; }
+        .progress-step .step-label { margin-top: 10px; font-size: 0.9rem; color: #666; }
+        .progress-step.completed .step-label { color: #000; font-weight: bold; }
+    </style>
+    @endpush
+
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -68,9 +81,14 @@
                     <!-- Action Buttons -->
                     @if($order->status->value === 'pending_approval')
                         <div class="mt-6 flex space-x-4">
+                            <form action="{{ route('manufacturer.orders.update', $order) }}" method="POST">
+                            @csrf
+                                @method('PATCH')
+                                <input type="hidden" name="status" value="confirmed">
                             <a href="{{ route('payment.form', ['order' => $order->id]) }}" class="auth-button-green auth-button">
-                                Accept & Proceed to Pay
+                                <button type="submit" class="bg-green-500 text-white p-2 rounded auth-button-green auth-button">Accept & Pay</button>
                             </a>
+                            </form>
 <br>
                             <form action="{{ route('manufacturer.orders.update', $order) }}" method="POST">
                                 @csrf
@@ -109,8 +127,11 @@
 
                                 <button type="submit" class="auth-button-green auth-button">Confirm & Update Inventory</button>
                             </form>
-                             @php
-                    $statuses = ['pending', 'processing', 'in_transit', 'delivered', 'cancelled'];
+                        </div>
+                    @endif
+
+                        @php
+                    $statuses = ['pending', 'paid', 'delivering', 'delivered', 'cancelled'];
                     $currentStatusIndex = array_search($order->status->value, $statuses);
                     // Prevent division by zero if there's only one status
                     $progressWidth = (count($statuses) > 1) ? ($currentStatusIndex / (count($statuses) - 1)) * 100 : 100;
@@ -122,20 +143,17 @@
                             <li class="progress-step {{ $currentStatusIndex >= $index ? 'completed' : '' }}">
                                 <div class="step-icon">
                                     @if($status === 'pending') <i class="bi bi-card-checklist"></i>
-                                    @elseif($status === 'processing') <i class="bi bi-gear"></i>
-                                    @elseif($status === 'in_transit') <i class="bi bi-truck"></i>
+                                    @elseif($status === 'paid') <i class="bi bi-gear"></i>
+                                    @elseif($status === 'delivering') <i class="bi bi-truck"></i>
                                     @elseif($status === 'delivered') <i class="bi bi-house-check-fill"></i>
                                     @endif
                                 </div>
-                                <div class="step-label">{{ Str::title($status) }}</div>
+                                <div class="step-label">{{ ucwords(str_replace('_', ' ', $status)) }}</div>
                             </li>
                         @endif
                     @endforeach
                 </ul>
                 <hr class="my-4">
-                        </div>
-                    @endif
-
                 </div>
             </div>
         </div>
