@@ -609,13 +609,16 @@ Route::get('/reports/inventory-raw-materials', [InventoryReportController::class
      ->name('reports.inventory.raw_materials');
     
 
-// ... inside your auth middleware group ...
 
-// A route to show the list of products
+
+
 Route::get('/products', [ProductLogController::class, 'index'])->name('products.index');
 
-// The new route to handle adding stock to a specific product
+
 Route::post('/products/{product}/add-stock', [ProductLogController::class, 'addStock'])->name('products.add-stock');
+
+Route::get('/reports/inventory-manufacturer', [InventoryReportController::class, 'showManufacturerReport'])
+     ->name('reports.inventory.manufacturer');
 
 });
 
