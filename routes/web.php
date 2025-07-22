@@ -41,6 +41,7 @@ use App\Http\Controllers\SalesReportController;
 use App\Modules\Inventory\Http\Controllers\Finance\OrderReportController;
 use App\Modules\Inventory\Http\Controllers\FiOrderReportController;
 use App\Http\Controllers\ProductLogController;
+use App\Modules\Production\Http\Controllers\Manager\ProductionRunController;
 //use App\Modules\Inventory\Http\Controllers\MaPurchaseOrderController;
 
 
@@ -213,7 +214,7 @@ Route::middleware(['auth', 'role:Liquor Manager|Finance|Procurement Officer|Manu
         Route::get('/stock-levels', [LmStockLevelController::class, 'index'])->name('stock_levels.index');
         Route::resource('items', LmItemController::class);
         Route::get('/purchase-orders', [MaPurchaseOrderController::class, 'index'])->name('purchase_orders.index');
-
+        Route::get('/production-runs', [ProductionRunController::class, 'index'])->name('production_runs.index');
         Route::get('/tasks', [TaskController::class, 'index'])->name('work-distribution.task-list');
         Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
         Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
@@ -512,6 +513,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/analytics/menu', [AnalyticsController::class, 'analyticsMenu'])->name('analytics.menu');
         Route::get('/analytics/forecast', [AnalyticsController::class, 'forecast'])->name('analytics.forecast');
         Route::get('/analytics/segmentation', [AnalyticsController::class, 'segmentation'])->name('analytics.segmentation');
+        Route::get('/analytics/forecast/month/{month}', [AnalyticsController::class, 'getDailySales']);
     });
 
     /*

@@ -10,6 +10,112 @@ class RecipeSeeder extends Seeder
 {
     public function run(): void
     {
+        // --- Recipe for Blue Label Vodka ---
+        $this->createRecipe(
+            'blue-label',
+            "Standard Blue Label Vodka Recipe",
+            [
+                'wheat' => 0.15,
+                'activated-carbon' => 0.010,
+                'glass-bottles-750ml' => 1,
+                'bottle-caps' => 1,
+                'paper-labels' => 1,
+            ]
+        );
+
+        // --- Recipe for Bailey (Spirits) ---
+        $this->createRecipe(
+            'bailey',
+            "Standard Bailey Recipe",
+            [
+                'sugar' => 0.10,
+                'glass-bottles-750ml' => 1,
+                'bottle-caps' => 1,
+                'paper-labels' => 1,
+            ]
+        );
+
+        // --- Recipe for Malibu (Spirits) ---
+        $this->createRecipe(
+            'malibu',
+            "Standard Malibu Recipe",
+            [
+                'sugar' => 0.10,
+                'glass-bottles-750ml' => 1,
+                'bottle-caps' => 1,
+                'paper-labels' => 1,
+            ]
+        );
+
+        // --- Recipe for Bombay Sapphire (Gin) ---
+        $this->createRecipe(
+            'bombay-sapphire',
+            "Standard Bombay Sapphire Gin Recipe",
+            [
+                'juniper-berries' => 0.010,
+                'coriander' => 0.005,
+                'angelica-root' => 0.002,
+                'lemon-peel' => 0.003,
+                'glass-bottles-750ml' => 1,
+                'bottle-caps' => 1,
+                'paper-labels' => 1,
+            ]
+        );
+
+        // --- Recipe for Nile Special IPA 6-Pack (Beer) ---
+        $this->createRecipe(
+            'nile-special-ipa-6-pack',
+            "Standard Nile Special IPA Recipe",
+            [
+                'malted-barley' => 0.17,
+                'hops' => 0.002,
+                'Yeast' => 0.005,
+                'glass-bottles-500ml' => 6,
+                'bottle-caps' => 6,
+                'paper-labels' => 1,
+            ]
+        );
+
+        // --- Recipe for Smirnoff 4-Pack (Cider) ---
+        $this->createRecipe(
+            'smirnoff-4-pack',
+            "Standard Smirnoff 4-Pack Recipe",
+            [
+                'sugar' => 0.10,
+                'Yeast' => 0.005,
+                'glass-bottles-500ml' => 4,
+                'bottle-caps' => 4,
+                'paper-labels' => 1,
+            ]
+        );
+
+        // --- Recipe for Smirnoff 6-Pack (Cider) ---
+        $this->createRecipe(
+            'smirnoff-6-pack',
+            "Standard Smirnoff 6-Pack Recipe",
+            [
+                'sugar' => 0.10,
+                'Yeast' => 0.005,
+                'glass-bottles-500ml' => 6,
+                'bottle-caps' => 6,
+                'paper-labels' => 1,
+            ]
+        );
+
+        // --- Recipe for Club Beer IPA 6-Pack (Beer) ---
+        $this->createRecipe(
+            'club-beer-ipa-6-pack',
+            "Standard Club Beer IPA Recipe",
+            [
+                'malted-barley' => 0.17,
+                'hops' => 0.002,
+                'Yeast' => 0.005,
+                'glass-bottles-500ml' => 6,
+                'bottle-caps' => 6,
+                'paper-labels' => 1,
+            ]
+        );
+    
         // --- Recipe for Uganda Waragi 750ml ---
         $this->createRecipe(
             'uganda-waragi-premium', // SKU of the finished good

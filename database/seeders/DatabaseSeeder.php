@@ -45,7 +45,7 @@ class DatabaseSeeder extends Seeder
             OrderSeeder::class, 
             VendorProductSeeder::class,
             OrderItemSeeder::class,
-
+            ProductionRunSeeder::class,
             ShiftScheduleSeeder::class,
         ]);
 
