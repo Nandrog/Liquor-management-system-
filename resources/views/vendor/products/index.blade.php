@@ -27,7 +27,7 @@
                 {{-- This single form will submit all price changes at once. --}}
                 <form action="{{ route('vendor.products.bulk-update') }}" method="POST">
                     @csrf
-                    @method('PATCH') {{-- PATCH is appropriate for bulk updates --}}
+                    {{--@method('PATCH') {{-- PATCH is appropriate for bulk updates --}}
 
                     <table class="table table-hover align-middle">
                         <thead class="table-light">
