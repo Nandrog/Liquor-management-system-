@@ -513,6 +513,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/analytics/menu', [AnalyticsController::class, 'analyticsMenu'])->name('analytics.menu');
         Route::get('/analytics/forecast', [AnalyticsController::class, 'forecast'])->name('analytics.forecast');
         Route::get('/analytics/segmentation', [AnalyticsController::class, 'segmentation'])->name('analytics.segmentation');
+        Route::get('/analytics/forecast/month/{month}', [AnalyticsController::class, 'getDailySales']);
     });
 
     /*
