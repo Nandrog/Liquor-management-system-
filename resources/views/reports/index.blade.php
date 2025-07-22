@@ -10,10 +10,11 @@
     @endphp
 
     {{-- Workforce Reports --}}
-    <div class="box mb-4">
+    <div class="report-card">
         <h3 style="font-size: 1.1rem; font-weight: bold;">🧑‍💼 Workforce Reports</h3>
 
         @if (array_intersect($roles, ['Finance', 'Liquor Manager', 'Procurement Officer','Manufacturer']))
+         <div class="report-card-actions">
             <a href="{{ route('reports.task_performance') }}" class="button" target="_blank">
                 ✅ Task Performance Report
             </a>
@@ -21,31 +22,60 @@
             <a href="{{ route('reports.shift_schedules') }}" class="button" style="margin-left: 10px;" target="_blank">
                 🕒 Shift Schedule Report
             </a>
+            
         @else
             <p style="color: #666; font-style: italic;">No access to workforce reports.</p>
         @endif
+        </div>
     </div>
 
-    {{-- Inventory Reports --}}
-    <div class="box mb-4">
-        <h3 style="font-size: 1.1rem; font-weight: bold;">📦 Inventory Reports</h3>
 
-        @if (array_intersect($roles, ['Manufacturer', 'Supplier', 'Finance', 'Liquor Manager']))
-            <a href="{{ route('reports.stock_movements') }}" class="button" target="_blank">
-                🚚 Stock Movement Report
-            </a>
 
-            <a href="{{ route('reports.inventory_chart') }}" class="button" style="margin-left: 10px;" target="_blank">
-                📊 Inventory Category Chart
-            </a>
 
-            <a href="{{ route('reports.inventory.pdf') }}" class="button" style="margin-left: 10px;" target="_blank">
-                📄 Download Weekly Inventory Report
-            </a>
-        @else
-            <p style="color: #666; font-style: italic;">No access to inventory reports.</p>
-        @endif
-    </div>
+
+      {{-- ============================================= --}}
+                    {{--       INVENTORY REPORTS SECTION             --}}
+                    {{-- ============================================= --}}
+                    @hasanyrole('Admin|Finance|Liquor Manager|Procurement Officer')
+                        <div class="report-card">
+                            <h3>Inventory Reports</h3>
+                            <p>Status and valuation of current inventory.</p>
+                            <div class="report-card-actions">
+                                
+                                {{-- Link for Finance & Management --}}
+                                @hasanyrole('Admin|Finance|Liquor Manager')
+                                    <a href="{{ route('reports.inventory.finance') }}" class="btn btn-primary">
+                                        View Finance & Valuation Report
+                                    </a>
+                                @endhasanyrole
+
+                                {{-- Link for Procurement & Management --}}
+                                @hasanyrole('Admin|Procurement Officer|Liquor Manager')
+                                     <a href="{{ route('reports.inventory.procurement') }}" class="btn btn-primary">
+                                        View Procurement & Stock Status
+                                    </a>
+                                @endhasanyrole
+                                   @hasanyrole('Admin|Procurement Officer|Manufacturer|Liquor Manager')
+                <a href="{{ route('reports.inventory.raw_materials') }}" class="btn btn-primary">
+                    Raw Material Stock Status
+                </a>
+            @endhasanyrole
+
+                                 @hasanyrole('Admin|Procurement Officer|Liquor Manager|Manufacturer|Finance')
+                                     <a href="{{ route('reports.stock_movements') }}" class="btn btn-primary">
+                                        View Stock Movement
+                                    </a>
+                                @endhasanyrole
+                                @hasanyrole('Admin|Procurement Officer|Liquor Manager|Finance')
+                                     <a href="{{ route('reports.inventory_chart') }}" class="btn btn-primary">
+                                        View inventory graph
+                                    </a>
+                                @endhasanyrole
+             
+                                
+                            </div>
+                        </div>
+                    @endhasanyrole
 
     {{-- Sales Report --}}
    
@@ -56,7 +86,7 @@
 
 
 {{-- The @hasrole security check is still here and is very important --}}
-@hasrole('Liquor Manager|Finance|Supplier')
+@hasrole('Liquor Manager|Finance')
 
 <div class="report-card">
     

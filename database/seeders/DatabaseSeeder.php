@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
             EmployeeSeeder::class,
             FactorySeeder::class,
             UserSeeder::class, 
-            SupplierSeeder::class,
+            SupplierSeeder::class, 
             CustomerSeeder::class,
             CategorySeeder::class,
             VendorSeeder::class,
