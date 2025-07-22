@@ -17,7 +17,8 @@
                     </x-nav-link>
 
 
-        <x-nav-link :href="route('messages.index')" :active="request()->routeIs('messages.index')">
+        <x-nav-link :href="route('chat.page')" :active="request()->routeIs('chat.page')">
+            <i class="bi bi-chat-dots me-2"></i>
         {{ __('Messages') }}
     </x-nav-link>
                 </div>
@@ -98,6 +99,9 @@
                                         this.closest('form').submit();">
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>
+                    <!-- In navigation.blade.php -->
+
+
                     
                 </form>
             </div>

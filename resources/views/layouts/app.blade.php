@@ -38,12 +38,7 @@
             {{-- Header --}}
             @include('layouts.partials.header')
 
-            {{-- ✅ Logo Under Welcome/Header --}}
-            <div class="text-center py-3">
-                <img src="{{ asset('images/liquor logo.jpg') }}" 
-                     alt="Liquor Logo" 
-                     style="max-height: 80px; max-width: 200px;">
-            </div>
+           
 
             <!-- Page Content -->
             <main class="container-fluid py-4">

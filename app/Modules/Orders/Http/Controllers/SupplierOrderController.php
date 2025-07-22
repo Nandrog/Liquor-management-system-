@@ -215,5 +215,25 @@ public function markAsDelivered(Request $request, Order $order)
                     ->with('success', "Order #{$order->id} has been successfully marked as delivered.");
 }
 
+    public function update(Request $request, $id)
+    {
+        // 1. Find the order you want to update
+        $supplierOrder = Order::findOrFail($id);
+
+        // 2. Validate the incoming data from the form/request
+        $validatedData = $request->validate([
+            'supplier_id' => 'sometimes|required|exists:suppliers,id',
+            'status' => 'sometimes|required|string|max:50',
+            // Add other validation rules here
+        ]);
+
+        // 3. Update the model with the validated data
+        $supplierOrder->update($validatedData);
+
+        // 4. Redirect back with a success message
+        return redirect()->route('supplier.orders.show', $supplierOrder->id)
+                        ->with('success', 'Supplier order updated successfully!');
+    }
+
 
 }

@@ -54,45 +54,63 @@ class SalesReportController extends Controller
     $startOfWeek = now()->startOfWeek();
     $endOfWeek = now()->endOfWeek();
 
+    // ===================================================================
+    // THE NEW, CORRECTED DATABASE QUERY
+    // ===================================================================
     $sales = Order::whereBetween('created_at', [$startOfWeek, $endOfWeek])
-        ->with('orderItems.product.category')
+        // 1. First, only get Orders that contain at least one "finished_good".
+        //    This filters out any orders that might have only been for ingredients.
+        ->whereHas('orderItems.product', function ($query) {
+            $query->where('type', 'finished_good');
+        })
+        // 2. Then, when we load the items for those orders, we ALSO filter them.
+        //    This ensures that if an order had both a beer and (mistakenly) hops,
+        //    we only load the beer item and ignore the hops.
+        ->with(['orderItems' => function ($query) {
+            $query->whereHas('product', function ($subQuery) {
+                $subQuery->where('type', 'finished_good');
+            });
+        }, 'orderItems.product.category'])
         ->get();
+    // ===================================================================
 
     $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     $categoryData = [];
     $totalSales = 0;
     $dailyTotals = array_fill_keys($days, 0);
 
-    // 1. Process all sales data, preserving the daily breakdown
+    // Process all sales data. This logic does not need to change because
+    // the $sales collection is now already clean and pre-filtered.
     foreach ($sales as $order) {
         $day = $order->created_at->format('l');
         foreach ($order->orderItems as $item) {
+            // Because of our query, $item->product will always be a finished good.
             $categoryName = $item->product->category ? trim($item->product->category->name) : 'Uncategorized';
             $productName = $item->product->name ?? 'Unknown Product';
             $revenue = $item->price * $item->quantity;
 
-            // Initialize structures if they don't exist
             if (!isset($categoryData[$categoryName])) {
                 $categoryData[$categoryName] = ['products' => [], 'category_total' => 0];
             }
             if (!isset($categoryData[$categoryName]['products'][$productName])) {
                 $categoryData[$categoryName]['products'][$productName] = [
                     'name' => $productName,
-                    'daily_sales' => array_fill_keys($days, 0), // <-- THIS IS THE KEY PART WE ARE RESTORING
+                    'daily_sales' => array_fill_keys($days, 0),
                     'total' => 0
                 ];
             }
 
-            // Populate the daily sales data
             $categoryData[$categoryName]['products'][$productName]['daily_sales'][$day] += $revenue;
             $categoryData[$categoryName]['products'][$productName]['total'] += $revenue;
             $categoryData[$categoryName]['category_total'] += $revenue;
             $totalSales += $revenue;
-            $dailyTotals[$day] += $revenue; // Track grand total for each day
+            $dailyTotals[$day] += $revenue;
         }
     }
 
-    // 2. Convert to final report structure and calculate percentages
+    // The rest of the logic for totals, insights, and charts remains the same.
+    // It will all work correctly with the clean data.
+
     $finalReport = [];
     foreach ($categoryData as $name => $data) {
         $data['category'] = $name;
@@ -102,12 +120,9 @@ class SalesReportController extends Controller
     }
     usort($finalReport, fn($a, $b) => $a['category'] <=> $b['category']);
 
-    // ===================================================================
-    // 3. CALCULATE INSIGHTS (THIS LOGIC REMAINS THE SAME)
-    // ===================================================================
     $topDay = 'N/A';
     if ($totalSales > 0) {
-        arsort($dailyTotals); // Sort days by total sales
+        arsort($dailyTotals);
         $topDay = key($dailyTotals);
     }
 
@@ -116,13 +131,11 @@ class SalesReportController extends Controller
     $topCategory = collect($finalReport)->sortByDesc('category_total')->first() ?? ['category' => 'N/A'];
     $bottomProducts = $allProducts->where('total', '>', 0)->sortBy('total')->take(3)->values()->all();
     
-    // 4. Prepare Chart Data (REMAINS THE SAME)
     $chartLabels = collect($finalReport)->pluck('category')->toArray();
     $chartPercentages = collect($finalReport)->pluck('percent')->map(fn($p) => round($p, 1))->toArray();
 
-    // 5. Return ALL data to the view
     return [
-        'report' => $finalReport, // <-- This now contains the full daily breakdown
+        'report' => $finalReport,
         'days' => $days,
         'appName' => 'Liquor Supply Chain Stores',
         'weekStartDate' => $startOfWeek->format('j-M'),

@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Exception;
+// Add this import if OrderType exists in your app structure
+// use App\Enums\OrderType;
 
 
 class CustomerOrderController extends Controller
@@ -73,51 +75,51 @@ public function create()
 public function store(Request $request)
 {
     $request->validate([
-        'shipping_address' => 'required|string|max:255',
-        'city'             => 'required|string|max:255',
-        'phone_number'     => 'required|string|max:20',
+        'shipping_address' => ['required', 'string', 'max:255'],
+        'city'             => ['required', 'string', 'max:255'],
+        'phone_number'     => ['required', 'string', 'max:20'],
+        // You might want to validate postal_code here as well if it's on your form
     ]);
 
     $user = Auth::user();
-    // CHANGE #1: Use 'vendorProducts' (plural) for eager loading
     $cartItems = Cart::where('user_id', $user->id)->with('product.vendorProducts')->get();
 
     if ($cartItems->isEmpty()) {
         return redirect()->route('storefront.index')->with('error', 'Your cart is empty.');
     }
 
-    // CHANGE #2: Get the specific vendorProduct from the collection using ->first()
-    // This assumes the cart is for a single vendor.
-    $firstVendorProduct = $cartItems->first()->product->vendorProducts->first();
-    $vendorId = $firstVendorProduct ? $firstVendorProduct->vendor_id : null;
+    // This logic correctly gets the vendor ID, assuming a single-vendor cart.
+    $firstItemVendorProduct = $cartItems->first()->product->vendorProducts->first();
+    $vendorId = $firstItemVendorProduct ? $firstItemVendorProduct->vendor_id : null;
 
     if (!$vendorId) {
-        // Handle the case where a product in the cart isn't assigned to a vendor
-        return redirect()->back()->with('error', 'An item in your cart is not available from any vendor.');
+        // This is a good safety check.
+        return redirect()->back()->with('error', 'An item in your cart is not available from any vendor. Please remove it and try again.');
     }
 
+    // Start a database transaction for safety.
     DB::beginTransaction();
     try {
         // 1. Create the Order
         $order = Order::create([
             'user_id'          => $user->id,
             'customer_id'      => $user->customer->id,
-            'vendor_id'        => $vendorId, // Use the vendorId we found
+            'vendor_id'        => $vendorId, // <-- THE FIX: ADD THIS LINE
             'order_number'     => 'ORD-' . strtoupper(uniqid()),
-            'type'             => 'customer_order',
+            'type'             => 'customer_order', // No longer duplicated
             'status'           => 'pending',
-            'total_amount'     => 0,
+            'total_amount'     => 0, // Placeholder
             'shipping_address' => $request->shipping_address,
             'city'             => $request->city,
             'phone_number'     => $request->phone_number,
-            'payment_status'   => 'paid',
+            'payment_status'   => 'pending', // It's better to default to pending until payment is confirmed
         ]);
 
         $total = 0;
         // 2. Create Order Items from Cart Items
         foreach ($cartItems as $cartItem) {
-            // CHANGE #3: Get the specific vendorProduct from the collection to find its price
             $vendorProduct = $cartItem->product->vendorProducts->first();
+            // Fallback to base price if for some reason a retail price isn't set
             $price = $vendorProduct->retail_price ?? $cartItem->product->unit_price;
 
             $total += $price * $cartItem->quantity;
@@ -136,13 +138,16 @@ public function store(Request $request)
         // 4. Clear the user's cart
         Cart::where('user_id', $user->id)->delete();
 
+        // 5. Commit all changes to the database
         DB::commit();
 
-        return redirect()->route('payment.form', ['order' => $order->id])->with('success', 'Thank you! Your order has been placed successfully.');
+        // Redirect to payment or a success page
+        return redirect()->route('payment.form', ['order' => $order->id])->with('success', 'Your order has been placed! Please proceed with payment.');
 
     } catch (Exception $e) {
+        // If anything fails, undo all database changes and show an error
         DB::rollBack();
-        return redirect()->back()->with('error', 'Something went wrong. Please try again. Error: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'Something went wrong while placing your order. Please try again. Error: ' . $e->getMessage());
     }
 }
     /**

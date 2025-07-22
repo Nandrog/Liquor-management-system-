@@ -15,7 +15,9 @@ use App\Http\Controllers\WorkDistribution\TaskController;
 use App\Http\Controllers\WorkDistribution\ShiftController;
 use App\Modules\Communications\Http\Controllers\MessageController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\InventoryReportController;
 use App\Http\Controllers\Auth\VendorRegistrationController;
+use App\Http\Controllers\ReportDashboardController;
 use App\Modules\Inventory\Http\Controllers\LmStockLevelController;
 use App\Modules\Inventory\Http\Controllers\MaPurchaseOrderController;
 use App\Modules\Inventory\Http\Controllers\LmItemController;
@@ -38,6 +40,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalesReportController;
 use App\Modules\Inventory\Http\Controllers\Finance\OrderReportController;
 use App\Modules\Inventory\Http\Controllers\FiOrderReportController;
+use App\Http\Controllers\ProductLogController;
 //use App\Modules\Inventory\Http\Controllers\MaPurchaseOrderController;
 
 
@@ -382,10 +385,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/supplier/orders/{order}/edit', [SupplierOrderController::class, 'edit'])->name('orders.edit');
         Route::get('/suppliers/payments', [PaymentController::class, 'index'])
         ->name('payments.index');
-         Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+        Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
         // Route to handle the submission of the edit form
         Route::put('/supplier/orders/{order}', [SupplierOrderController::class, 'update'])->name('orders.update');
         Route::delete('/supplier/orders/{order}', [SupplierOrderController::class, 'destroy'])->name('orders.destroy');
+        Route::put('/supplier-orders/{order}', [SupplierOrderController::class, 'update'])->name('orders.update');
         Route::get('orders/{order}', [SupplierOrderController::class, 'show'])->name('orders.show');
         Route::patch('orders/{order}', [SupplierOrderController::class, 'update'])->name('orders.update');
     });
@@ -589,6 +593,29 @@ Route::middleware(['auth'])->group(function () {
 
 
     Route::get('/storefront/product/{product}', [StorefrontController::class, 'show'])->name('storefront.show');
+    Route::get('/reports/inventory-finance', [InventoryReportController::class, 'showFinanceReport'])
+     ->name('reports.inventory.finance');
+     // ... inside your auth middleware group ...
+Route::get('/reports/inventory-procurement', [InventoryReportController::class, 'showProcurementReport'])
+     ->name('reports.inventory.procurement');
+     // We'll create a simple controller for this page
+
+
+// ... inside your auth middleware group ...
+Route::get('/reports', [ReportDashboardController::class, 'index'])
+     ->name('reports.index');
+     // ... inside your auth middleware group ...
+Route::get('/reports/inventory-raw-materials', [InventoryReportController::class, 'showRawMaterialsReport'])
+     ->name('reports.inventory.raw_materials');
+    
+
+// ... inside your auth middleware group ...
+
+// A route to show the list of products
+Route::get('/products', [ProductLogController::class, 'index'])->name('products.index');
+
+// The new route to handle adding stock to a specific product
+Route::post('/products/{product}/add-stock', [ProductLogController::class, 'addStock'])->name('products.add-stock');
 
 });
 
@@ -612,3 +639,6 @@ Route::middleware(['auth'])->prefix('cart')->name('cart.')->group(function () {
     Route::prefix('officer')->name('officer.work-distribution.')->group(function () {
     Route::get('/tasks', [TaskController::class, 'index'])->name('task-list');
 });
+
+
+// ... inside your auth middleware group ...
