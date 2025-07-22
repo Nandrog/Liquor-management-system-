@@ -247,7 +247,8 @@ Route::middleware(['auth', 'role:Liquor Manager|Finance|Procurement Officer|Manu
         Route::get('/tasks', [ShiftController::class, 'index'])->name('work-distribution.shift-list');
         Route::get('/tasks/create', [ShiftController::class, 'create'])->name('shift.create');
         Route::post('/tasks', [ShiftController::class, 'store'])->name('shift.store');
-        Route::get('/reports/sales/weekly', [SalesReportController::class, 'weeklyReport'])->name('reports.sales.weekly');
+        Route::get('/reports/sales/weekly', [ReportController::class, 'weeklySales'])->name('reports.sales.weekly');
+
     });
 
 
@@ -384,10 +385,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/supplier/orders/{order}/edit', [SupplierOrderController::class, 'edit'])->name('orders.edit');
         Route::get('/suppliers/payments', [PaymentController::class, 'index'])
         ->name('payments.index');
-         Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+        Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
         // Route to handle the submission of the edit form
         Route::put('/supplier/orders/{order}', [SupplierOrderController::class, 'update'])->name('orders.update');
         Route::delete('/supplier/orders/{order}', [SupplierOrderController::class, 'destroy'])->name('orders.destroy');
+        Route::put('/supplier-orders/{order}', [SupplierOrderController::class, 'update'])->name('orders.update');
         Route::get('orders/{order}', [SupplierOrderController::class, 'show'])->name('orders.show');
         Route::patch('orders/{order}', [SupplierOrderController::class, 'update'])->name('orders.update');
     });
@@ -569,6 +571,10 @@ Route::middleware(['auth'])->group(function () {
     // This route will download the report as a PDF
     Route::get('/reports/weekly-summary/download', [SalesReportController::class, 'downloadWeeklySummaryReport'])
          ->name('reports.weekly_summary.download');
+
+Route::get('/reports/sales/weekly', [SalesReportController::class, 'showWeeklySummaryReport'])->name('reports.sales.weekly');
+Route::get('/reports/sales/weekly/download', [SalesReportController::class, 'downloadWeeklySummaryReport'])->name('reports.sales.weekly.download');
+
 });
 
 

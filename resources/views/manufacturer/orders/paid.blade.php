@@ -35,7 +35,7 @@
                                 <td>{{ $order->created_at->format('M d, Y') }}</td>
                                 <td>{{ $order->paid_at?->format('M d, Y') ?? now()->format('M d, Y') }}</td>
                                 <td>{{ $order->orderItems->count() }}</td>
-                                <td>${{ number_format($order->total_amount, 2) }}</td>
+                                <td>UGX{{ number_format($order->total_amount, 2) }}</td>
                                 <td>
                                     <a href="{{ route('manufacturer.orders.show', $order) }}" class="btn btn-sm btn-outline-secondary">
                                         <i class="fas fa-eye fa-sm"></i> View

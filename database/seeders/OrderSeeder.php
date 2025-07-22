@@ -37,41 +37,63 @@ class OrderSeeder extends Seeder
 
         // Use a transaction for safety
         DB::transaction(function () use ($procurementOfficer, $liquorManager, $suppliers, $customers, $rawMaterials, $finishedGoods) {
-            
-            // --- CREATE 20 SAMPLE SUPPLIER ORDERS (PURCHASE ORDERS) ---
-            for ($i = 0; $i < 20; $i++) {
-                $this->createOrder(
-                    $procurementOfficer, // The user creating the order
-                    OrderType::SUPPLIER_ORDER,
-                    OrderStatus::cases()[array_rand(OrderStatus::cases())], // Pick a random status from the Enum
-                    ['supplier_id' => $suppliers->random()->id], // Assign a random Supplier
-                    $rawMaterials->random(rand(1, 3)) // Assign 1 to 3 random raw materials
-                );
-            }
-
-            // --- CREATE 30 SAMPLE CUSTOMER ORDERS (SALES ORDERS) ---
-            for ($i = 0; $i < 30; $i++) {
-                $this->createOrder(
-                    $liquorManager, // The user creating the order
-                    OrderType::CUSTOMER_ORDER,
-                    OrderStatus::cases()[array_rand(OrderStatus::cases())], // Pick a random status
-                    ['customer_id' => $customers->random()->id], // Assign a random Customer
-                    $finishedGoods->random(rand(1, 2)) // Assign 1 to 2 random finished goods
-                );
-            }
-
-            // --- CREATE 15 SAMPLE VENDOR ORDERS ---
+            // We'll seed 52 supplier orders, 104 customer orders, and 52 vendor orders (one for each week, double for customers)
+            $weeks = 52;
             $vendors = \App\Models\Vendor::all();
-            for ($i = 0; $i < 15; $i++) {
+            for ($i = 0; $i < $weeks; $i++) {
+                // Calculate a date for each week
+                // Use June to December of the current year for created_at and updated_at
+                $year = now()->year;
+                $startDate = now()->setDate($year, 6, 1)->startOfDay(); // June 1st
+                $endDate = now()->setDate($year, 12, 31)->endOfDay();   // December 31st
+                $totalWeeks = $startDate->diffInWeeks($endDate);
+                $weekStart = $startDate->copy()->addWeeks($i % $totalWeeks);
+                // Ensure weekStart does not go beyond December
+                if ($weekStart->greaterThan($endDate)) {
+                    $weekStart = $endDate->copy()->subDays(rand(0, 6));
+                }
+                $createdAt = $weekStart->copy()->addDays(rand(0, 6))->setTime(rand(8, 18), rand(0, 59));
+                if ($createdAt->greaterThan($endDate)) {
+                    $createdAt = $endDate->copy()->subDays(rand(0, 6))->setTime(rand(8, 18), rand(0, 59));
+                }
+                $updatedAt = $createdAt->copy()->addDays(rand(0, 6))->setTime(rand(8, 18), rand(0, 59));
+                if ($updatedAt->greaterThan($endDate)) {
+                    $updatedAt = $endDate->copy()->setTime(rand(8, 18), rand(0, 59));
+                }
+                // Supplier Orders
+                $this->createOrder(
+                    $procurementOfficer,
+                    OrderType::SUPPLIER_ORDER,
+                    OrderStatus::cases()[array_rand(OrderStatus::cases())],
+                    ['supplier_id' => $suppliers->random()->id],
+                    $rawMaterials->random(rand(1, 3)),
+                    $createdAt,
+                    $updatedAt
+                );
+                // Vendor Orders
                 $vendor = $vendors->random();
                 $user = $vendor->user;
                 $this->createOrder(
-                    $user, // The user creating the order
+                    $user,
                     OrderType::VENDOR_ORDER,
                     OrderStatus::cases()[array_rand(OrderStatus::cases())],
                     ['vendor_id' => $vendor->getKey()],
-                    $finishedGoods->random(rand(1, 2))
+                    $finishedGoods->random(rand(1, 2)),
+                    $createdAt,
+                    $updatedAt
                 );
+                // Two customer orders per week
+                for ($j = 0; $j < 2; $j++) {
+                    $this->createOrder(
+                        $liquorManager,
+                        OrderType::CUSTOMER_ORDER,
+                        OrderStatus::cases()[array_rand(OrderStatus::cases())],
+                        ['customer_id' => $customers->random()->id],
+                        $finishedGoods->random(rand(1, 2)),
+                        $createdAt,
+                        $updatedAt
+                    );
+                }
             }
         });
 
@@ -81,7 +103,7 @@ class OrderSeeder extends Seeder
     /**
      * A helper function to create a single order with its items.
      */
-    private function createOrder(User $creator, OrderType $type, OrderStatus $status, array $attributes, $products)
+    private function createOrder(User $creator, OrderType $type, OrderStatus $status, array $attributes, $products, $createdAt = null, $updatedAt = null)
     {
         $orderData = array_merge([
             'user_id' => $creator->getKey(),
@@ -90,16 +112,25 @@ class OrderSeeder extends Seeder
             'order_number' => strtoupper($type->value) . '-' . now()->format('Ymd') . '-' . uniqid(),
             'payment_status' => ['pending', 'paid', 'failed'][array_rand(['pending', 'paid', 'failed'])],
         ], $attributes);
-        
+
         // Add paid_at and delivered_at dates for appropriate statuses
         if (in_array($status, [OrderStatus::PAID, OrderStatus::DELIVERED, OrderStatus::REFUNDED])) {
-            $orderData['paid_at'] = now()->subDays(rand(1, 30));
+            // Paid date within the week
+            $orderData['paid_at'] = isset($attributes['created_at']) ? $attributes['created_at']->copy()->addDays(rand(0, 6))->setTime(rand(8, 18), rand(0, 59)) : now()->subDays(rand(1, 365))->setTime(rand(8, 18), rand(0, 59));
         }
         if ($status === OrderStatus::DELIVERED) {
-            $orderData['delivered_at'] = now()->subDays(rand(0, 5));
+            $paidAt = isset($orderData['paid_at']) ? $orderData['paid_at'] : (isset($attributes['created_at']) ? $attributes['created_at'] : now()->subDays(rand(1, 365)));
+            $orderData['delivered_at'] = $paidAt->copy()->addDays(rand(0, 6))->setTime(rand(8, 18), rand(0, 59));
         }
 
-        $order = Order::create($orderData);
+        // Use provided created_at and updated_at if available
+        $createdAt = $createdAt ?? now();
+        $updatedAt = $updatedAt ?? $createdAt;
+
+        $order = Order::create(array_merge($orderData, [
+            'created_at' => $createdAt,
+            'updated_at' => $updatedAt
+        ]));
 
         // --- Create Order Items and Calculate Total ---
         $totalAmount = 0;
@@ -107,13 +138,11 @@ class OrderSeeder extends Seeder
             $quantity = rand(5, 50);
             $price = $product->unit_price;
             $subtotal = $quantity * $price;
-            
             $order->items()->create([
                 'product_id' => $product->id,
                 'quantity' => $quantity,
                 'price' => $price,
             ]);
-
             $totalAmount += $subtotal;
         }
 

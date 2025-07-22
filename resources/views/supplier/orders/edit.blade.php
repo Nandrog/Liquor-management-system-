@@ -34,7 +34,11 @@
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700">Price per Unit</label>
                                         {{-- Pre-fill the input with the existing price --}}
-                                        <input class="form-control mt-1 block w-full sm:w-1/2 bg-gray-100 rounded-md border-gray-300 shadow-sm" type="number" name="items[{{ $item->id }}][price]" value="{{ old('price', $item->price) }}" readonly>
+                                        <input class="form-control mt-1 block w-full sm:w-1/2 bg-gray-100 rounded-md border-gray-300 shadow-sm" type="number"
+                                                name="products[{{ $loop->index }}][price]"
+                                                value="{{ $item->product->unit_price }}"
+                                                readonly
+                                                disabled>
                                     </div>
                                 </div>
                             </div>

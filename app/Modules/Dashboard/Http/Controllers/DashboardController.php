@@ -184,14 +184,14 @@ class DashboardController extends Controller
                 'count' => $messages,
                 'count_label' => 'Unread Messages'
             ],
-           /* [
+           [
                 'title' => 'Order Management',
                 'description' => 'Manage purchase orders and vendor interactions',
                 'icon' => 'bi-file-earmark-text',
-                'route' =>route(),
-                'count' => null,
-                'count_label' => null
-            ]*/
+                'route' =>route('procurement.orders.index'),
+                'count' =>Order::count(),
+                'count_label' => 'Orders Made'
+            ]
         ];
         
         return view('officer.dashboard',['cards' => $cards]);
@@ -256,15 +256,15 @@ class DashboardController extends Controller
          $sales = Order::where('type','!=','supplier_order')->where('status','paid')->count();
 
         $cards =[
-           /* [
+            [
                 'title' => 'Sales Report',
                 'description' => 'View sales reports and analytics',
                 'icon' => 'bi-graph-up',
-                'route' => route('report.inventory_manufacturer'),
+                'route' => route('reports.sales.weekly'),
                 'count' => $sales, // Placeholder, can be replaced with actual count if needed
                 'count_label' => 'Sales made', // Placeholder, can be replaced with actual label if needed
             
-            ],*/
+            ],
             [
                 'title' => 'Chats',
                 'description' => 'Communicate with other users',
