@@ -1,53 +1,63 @@
 <x-app-layout>
     {{-- Page Header --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h2">Stock Levels</h1>
-        {{-- You can add an "Adjust Stock" button here later --}}
-        <a href="#" class="btn btn-primary">Adjust Stock</a>
+        <h1 class="h2">Stock Levels by Warehouse</h1>
+        
     </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th scope="col">Product Name</th>
-                            <th scope="col">SKU</th>
-                            <th scope="col">Warehouse</th>
-                            <th scope="col" class="text-end">Quantity On Hand</th>
-                            <th scope="col" class="text-center">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($stockLevels as $stockLevel)
-                            <tr>
-                                <td>{{ $stockLevel->product->name }}</td>
-                                <td><span class="font-monospace">{{ $stockLevel->product->sku }}</span></td>
-                                <td>{{ $stockLevel->warehouse->name }}</td>
-                                <td class="text-end fw-bold">{{ $stockLevel->quantity }} {{ $stockLevel->product->unit_of_measure }}s</td>
-                                <td class="text-center">
-                                    {{-- BEST PRACTICE: Conditional styling for low stock --}}
-                                    @if($stockLevel->quantity <= $stockLevel->product->reorder_level)
-                                        <span class="badge bg-danger-subtle text-danger-emphasis rounded-pill">Low Stock</span>
-                                    @else
-                                        <span class="badge bg-success-subtle text-success-emphasis rounded-pill">In Stock</span>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="text-center py-4">No stock records found.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+    {{-- 1. FINISHED GOODS SECTION --}}
+    <h3 class="mb-3">Finished Goods</h3>
+    <div class="accordion mb-5" id="finishedGoodsAccordion">
+        {{-- Loop through each warehouse that has finished goods --}}
+        @forelse ($finishedGoodsByWarehouse as $warehouseName => $stockLevels)
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-fg-{{ Str::slug($warehouseName) }}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-fg-{{ Str::slug($warehouseName) }}">
+                        <div class="d-flex justify-content-between w-100 me-3">
+                            <span class="fw-bold">{{ $warehouseName }}</span>
+                            <span class="badge bg-secondary rounded-pill">{{ $stockLevels->count() }} Item Types</span>
+                        </div>
+                    </button>
+                </h2>
+                <div id="collapse-fg-{{ Str::slug($warehouseName) }}" class="accordion-collapse collapse" data-bs-parent="#finishedGoodsAccordion">
+                    <div class="accordion-body">
+                        {{-- We can reuse our existing table structure here in a partial --}}
+                        @include('manager.stock_levels.partials.stock-table', ['stockLevels' => $stockLevels])
+                    </div>
+                </div>
             </div>
-
-            {{-- Render the pagination links --}}
-            <div class="mt-3">
-                {{ $stockLevels->links() }}
+        @empty
+            <div class="card">
+                <div class="card-body text-center text-muted">No finished goods are currently in stock in any warehouse.</div>
             </div>
-        </div>
+        @endforelse
     </div>
+
+    {{-- 2. RAW MATERIALS SECTION --}}
+    <h3 class="mb-3">Raw Materials</h3>
+    <div class="accordion" id="rawMaterialsAccordion">
+        {{-- Loop through each warehouse that has raw materials --}}
+        @forelse ($rawMaterialsByWarehouse as $warehouseName => $stockLevels)
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-rm-{{ Str::slug($warehouseName) }}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-rm-{{ Str::slug($warehouseName) }}">
+                        <div class="d-flex justify-content-between w-100 me-3">
+                            <span class="fw-bold">{{ $warehouseName }}</span>
+                            <span class="badge bg-secondary rounded-pill">{{ $stockLevels->count() }} Item Types</span>
+                        </div>
+                    </button>
+                </h2>
+                <div id="collapse-rm-{{ Str::slug($warehouseName) }}" class="accordion-collapse collapse" data-bs-parent="#rawMaterialsAccordion">
+                    <div class="accordion-body">
+                        @include('manager.stock_levels.partials.stock-table', ['stockLevels' => $stockLevels])
+                    </div>
+                </div>
+            </div>
+        @empty
+            <div class="card">
+                <div class="card-body text-center text-muted">No raw materials are currently in stock in any warehouse.</div>
+            </div>
+        @endforelse
+    </div>
+
 </x-app-layout>

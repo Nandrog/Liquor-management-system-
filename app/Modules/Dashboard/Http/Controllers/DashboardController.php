@@ -97,9 +97,27 @@ class DashboardController extends Controller
         $itemsOutOfStock = Product::whereDoesntHave('stockLevels', fn($q) => $q->where('quantity', '>', 0))->count();
         $tasks=Task::where('status','pending')->count();
         $messages = Message::where('receiver_id', Auth::id())->where('is_read',false)->count();
-
-
+         $sales=Order::whereIn('type', ['vendor_order', 'customer_order'])->count();
+         $purchaseOrders = Order::where('type', 'supplier_order')->count();
         $cards = [
+            [
+                'title' => 'Sales Report',
+                'description' => 'View sales reports and analytics',
+                'icon' => 'bi-graph-up',
+                'route' => route('reports.sales.weekly'),
+                'count' => $purchaseOrders, // Placeholder, can be replaced with actual count if needed
+                'count_label' => 'Sales made', // Placeholder, can be replaced with actual label if needed
+            
+            ],
+            [
+                'title' => 'Purchase Orders',
+                'description' => 'Track financial status of all purchase orders.',
+                'icon' => 'bi-receipt',
+                'route' => route('manager.purchase_orders.index'),
+                'count' => $sales, // Placeholder, can be replaced with actual count if needed
+                'count_label' => 'Purchases made', // Placeholder, can be replaced with actual label if needed
+            
+            ],
             [
                 'title' => 'Stock Levels',
                 'description' => 'View detailed stock levels.',
@@ -253,17 +271,18 @@ class DashboardController extends Controller
          $messages = Message::where('receiver_id', Auth::id())->where('is_read',false)->count();
          $shifts = ShiftSchedule::where('end_time', '<', Carbon::now())->get()->count();
          $recipes = Recipe::count();
-         $sales = Order::where('type','!=','supplier_order')->where('status','paid')->count();
+          $tasks=Task::where('status','pending')->count();
 
         $cards =[
             [
-                'title' => 'Sales Report',
-                'description' => 'View sales reports and analytics',
-                'icon' => 'bi-graph-up',
-                'route' => route('reports.sales.weekly'),
-                'count' => $sales, // Placeholder, can be replaced with actual count if needed
-                'count_label' => 'Sales made', // Placeholder, can be replaced with actual label if needed
-            
+                'title'=>'Task Master',
+                'description'=>'Monitor tasks and assign tasks',
+                'icon'=>'bi-clipboard-check',
+                'route'=>route('manager.work-distribution.task-list'),
+                'count' =>$tasks,
+                'count_label' =>'Pending Tasks', 
+                'secondaryCount' => null,     // Default to null
+                'secondaryCountLabel' => null
             ],
             [
                 'title' => 'Chats',

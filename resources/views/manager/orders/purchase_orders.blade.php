@@ -16,7 +16,7 @@
                             <h2 class="accordion-header" id="heading{{ $order->id }}">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $order->id }}">
                                     <div class="d-flex justify-content-between w-100 me-3">
-                                        <span>Order #{{ $order->id }} - From Supplier: <span class="fw-bold">{{ optional($order->recipientSupplier)->username }}</span></span>
+                                        <span>Order #{{ $order->id }} - To: <span class="fw-bold">{{ optional($order->recipientSupplier)->username }}</span></span>
                                         <span class="text-muted">Order Date: {{ $order->created_at->format('d M, Y') }}</span>
                                         <x-order-status-badge :status="$order->status" />
                                     </div>

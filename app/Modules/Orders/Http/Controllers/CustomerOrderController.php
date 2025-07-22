@@ -20,7 +20,7 @@ class CustomerOrderController extends Controller
 {
     use AuthorizesRequests;
 
- public function index()
+    public function index()
     {
 
 if (! Auth::user() || ! Auth::user()->hasRole('Customer')) {
@@ -35,7 +35,7 @@ if (! Auth::user() || ! Auth::user()->hasRole('Customer')) {
         return view('customer.orders.index', compact('orders'));
     }
 
-     public function browse(Vendor $vendor)
+    public function browse(Vendor $vendor)
     {
         // Fetch products this vendor sells, along with their custom retail price.
         $vendorProducts = $vendor->vendorProducts()->with('product')->get();

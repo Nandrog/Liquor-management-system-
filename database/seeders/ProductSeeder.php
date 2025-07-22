@@ -140,7 +140,7 @@ class ProductSeeder extends Seeder
                     'description'       => 'High quality ' . $productData['name'],
                     'unit_price'        => $productData['price'],
                     'unit_of_measure'   => $uom,
-                    'reorder_level'     => rand(10, 50),
+                    'reorder_level'     => rand(1000, 8000),
                     'type'              => $type,
                     'category_id'       => $categories->get($productData['category']),
                     'vendor_id'         => $vendors->get($vendorName),

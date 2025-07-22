@@ -62,6 +62,24 @@ class DashboardController extends Controller
                 'icon' => 'bi-cart-check',
                 'route' => '#',
             ],
+            'production_runs' => [
+                'title' => 'Production Runs',
+                'description' => 'Track production runs at your factory.',
+                'icon' => 'bi-gear-wide-connected',
+                'route' => '#',
+            ],
+            'tasks' => [
+                'title' => 'Work Distribution',
+                'description' => 'Assign and track tasks for your team.',
+                'icon' => 'bi-list-task',
+                'route' => '#',
+            ],
+            'finance' => [
+                'title' => 'Finance Overview',
+                'description' => 'View financial reports and supplier performance.',
+                'icon' => 'bi-currency-exchange',
+                'route' => '#',
+            ],
         ];
 
         $cardsForUser = [];
@@ -86,7 +104,7 @@ class DashboardController extends Controller
             // --- Liquor Manager Cards ---
             // The manager gets access to everything, so we can use a loop for cleaner code.
 
-            $managerActions = ['items', 'stock_levels', 'purchase_orders'/*, 'stock_movements', 'warehouses', 'sales'*/];
+            $managerActions = ['items', 'stock_levels', 'purchase_orders','production_runs'/*, 'stock_movements', 'warehouses', 'sales'*/];
 
             foreach ($managerActions as $action) {
                 $card = $masterActionList[$action];

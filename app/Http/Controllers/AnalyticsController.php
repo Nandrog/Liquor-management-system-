@@ -60,19 +60,34 @@ class AnalyticsController extends Controller
 
     public function segmentation()
     {
-        /*Call Flask ML API for segmentation
-        $segments = Http::get('http://127.0.0.1:5000/api/segments')->json();
-        return view('analytics.segmentation', compact('segments'));*/
-        $response = Http::get('http://127.0.0.1:5000/api/segments');
-        if ($response->successful()) {
-            return view('analytics.customer-segmentation', ['segments' => $response->json()]);
-        }
 
-        abort(500, 'Segementation API unavailable');
+        try {
+            $response = Http::get('http://127.0.0.1:5000/api/segments');
+
+            if ($response->successful()) {
+                $data = $response->json();
+
+                \Log::info('Segments API response:', $data);
+                //dd($data);
+
+                return view('analytics.customer-segmentation', [
+                    'segments' => $data
+                ]);
+            } else {
+                return view('analytics.customer-segmentation', [
+                    'segments' =>[]
+                ]);
+            }
+        }catch (\Exception $e) {
+            return view('analytics.customer-segmentation', [
+                'segments' => [],
+                'error' => $e->getMessage()
+            ]);
+        }
     }
 
     public function forecast()
-{
+    {
     // Get all products (liquors)
     $products = DB::table('products')->pluck('name', 'id')->toArray();
 
@@ -210,5 +225,19 @@ class AnalyticsController extends Controller
     {
         return view('analytics.menu');
     }
+
+    public function getDailySales($month)
+{
+    $daily = DB::table('orders')
+        ->selectRaw('DAY(created_at) as day, SUM(total_amount) as total')
+        ->whereMonth('created_at', $month)
+        ->whereYear('created_at', now()->year)
+        ->groupBy('day')
+        ->orderBy('day')
+        ->pluck('total', 'day');
+
+    return response()->json($daily);
+}
+
 
 }

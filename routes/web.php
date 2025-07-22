@@ -41,6 +41,7 @@ use App\Http\Controllers\SalesReportController;
 use App\Modules\Inventory\Http\Controllers\Finance\OrderReportController;
 use App\Modules\Inventory\Http\Controllers\FiOrderReportController;
 use App\Http\Controllers\ProductLogController;
+use App\Modules\Production\Http\Controllers\Manager\ProductionRunController;
 //use App\Modules\Inventory\Http\Controllers\MaPurchaseOrderController;
 
 
@@ -213,7 +214,7 @@ Route::middleware(['auth', 'role:Liquor Manager|Finance|Procurement Officer|Manu
         Route::get('/stock-levels', [LmStockLevelController::class, 'index'])->name('stock_levels.index');
         Route::resource('items', LmItemController::class);
         Route::get('/purchase-orders', [MaPurchaseOrderController::class, 'index'])->name('purchase_orders.index');
-
+        Route::get('/production-runs', [ProductionRunController::class, 'index'])->name('production_runs.index');
         Route::get('/tasks', [TaskController::class, 'index'])->name('work-distribution.task-list');
         Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
         Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
@@ -426,7 +427,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/customer-carts', [VendorOrderController::class, 'showCustomerCartLookup'])->name('carts.lookup');
         Route::patch('/products/{product}', [VendorProductController::class, 'update'])->name('products.update');
         Route::get('/orders/{order}', [VendorOrderController::class, 'show'])->name('orders.show');
-        Route::patch('/products/bulk-update', [VendorProductController::class, 'bulkUpdate'])->name('products.bulk-update');
+        Route::post('/products/bulk-update', [VendorProductController::class, 'bulkUpdate'])->name('products.bulk-update');
         // Route to show the payment page for a specific order
         Route::get('/orders/{order}/payment', [VendorOrderController::class, 'showPaymentPage'])->name('orders.payment.create');
 
@@ -512,6 +513,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/analytics/menu', [AnalyticsController::class, 'analyticsMenu'])->name('analytics.menu');
         Route::get('/analytics/forecast', [AnalyticsController::class, 'forecast'])->name('analytics.forecast');
         Route::get('/analytics/segmentation', [AnalyticsController::class, 'segmentation'])->name('analytics.segmentation');
+        Route::get('/analytics/forecast/month/{month}', [AnalyticsController::class, 'getDailySales']);
     });
 
     /*
@@ -607,7 +609,7 @@ Route::get('/reports', [ReportDashboardController::class, 'index'])
      // ... inside your auth middleware group ...
 Route::get('/reports/inventory-raw-materials', [InventoryReportController::class, 'showRawMaterialsReport'])
      ->name('reports.inventory.raw_materials');
-    
+
 
 
 

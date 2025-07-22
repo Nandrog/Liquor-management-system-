@@ -13,35 +13,40 @@ class MaStockLevelController extends Controller
      * Display a paginated list of stock levels for the manufacturer's
      * assigned factory warehouse.
      */
-    public function index()
+   public function index()
     {
-        // 1. Get the authenticated user (the manufacturer).
         $user = Auth::user();
-
-        // 2. Find the user's factory and its associated warehouse.
-        // Eager load the 'factory.warehouse' relationship to do this efficiently.
         $user->load('productionPlant.warehouse');
         
-        // 3. Handle the case where the manufacturer is not assigned to a factory/warehouse.
         if (!$user->productionPlant || !$user->productionPlant->warehouse) {
-            // You can either show an error, or an empty page.
-            // Let's redirect back with an error message for clarity.
             return redirect()->route('dashboard')
                 ->with('error', 'You are not assigned to a factory with a warehouse.');
         }
 
         $warehouse = $user->productionPlant->warehouse;
 
-        // 4. Fetch only the stock levels for that specific warehouse.
-        // We still eager load the 'product' relationship for efficiency.
-        $stockLevels = StockLevel::with('product')
-            ->where('warehouse_id', $warehouse->warehouse_id)
-            ->paginate(15); // Paginate the results
+        // --- THIS IS THE MODIFIED LOGIC ---
 
-        // 5. Return the view, passing the warehouse name and its stock levels.
+        // 1. Fetch ALL stock levels for the specific warehouse.
+        // Eager load the product relationship so we can access its 'type'.
+        $allStockForWarehouse = StockLevel::with('product')
+            ->where('warehouse_id', $warehouse->warehouse_id)
+            ->get(); // Use get() to fetch the full collection for grouping
+
+        // 2. Group the results by the product's type.
+        $groupedStock = $allStockForWarehouse->groupBy('product.type');
+
+        // 3. Extract the two collections.
+        $finishedGoods = $groupedStock->get('finished_good', collect());
+        $rawMaterials = $groupedStock->get('raw_material', collect());
+        
+        // --- END OF MODIFIED LOGIC ---
+
+        // 4. Return the view, passing the warehouse and the two new collections.
         return view('manufacturer.stock_levels.index', [
             'warehouse' => $warehouse,
-            'stockLevels' => $stockLevels,
+            'finishedGoods' => $finishedGoods,
+            'rawMaterials' => $rawMaterials,
         ]);
     }
 }

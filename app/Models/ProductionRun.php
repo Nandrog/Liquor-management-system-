@@ -20,9 +20,18 @@ class ProductionRun extends Model
     'completed_at',
 ];
 
+    protected $casts = [
+        'completed_at' => 'datetime',
+    ];
+
    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function factory(): BelongsTo
+    {
+        return $this->belongsTo(Factory::class);
     }
 
     public function product(): BelongsTo
