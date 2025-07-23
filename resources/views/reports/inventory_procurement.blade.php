@@ -31,7 +31,7 @@
                 <th class="text-right">Reorder Level</th>
                 <th>Status</th>
                 <th class="text-right">Sales Velocity (Avg/Day)</th>
-                <th>Supplier</th>
+                <th>Vendor</th>
             </tr>
         </thead>
         <tbody>
@@ -51,7 +51,7 @@
                     <td class="text-right">{{ $product->reorder_level }}</td>
                     <td>{{ $product->status }}</td>
                     <td class="text-right">{{ $product->sales_velocity }}</td>
-                    <td>{{ $product->supplier->name ?? 'N/A' }}</td>
+                    <td>{{ $product->vendor->name ?? 'N/A' }}</td>
                 </tr>
             @empty
                 <tr>

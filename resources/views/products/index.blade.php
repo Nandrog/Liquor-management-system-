@@ -17,32 +17,38 @@
                         </div>
                     @endif
 
-
 <table class="stock-table">
     <thead>
         <tr>
             <th>Product Name</th>
-            <th>Product Type</th>
-            <th class="text-right">Current Stock</th>
-            <th>Add Stock (Receive Delivery)</th>
+            <th class="text-right">Total Stock (All Warehouses)</th>
+            <th>Add Stock to a Warehouse</th>
         </tr>
     </thead>
     <tbody>
         @foreach ($products as $product)
             <tr>
                 <td>{{ $product->name }}</td>
-                <td>{{ $product->type }}</td>
-                <td class="text-right">{{ $product->stock }}</td>
+                <td class="text-right">{{ $product->total_stock }}</td>
                 <td>
-                   
                     <form action="{{ route('products.add-stock', $product) }}" method="POST" class="add-stock-form">
                         @csrf
+                        
+                        {{-- 1. ADD THE WAREHOUSE DROPDOWN --}}
+                        <select name="warehouse_id" required>
+                            <option value="">Select Warehouse...</option>
+                            @foreach($warehouses as $warehouse)
+                                <option value="{{ $warehouse->warehouse_id }}">{{ $warehouse->name }}</option>
+                            @endforeach
+                        </select>
+
                         <input 
                             type="number" 
                             name="quantity"
                             placeholder="Enter Qty" 
                             min="1"
                             required>
+                            
                         <button type="submit" class="btn-add-stock">
                             Add Stock
                         </button>

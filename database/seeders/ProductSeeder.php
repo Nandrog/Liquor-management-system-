@@ -26,7 +26,7 @@ class ProductSeeder extends Seeder
 
         // --- 2. DEFINE ALL PRODUCTS IN A SINGLE, UNIFIED ARRAY ---
         $products = [
-            // --- Finished Goods (Merged List) ---
+            // --- Finished Goods  ---
             ['image' => "whiskey-bourbon.jpg",'name' => "Oak Barrel Reserve Bourbon", 'price' => 95500, 'category' => "Whiskey", 'type' => 'finished_good'],
             ['image' => "whiskey-single-malt.jpg",'name' => "OBAN Single Malt Scotch Whisky", 'price' => 362000, 'category' => "Whiskey", 'type' => 'finished_good'],
             ['image' => "Hennessy.jpg",'name' => "Hennessy VS Cognac", 'price' => 592000, 'category' => "Spirits", 'type' => 'finished_good'],
