@@ -24,7 +24,6 @@
                 <li><a href="{{route('supplier.orders.create')}}" class="nav-link"><i class="bi bi-truck me-2"></i> Orders</a></li>
                 <li><a href="{{route('supplier.orders.index')}}" class="nav-link"><i class="bi bi-truck me-2"></i> Orders view</a></li>
                 <li><a href="{{route('supplier.orders.paid')}}" class="nav-link"><i class="bi bi-truck me-2"></i> Orders paid</a></li>
-                {{--<li><a href="#" class="nav-link"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports</a></li>--}}
                 <li><a href="{{ route('analytics.menu') }}" class="nav-link"><i class="bi bi-graph-up me-2"></i> Analytics</a></li>
             @endif
 
@@ -41,7 +40,7 @@
                 <li><a href="{{ route('procurement.orders.index') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Orders</a></li>
                 <li><a href="{{ route('analytics.menu') }}" class="nav-link"><i class="bi bi-graph-up me-2"></i> Analytics</a></li>
                 <li><a href="{{ route('reports.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports</a></li>
-                <li><a href="{{ route('products.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph me-2"></i> Manage Stock</a></li>
+
             @endif
 
             @if($user && $user->hasRole('Finance'))
@@ -71,7 +70,7 @@
                 <li><a href="{{ route('inventory.dashboard') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Inventory</a></li>
                 <li><a href="{{ route('liquor-manager.products.index') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Products</a></li>
                  <li><a href="{{ route('reports.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports</a></li>
-                 <li><a href="{{ route('products.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph me-2"></i> Manage Stock</a></li>
+ 
             @endif
 
             {{-- Workforce (for specific roles) --}}

@@ -13,7 +13,6 @@ use App\Modules\Payments\Http\Controllers\PaymentController;
 use App\Modules\Payments\Http\Controllers\PaymentsController;
 use App\Http\Controllers\WorkDistribution\TaskController;
 use App\Http\Controllers\WorkDistribution\ShiftController;
-use App\Modules\Communications\Http\Controllers\MessageController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\InventoryReportController;
 use App\Http\Controllers\Auth\VendorRegistrationController;
@@ -124,16 +123,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/shifts/{shift}', [ShiftController::class, 'destroy'])->name('shifts.destroy');
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | Communication
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
-    Route::get('/messages/{user}', [MessageController::class, 'show'])->name('messages.show');
-    Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
-    Route::post('/messages/{id}/read', [MessageController::class, 'markAsRead'])->name('messages.markAsRead');
-    Route::delete('/messages/{id}', [MessageController::class, 'destroy'])->name('messages.destroy');
 
     /*
     |--------------------------------------------------------------------------
@@ -163,6 +152,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 
+/*----------------------------------------------------
+Communication routes
+------------------------------------------------------*/
    // --- CHAT ROUTES (Available to all logged-in users) ---
     Route::get('/chat/{user}', [ChatController::class, 'chat'])->name('chat.with');
     Route::post('/chat/send/{user}', [ChatController::class, 'sendMessage'])->name('chat.send');
@@ -253,16 +245,8 @@ Route::middleware(['auth', 'role:Liquor Manager|Finance|Procurement Officer|Manu
     });
 
 
-/*----------------------------------------------------
-Communication routes
-------------------------------------------------------*/
-Route::middleware(['auth'])->group(function () {
-    Route::get('/messages', [MessageController::class, 'index'])->name('messages.index'); // showing view and messages
-    Route::get('/messages/{user}', [MessageController::class, 'show'])->name('messages.show'); // single user messages
-    Route::post('/messages', [MessageController::class, 'store'])->name('messages.store'); // send message
-    Route::post('/messages/{id}/read', [MessageController::class, 'markAsRead'])->name('messages.markAsRead'); // mark as read
-    Route::delete('/messages/{id}', [MessageController::class, 'destroy'])->middleware('auth'); // delete message
-});
+
+
 
 // All routes for a Procurement officer's specific actions.
 
@@ -563,7 +547,7 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-// ... other routes
+// Report routes
 
 Route::middleware(['auth'])->group(function () {
     // This route will show the report in the browser
@@ -576,6 +560,19 @@ Route::middleware(['auth'])->group(function () {
 
 Route::get('/reports/sales/weekly', [SalesReportController::class, 'showWeeklySummaryReport'])->name('reports.sales.weekly');
 Route::get('/reports/sales/weekly/download', [SalesReportController::class, 'downloadWeeklySummaryReport'])->name('reports.sales.weekly.download');
+Route::get('/reports/inventory-manufacturer', [InventoryReportController::class, 'showManufacturerReport'])
+     ->name('reports.inventory.manufacturer');
+      Route::get('/reports/inventory-finance', [InventoryReportController::class, 'showFinanceReport'])
+     ->name('reports.inventory.finance');
+     
+Route::get('/reports/inventory-procurement', [InventoryReportController::class, 'showProcurementReport'])
+     ->name('reports.inventory.procurement');
+     
+Route::get('/reports', [ReportDashboardController::class, 'index'])
+     ->name('reports.index');
+     
+Route::get('/reports/inventory-raw-materials', [InventoryReportController::class, 'showRawMaterialsReport'])
+     ->name('reports.inventory.raw_materials');
 
 });
 
@@ -595,33 +592,7 @@ Route::middleware(['auth'])->group(function () {
 
 
     Route::get('/storefront/product/{product}', [StorefrontController::class, 'show'])->name('storefront.show');
-    Route::get('/reports/inventory-finance', [InventoryReportController::class, 'showFinanceReport'])
-     ->name('reports.inventory.finance');
-     // ... inside your auth middleware group ...
-Route::get('/reports/inventory-procurement', [InventoryReportController::class, 'showProcurementReport'])
-     ->name('reports.inventory.procurement');
-     // We'll create a simple controller for this page
-
-
-// ... inside your auth middleware group ...
-Route::get('/reports', [ReportDashboardController::class, 'index'])
-     ->name('reports.index');
-     // ... inside your auth middleware group ...
-Route::get('/reports/inventory-raw-materials', [InventoryReportController::class, 'showRawMaterialsReport'])
-     ->name('reports.inventory.raw_materials');
-
-
-
-
-
-Route::get('/products', [ProductLogController::class, 'index'])->name('products.index');
-
-
-Route::post('/products/{product}/add-stock', [ProductLogController::class, 'addStock'])->name('products.add-stock');
-
-Route::get('/reports/inventory-manufacturer', [InventoryReportController::class, 'showManufacturerReport'])
-     ->name('reports.inventory.manufacturer');
-
+   
 });
 
 Route::middleware(['auth'])->prefix('cart')->name('cart.')->group(function () {

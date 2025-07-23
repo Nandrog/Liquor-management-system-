@@ -33,8 +33,8 @@
 
 
 
-      {{-- ============================================= --}}
-                    {{--       INVENTORY REPORTS SECTION             --}}
+                    {{-- ============================================= --}}
+                    {{--       INVENTORY REPORTS SECTION               --}}
                     {{-- ============================================= --}}
                     @hasanyrole('Admin|Finance|Liquor Manager|Procurement Officer|Manufacturer')
                         <div class="report-card">
@@ -87,7 +87,7 @@
 
 {{-- This @hasrole directive is a SECURITY feature. 
      It ensures that only users with these roles will see this card.
-     Make sure the roles match the ones in your controller. --}}
+      --}}
 
 
 {{-- The @hasrole security check is still here and is very important --}}

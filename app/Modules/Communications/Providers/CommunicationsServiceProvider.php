@@ -6,22 +6,13 @@ use Illuminate\Support\ServiceProvider;
 
 class CommunicationsServiceProvider extends ServiceProvider
 {
-    /**
-     * Register services.
-     */
-    public function register(): void
+    public function register()
     {
-        //
+        // Bind services or load helpers
     }
 
-    /**
-     * Bootstrap services.
-     */
-    public function boot(): void
+    public function boot()
     {
-           $this->loadViewsFrom(__DIR__.'/../Resources/views', 'communications');
-
-                  $this->loadRoutesFrom(__DIR__.'/../Routes/web.php');
+        // Load routes, views, etc.
     }
-    }
-
+}
