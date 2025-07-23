@@ -1,7 +1,17 @@
-C:\Users\25677\laravel_pro_lms\src\main\java\com\vendor\controller\VendorController.java
-C:\Users\25677\laravel_pro_lms\src\main\java\com\vendor\model\VendorInfo.java
-C:\Users\25677\laravel_pro_lms\src\main\java\com\vendor\service\PDFProcessor.java
-C:\Users\25677\laravel_pro_lms\src\main\java\com\vendor\service\ResponseService.java
-C:\Users\25677\laravel_pro_lms\src\main\java\com\vendor\service\SchedulerService.java
-C:\Users\25677\laravel_pro_lms\src\main\java\com\vendor\service\ValidatorService.java
-C:\Users\25677\laravel_pro_lms\src\main\java\com\vendor\VendorValidationServerApplication.java
+<<<<<<< HEAD
+C:\xampp\htdocs\Liquor-management-system\src\main\java\com\vendor\controller\VendorController.java
+C:\xampp\htdocs\Liquor-management-system\src\main\java\com\vendor\model\VendorInfo.java
+C:\xampp\htdocs\Liquor-management-system\src\main\java\com\vendor\service\PDFProcessor.java
+C:\xampp\htdocs\Liquor-management-system\src\main\java\com\vendor\service\ResponseService.java
+C:\xampp\htdocs\Liquor-management-system\src\main\java\com\vendor\service\SchedulerService.java
+C:\xampp\htdocs\Liquor-management-system\src\main\java\com\vendor\service\ValidatorService.java
+C:\xampp\htdocs\Liquor-management-system\src\main\java\com\vendor\VendorValidationServerApplication.java
+=======
+D:\xampp\htdocs\Liquor-management-system\src\main\java\com\vendor\controller\VendorController.java
+D:\xampp\htdocs\Liquor-management-system\src\main\java\com\vendor\model\VendorInfo.java
+D:\xampp\htdocs\Liquor-management-system\src\main\java\com\vendor\service\PDFProcessor.java
+D:\xampp\htdocs\Liquor-management-system\src\main\java\com\vendor\service\ResponseService.java
+D:\xampp\htdocs\Liquor-management-system\src\main\java\com\vendor\service\SchedulerService.java
+D:\xampp\htdocs\Liquor-management-system\src\main\java\com\vendor\service\ValidatorService.java
+D:\xampp\htdocs\Liquor-management-system\src\main\java\com\vendor\VendorValidationServerApplication.java
+>>>>>>> f5f5dd9172e42974836b48b3d18733f899b160c2

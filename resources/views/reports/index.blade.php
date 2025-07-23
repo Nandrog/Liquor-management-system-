@@ -36,7 +36,7 @@
       {{-- ============================================= --}}
                     {{--       INVENTORY REPORTS SECTION             --}}
                     {{-- ============================================= --}}
-                    @hasanyrole('Admin|Finance|Liquor Manager|Procurement Officer')
+                    @hasanyrole('Admin|Finance|Liquor Manager|Procurement Officer|Manufacturer')
                         <div class="report-card">
                             <h3>Inventory Reports</h3>
                             <p>Status and valuation of current inventory.</p>
@@ -71,6 +71,11 @@
                                         View inventory graph
                                     </a>
                                 @endhasanyrole
+                                @hasanyrole('Admin|Procurement Officer|Manufacturer|Liquor Manager')
+                <a href="{{ route('reports.inventory.manufacturer') }}" class="btn btn-primary" >
+                    Raw Material Procurement
+                </a>
+            @endhasanyrole
              
                                 
                             </div>

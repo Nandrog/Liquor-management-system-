@@ -61,6 +61,17 @@
                         }
                     }
                 }
+                /*onClick: function (e, elements) {
+                    if (elements.length > 0) {
+                        const monthIndex = elements[0].index + 1; // Months are 1-indexed
+                        fetch(`/analytics/forecast/month/${monthIndex}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                // Display in modal, toast, or update a chart/table dynamically
+                                console.log('Daily data:', data);
+                            });
+                    }
+                }*/
             }
         });
     </script>
