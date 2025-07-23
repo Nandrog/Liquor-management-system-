@@ -137,7 +137,7 @@ class InventoryReportController extends Controller
     }
     public function showManufacturerReport()
     {
-        
+          
         // This report is for users involved in the production process.
         if (!Auth::user()->hasAnyRole(['Manufacturer', 'Admin', 'Liquor Manager'])) {
             abort(403, 'Unauthorized Access');

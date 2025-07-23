@@ -17,6 +17,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\InventoryReportController;
 use App\Http\Controllers\Auth\VendorRegistrationController;
 use App\Http\Controllers\ReportDashboardController;
+use App\Http\Controllers\SupplierReportController;
 use App\Modules\Inventory\Http\Controllers\LmStockLevelController;
 use App\Modules\Inventory\Http\Controllers\MaPurchaseOrderController;
 use App\Modules\Inventory\Http\Controllers\LmItemController;
@@ -573,6 +574,9 @@ Route::get('/reports', [ReportDashboardController::class, 'index'])
      
 Route::get('/reports/inventory-raw-materials', [InventoryReportController::class, 'showRawMaterialsReport'])
      ->name('reports.inventory.raw_materials');
+
+     Route::get('/supplier/dashboard', [SupplierReportController::class, 'showDashboard'])
+     ->name('supplier.dashboard');
 
 });
 

@@ -33,35 +33,42 @@
 
 
 
-                    {{-- ============================================= --}}
-                    {{--       INVENTORY REPORTS SECTION               --}}
-                    {{-- ============================================= --}}
-                    @hasanyrole('Admin|Finance|Liquor Manager|Procurement Officer|Manufacturer')
-                        <div class="report-card">
-                            <h3>Inventory Reports</h3>
-                            <p>Status and valuation of current inventory.</p>
-                            <div class="report-card-actions">
-                                
-                                {{-- Link for Finance & Management --}}
-                                @hasanyrole('Admin|Finance|Liquor Manager')
-                                    <a href="{{ route('reports.inventory.finance') }}" class="btn btn-primary">
-                                        View Finance & Valuation Report
-                                    </a>
-                                @endhasanyrole
+                 @hasanyrole('Admin|Finance|Liquor Manager|Procurement Officer|Manufacturer|Supplier')
+    <div class="report-card">
+        <h3>Inventory Reports</h3>
+        <p>Status and valuation of current inventory for finished goods and raw materials.</p>
+        
+        {{-- This div uses the 'report-card-actions' class to align buttons horizontally --}}
+        <div class="report-card-actions">
+            
+            {{-- Link for Finance & Management --}}
+            @hasanyrole('Admin|Finance|Liquor Manager')
+                <a href="{{ route('reports.inventory.finance') }}" class="btn btn-primary">
+                    Finished Goods Valuation
+                </a>
+            @endhasrole
 
-                                {{-- Link for Procurement & Management --}}
-                                @hasanyrole('Admin|Procurement Officer|Liquor Manager')
-                                     <a href="{{ route('reports.inventory.procurement') }}" class="btn btn-primary">
-                                        View Procurement & Stock Status
-                                    </a>
-                                @endhasanyrole
-                                   @hasanyrole('Admin|Procurement Officer|Manufacturer|Liquor Manager')
-                <a href="{{ route('reports.inventory.raw_materials') }}" class="btn btn-primary">
-                    Raw Material Stock Status
+            {{-- Link for Procurement & Management --}}
+            @hasanyrole('Admin|Procurement Officer|Liquor Manager')
+                 <a href="{{ route('reports.inventory.procurement') }}" class="btn btn-primary">
+                    Finished Goods Procurement
                 </a>
             @endhasanyrole
 
-                                 @hasanyrole('Admin|Procurement Officer|Liquor Manager|Manufacturer|Finance')
+            {{-- Link for Raw Materials Procurement --}}
+            @hasanyrole('Admin|Procurement Officer|Manufacturer|Liquor Manager')
+                <a href="{{ route('reports.inventory.raw_materials') }}" class="btn btn-primary" >
+                    Raw Material Stock
+                </a>
+            @endhasrole
+
+            {{-- Link for the Supplier's unique view --}}
+            @hasrole('Supplier')
+                <a href="{{ route('supplier.dashboard') }}" class="btn btn-primary">
+                    Supplier Dashboard
+                </a>
+            @endhasrole
+            @hasanyrole('Admin|Procurement Officer|Liquor Manager|Manufacturer|Finance')
                                      <a href="{{ route('reports.stock_movements') }}" class="btn btn-primary">
                                         View Stock Movement
                                     </a>
@@ -71,16 +78,11 @@
                                         View inventory graph
                                     </a>
                                 @endhasanyrole
-                                @hasanyrole('Admin|Procurement Officer|Manufacturer|Liquor Manager')
-                <a href="{{ route('reports.inventory.manufacturer') }}" class="btn btn-primary" >
-                    Raw Material Procurement
-                </a>
-            @endhasanyrole
-             
-                                
-                            </div>
-                        </div>
-                    @endhasanyrole
+            
+        </div>
+    </div>
+@endhasanyrole
+
 
     {{-- Sales Report --}}
    
