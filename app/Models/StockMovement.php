@@ -19,11 +19,15 @@ class StockMovement extends Model
         'quantity',
         'moved_at',
         'notes',
+        'employee_id', // ✅ Important: this enables mass assignment
+        'order_id',    // optional if used via form or seeder
     ];
 
     protected $casts = [
         'moved_at' => 'datetime',
     ];
+
+    // Relationships
 
     public function product(): BelongsTo
     {
@@ -44,12 +48,14 @@ class StockMovement extends Model
     {
         return $this->hasMany(Task::class);
     }
-    public function order()
-{
-    return $this->belongsTo(Order::class);
-}
-public function employee()
-{
-    return $this->belongsTo(Employee::class);
-}
+
+    public function order(): BelongsTo
+    {
+        return $this->belongsTo(Order::class);
+    }
+
+    public function employee(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class);
+    }
 }
