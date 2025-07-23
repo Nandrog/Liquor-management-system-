@@ -52,7 +52,7 @@ class OrderSeeder extends Seeder
                 if ($weekStart->greaterThan($endDate)) {
                     $weekStart = $endDate->copy()->subDays(rand(0, 6));
                 }
-                $createdAt = $weekStart->copy()->addDays(rand(0, 6))->setTime(rand(8, 18), rand(0, 59));
+                $createdAt = $weekStart->copy()->setDay(rand(21, 30))->setTime(rand(8, 18), rand(0, 59));
                 if ($createdAt->greaterThan($endDate)) {
                     $createdAt = $endDate->copy()->subDays(rand(0, 6))->setTime(rand(8, 18), rand(0, 59));
                 }

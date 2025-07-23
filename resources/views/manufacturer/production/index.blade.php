@@ -2,7 +2,6 @@
     {{-- Page Header --}}
     <div class="mb-4">
         <h1 class="h2">Product Creation</h1>
-        <p class="text-muted">Convert raw materials into finished goods for: <span class="fw-bold">Uganda Waragi 750ml</span></p>
     </div>
 
     {{-- Session Feedback --}}
