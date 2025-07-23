@@ -427,7 +427,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/customer-carts', [VendorOrderController::class, 'showCustomerCartLookup'])->name('carts.lookup');
         Route::patch('/products/{product}', [VendorProductController::class, 'update'])->name('products.update');
         Route::get('/orders/{order}', [VendorOrderController::class, 'show'])->name('orders.show');
-        Route::patch('/products/bulk-update', [VendorProductController::class, 'bulkUpdate'])->name('products.bulk-update');
+        Route::post('/products/bulk-update', [VendorProductController::class, 'bulkUpdate'])->name('products.bulk-update');
         // Route to show the payment page for a specific order
         Route::get('/orders/{order}/payment', [VendorOrderController::class, 'showPaymentPage'])->name('orders.payment.create');
 
@@ -609,15 +609,18 @@ Route::get('/reports', [ReportDashboardController::class, 'index'])
      // ... inside your auth middleware group ...
 Route::get('/reports/inventory-raw-materials', [InventoryReportController::class, 'showRawMaterialsReport'])
      ->name('reports.inventory.raw_materials');
-    
 
-// ... inside your auth middleware group ...
 
-// A route to show the list of products
+
+
+
 Route::get('/products', [ProductLogController::class, 'index'])->name('products.index');
 
-// The new route to handle adding stock to a specific product
+
 Route::post('/products/{product}/add-stock', [ProductLogController::class, 'addStock'])->name('products.add-stock');
+
+Route::get('/reports/inventory-manufacturer', [InventoryReportController::class, 'showManufacturerReport'])
+     ->name('reports.inventory.manufacturer');
 
 });
 

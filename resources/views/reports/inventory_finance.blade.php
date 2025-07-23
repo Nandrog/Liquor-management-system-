@@ -15,16 +15,13 @@
 </head>
 <body>
 
-    <h2>Weekly Inventory Movement Report</h2>
+     <h2>Weekly Inventory Valuation Report</h2>
     <h3>For the week of: {{ $weekStartDate }} to {{ $weekEndDate }}</h3>
 
     <table>
         <thead>
             <tr>
                 <th>Product Name</th>
-                <th class="text-right">Beginning Stock</th>
-                <th class="text-right">Stock In (Purchases)</th>
-                <th class="text-right">Stock Out (Sales)</th>
                 <th class="text-right">Ending Stock</th>
                 <th class="text-right">Unit Price</th>
                 <th class="text-right">Ending Stock Value</th>
@@ -35,10 +32,8 @@
             @forelse($products as $product)
                 <tr>
                     <td>{{ $product->name }}</td>
-                    <td class="text-right">{{ $product->beginning_stock }}</td>
-                    <td class="text-right">{{ $product->stock_in_this_week }}</td>
-                    <td class="text-right">{{ $product->stock_out_this_week }}</td>
-                    <td class="text-right" style="font-weight: bold;">{{ $product->ending_stock }}</td>
+                    {{-- This now uses the 'ending_stock' property from the controller --}}
+                    <td class="text-right">{{ $product->ending_stock }}</td>
                     <td class="text-right">{{ number_format($product->unit_price, 2) }}</td>
                     
                     @php $endingValue = $product->ending_stock * $product->unit_price; @endphp
@@ -47,17 +42,18 @@
                 @php $grandTotalValue += $endingValue; @endphp
             @empty
                 <tr>
-                    <td colspan="7" style="text-align: center;">No finished good products found.</td>
+                    <td colspan="4" style="text-align: center;">No finished good products found.</td>
                 </tr>
             @endforelse
         </tbody>
         <tfoot>
             <tr style="font-weight: bold; background-color: #f2f2f2;">
-                <td colspan="6" class="text-right">Grand Total Ending Inventory Value:</td>
+                <td colspan="3" class="text-right">Grand Total Ending Inventory Value:</td>
                 <td class="text-right">{{ number_format($grandTotalValue, 2) }}</td>
             </tr>
         </tfoot>
     </table>
+
 
 </body>
 </html>

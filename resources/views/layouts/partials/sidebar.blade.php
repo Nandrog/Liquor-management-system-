@@ -32,6 +32,7 @@
 
                 <li><a href="{{ route('inventory.dashboard') }}" class="nav-link"><i class="bi bi-box-seam me-2"></i> Inventory</a></li>
                 <li><a href="{{ route('manufacturer.orders.index') }}" class="nav-link"><i class="bi bi-truck me-2"></i> Orders</a></li>
+                <li><a href="{{ route('reports.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports</a></li>
 
             @endif
 
