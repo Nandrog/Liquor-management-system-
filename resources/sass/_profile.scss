@@ -1,0 +1,138 @@
+// Profile Management Page Custom Styles
+
+.profile-bg {
+  background: #f6f8fa;
+  min-height: 100vh;
+}
+
+.profile-container {
+  padding-bottom: 2rem;
+}
+
+.profile-card {
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  border: 1px solid #e3e8f0;
+  background: #fff;
+}
+
+// Profile Info Form
+.profile-info-section {
+  padding: 2rem 0;
+}
+.profile-info-header {
+  margin-bottom: 1.5rem;
+}
+.profile-info-form {
+  padding: 0;
+}
+.profile-info-field {
+  margin-bottom: 1.25rem;
+}
+.profile-info-input {
+  border-radius: 0.75rem;
+  border: 1px solid #b6d4fe;
+  background: #f8fafc;
+  transition: border 0.2s;
+}
+.profile-info-input:focus {
+  border-color: #2563eb;
+  background: #fff;
+}
+.profile-info-unverified {
+  background: #fffbe6;
+  border-left: 4px solid #facc15;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin-top: 0.5rem;
+}
+.profile-info-actions {
+  margin-top: 1.5rem;
+}
+.profile-info-saved {
+  color: #059669;
+  font-weight: 500;
+}
+
+// Update Password Form
+.update-password-section {
+  padding: 2rem 0;
+}
+.update-password-header {
+  margin-bottom: 1.5rem;
+}
+.update-password-form {
+  padding: 0;
+}
+.update-password-field {
+  margin-bottom: 1.25rem;
+}
+.update-password-input {
+  border-radius: 0.75rem;
+  border: 1px solid #b6d4fe;
+  background: #f8fafc;
+  transition: border 0.2s;
+}
+.update-password-input:focus {
+  border-color: #2563eb;
+  background: #fff;
+}
+.update-password-actions {
+  margin-top: 1.5rem;
+}
+.update-password-saved {
+  color: #059669;
+  font-weight: 500;
+}
+
+// Delete Account Form
+.delete-account-section {
+  padding: 2rem 0;
+}
+.delete-account-header {
+  margin-bottom: 1.5rem;
+}
+.delete-account-trigger {
+  margin-top: 1.5rem;
+  font-weight: 600;
+}
+.delete-account-modal {
+  border-radius: 1rem;
+}
+.delete-account-form {
+  padding: 0;
+}
+.delete-account-title {
+  color: #dc2626;
+  font-weight: 700;
+}
+.delete-account-warning {
+  color: #b91c1c;
+}
+.delete-account-password {
+  margin-top: 1.25rem;
+}
+.delete-account-password-input {
+  border-radius: 0.75rem;
+  border: 1px solid #fca5a5;
+  background: #fef2f2;
+  transition: border 0.2s;
+}
+.delete-account-password-input:focus {
+  border-color: #dc2626;
+  background: #fff;
+}
+.delete-account-actions {
+  margin-top: 1.5rem;
+}
+.delete-account-cancel {
+  background: #f3f4f6;
+  color: #374151;
+  border-radius: 0.5rem;
+}
+.delete-account-confirm {
+  background: #dc2626;
+  color: #fff;
+  border-radius: 0.5rem;
+  margin-left: 0.75rem;
+}

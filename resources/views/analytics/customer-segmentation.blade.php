@@ -47,19 +47,32 @@
 
                     <div class="mt-4">
                         <h5 class="font-semibold">Customers:</h5>
-                        <ul class="text-sm text-gray-700 max-h-40 overflow-y-auto">
-                            @if (isset($segments['segments'][$index]))
-                                @foreach ($segments['segments'][$index] as $customer)
-                                    <li>
-                                        ID: {{ $customer['customer_id'] }} -
-                                        Freq: {{ $customer['frequency'] }},
-                                        ${{ round($customer['monetary'], 2) }}
-                                    </li>
-                                @endforeach
-                            @else
-                                <li>No customers for this segment.</li>
-                            @endif
-                        </ul>
+                        <div class="overflow-x-auto mt-4">
+                            <table class="min-w-full border text-sm text-left">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="px-4 py-2 border">Customer ID</th>
+                                        <th class="px-4 py-2 border">Frequency</th>
+                                        <th class="px-4 py-2 border">Monetary ($)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (isset($segments['segments'][$index]))
+                                        @foreach ($segments['segments'][$index] as $customer)
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-4 py-2 border">{{ $customer['customer_id'] }}</td>
+                                                <td class="px-4 py-2 border">{{ $customer['frequency'] }}</td>
+                                                <td class="px-4 py-2 border">${{ number_format($customer['monetary'], 2) }}</td>
+                                            </tr>
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td colspan="3" class="px-4 py-2 border text-red-500">No customers for this segment.</td>
+                                        </tr>
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             @endforeach
