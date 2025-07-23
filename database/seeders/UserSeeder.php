@@ -15,15 +15,32 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         DB::transaction(function () {
-            
             // --- 1. SEED SINGLE USERS FOR EACH APPLICATION ROLE ---
             $this->createUser('Admin', 'Admin', 'User', 'admin', 'admin@lms.com', 'EMP001');
+            // Liquor Managers
             $this->createUser('Liquor Manager', 'Sarah', 'Manager', 'sarahmanager', 'manager@lms.com', 'EMP002');
+            $this->createUser('Liquor Manager', 'James', 'Liquor', 'jamesliquor', 'james.liquor@lms.com', 'EMP102');
+            $this->createUser('Liquor Manager', 'Linda', 'Bar', 'lindabar', 'linda.bar@lms.com', 'EMP103');
+            $this->createUser('Liquor Manager', 'Brian', 'Spirit', 'brianspirit', 'brian.spirit@lms.com', 'EMP104');
+
+            // Procurement Officers
             $this->createUser('Procurement Officer', 'Peter', 'Procure', 'peterprocure', 'procurement@lms.com', 'EMP003');
+            $this->createUser('Procurement Officer', 'Alice', 'Procure', 'aliceprocure', 'alice.procure@lms.com', 'EMP105');
+            $this->createUser('Procurement Officer', 'Samuel', 'Procure', 'samuelprocure', 'samuel.procure@lms.com', 'EMP106');
+            $this->createUser('Procurement Officer', 'Grace', 'Procure', 'graceprocure', 'grace.procure@lms.com', 'EMP107');
+
+            // Finance
             $this->createUser('Finance', 'Frank', 'Finance', 'frankfinance', 'finance@lms.com', 'EMP004');
+            $this->createUser('Finance', 'Helen', 'Money', 'helenmoney', 'helen.money@lms.com', 'EMP108');
+            $this->createUser('Finance', 'Paul', 'Cash', 'paulcash', 'paul.cash@lms.com', 'EMP109');
+            $this->createUser('Finance', 'Diana', 'Ledger', 'dianaledger', 'diana.ledger@lms.com', 'EMP110');
+
+            // Manufacturers
             $this->createUser('Manufacturer', 'John', 'Maker', 'johnmaker', 'manufacturer@lms.com', 'EMP101');
-            
-            
+            $this->createUser('Manufacturer', 'Kevin', 'Brew', 'kevinbrew', 'kevin.brew@lms.com', 'EMP111');
+            $this->createUser('Manufacturer', 'Emily', 'Distill', 'emilydistill', 'emily.distill@lms.com', 'EMP112');
+            $this->createUser('Manufacturer', 'Oscar', 'Blend', 'oscarblend', 'oscar.blend@lms.com', 'EMP113');
+
             // --- 1b. SEED MULTIPLE VENDOR USERS ---
             $vendors = [
                 ['name' => 'Capital Shoppers Ntinda', 'contact' => '00800097656', 'email' => 'capitalntinda@vendor.com', 'username' => 'capitalntinda'],
