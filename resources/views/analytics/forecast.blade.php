@@ -51,7 +51,7 @@
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: 'Sales Amount (USD)'
+                            text: 'Sales Amount (UGX)'
                         }
                     },
                     x: {

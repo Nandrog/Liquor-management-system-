@@ -32,7 +32,7 @@
                 <div class="bg-white p-4 shadow rounded">
                     <h4 class="text-lg font-semibold mb-2">Segment {{ $clusterLabels[$index] ?? $index }}</h4>
                     <p><strong>Centroid - Frequency:</strong> {{ round($centroid[0], 2) }}</p>
-                    <p><strong>Centroid - Monetary:</strong> ${{ round($centroid[1], 2) }}</p>
+                    <p><strong>Centroid - Monetary:</strong> UGX{{ round($centroid[1], 2) }}</p>
 
                     {{-- Safely access range info if available --}}
                     @php
@@ -40,7 +40,7 @@
                     @endphp
                     @if ($range)
                         <p><strong>Frequency Range:</strong> {{ $range['frequency_range'][0] }}–{{ $range['frequency_range'][1] }}</p>
-                        <p><strong>Monetary Range:</strong> ${{ $range['monetary_range'][0] }} – ${{ $range['monetary_range'][1] }}</p>
+                        <p><strong>Monetary Range:</strong> UGX{{ $range['monetary_range'][0] }} – UGX{{ $range['monetary_range'][1] }}</p>
                     @else
                         <p>Range data not available.</p>
                     @endif
@@ -53,7 +53,7 @@
                                     <tr>
                                         <th class="px-4 py-2 border">Customer ID</th>
                                         <th class="px-4 py-2 border">Frequency</th>
-                                        <th class="px-4 py-2 border">Monetary ($)</th>
+                                        <th class="px-4 py-2 border">Monetary (UGX)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -62,7 +62,7 @@
                                             <tr class="hover:bg-gray-50">
                                                 <td class="px-4 py-2 border">{{ $customer['customer_id'] }}</td>
                                                 <td class="px-4 py-2 border">{{ $customer['frequency'] }}</td>
-                                                <td class="px-4 py-2 border">${{ number_format($customer['monetary'], 2) }}</td>
+                                                <td class="px-4 py-2 border">UGX{{ number_format($customer['monetary'], 2) }}</td>
                                             </tr>
                                         @endforeach
                                     @else

@@ -565,13 +565,13 @@ Route::get('/reports/inventory-manufacturer', [InventoryReportController::class,
      ->name('reports.inventory.manufacturer');
       Route::get('/reports/inventory-finance', [InventoryReportController::class, 'showFinanceReport'])
      ->name('reports.inventory.finance');
-     
+
 Route::get('/reports/inventory-procurement', [InventoryReportController::class, 'showProcurementReport'])
      ->name('reports.inventory.procurement');
-     
+
 Route::get('/reports', [ReportDashboardController::class, 'index'])
      ->name('reports.index');
-     
+
 Route::get('/reports/inventory-raw-materials', [InventoryReportController::class, 'showRawMaterialsReport'])
      ->name('reports.inventory.raw_materials');
 
@@ -596,7 +596,7 @@ Route::middleware(['auth'])->group(function () {
 
 
     Route::get('/storefront/product/{product}', [StorefrontController::class, 'show'])->name('storefront.show');
-   
+
 });
 
 Route::middleware(['auth'])->prefix('cart')->name('cart.')->group(function () {
@@ -622,3 +622,6 @@ Route::middleware(['auth'])->prefix('cart')->name('cart.')->group(function () {
 
 
 // ... inside your auth middleware group ...
+Route::get('/vendor/dashboard', [\App\Modules\Dashboard\Http\Controllers\DashboardController::class, 'index'])
+    ->name('vendor.dashboard')
+    ->middleware(['auth', 'role:Vendor']);

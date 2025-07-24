@@ -20,7 +20,7 @@ class OrderSeeder extends Seeder
         // Get the actors (users, suppliers, customers)
         $procurementOfficer = User::role('Procurement Officer')->first();
         $liquorManager = User::role('Liquor Manager')->first();
-        
+
         // Get Supplier PROFILES, not users
         $suppliers = Supplier::all();
         $customers = Customer::all();
@@ -40,59 +40,53 @@ class OrderSeeder extends Seeder
             // We'll seed 52 supplier orders, 104 customer orders, and 52 vendor orders (one for each week, double for customers)
             $weeks = 52;
             $vendors = \App\Models\Vendor::all();
-            for ($i = 0; $i < $weeks; $i++) {
-                // Calculate a date for each week
-                // Use June to December of the current year for created_at and updated_at
-                $year = now()->year;
-                $startDate = now()->setDate($year, 6, 1)->startOfDay(); // June 1st
-                $endDate = now()->setDate($year, 12, 31)->endOfDay();   // December 31st
-                $totalWeeks = $startDate->diffInWeeks($endDate);
-                $weekStart = $startDate->copy()->addWeeks($i % $totalWeeks);
-                // Ensure weekStart does not go beyond December
-                if ($weekStart->greaterThan($endDate)) {
-                    $weekStart = $endDate->copy()->subDays(rand(0, 6));
-                }
-                $createdAt = $weekStart->copy()->setDay(rand(21, 30))->setTime(rand(8, 18), rand(0, 59));
-                if ($createdAt->greaterThan($endDate)) {
-                    $createdAt = $endDate->copy()->subDays(rand(0, 6))->setTime(rand(8, 18), rand(0, 59));
-                }
-                $updatedAt = $createdAt->copy()->addDays(rand(0, 6))->setTime(rand(8, 18), rand(0, 59));
-                if ($updatedAt->greaterThan($endDate)) {
-                    $updatedAt = $endDate->copy()->setTime(rand(8, 18), rand(0, 59));
-                }
-                // Supplier Orders
-                $this->createOrder(
-                    $procurementOfficer,
-                    OrderType::SUPPLIER_ORDER,
-                    OrderStatus::cases()[array_rand(OrderStatus::cases())],
-                    ['supplier_id' => $suppliers->random()->id],
-                    $rawMaterials->random(rand(1, 3)),
-                    $createdAt,
-                    $updatedAt
-                );
-                // Vendor Orders
-                $vendor = $vendors->random();
-                $user = $vendor->user;
-                $this->createOrder(
-                    $user,
-                    OrderType::VENDOR_ORDER,
-                    OrderStatus::cases()[array_rand(OrderStatus::cases())],
-                    ['vendor_id' => $vendor->getKey()],
-                    $finishedGoods->random(rand(1, 2)),
-                    $createdAt,
-                    $updatedAt
-                );
-                // Two customer orders per week
-                for ($j = 0; $j < 2; $j++) {
+            $year = now()->year;
+
+            for ($month = 1; $month <= 12; $month++) {
+                // For each day from 21st to 30th
+                for ($day = 21; $day <= 30; $day++) {
+                    // Make sure the day is valid for the month
+                    if (!checkdate($month, $day, $year)) {
+                        continue;
+                    }
+                    // Generate a random time for the order
+                    $createdAt = now()->setDate($year, $month, $day)->setTime(rand(8, 18), rand(0, 59));
+                    $updatedAt = $createdAt->copy()->addDays(rand(0, 6))->setTime(rand(8, 18), rand(0, 59));
+
+                    // Supplier Orders
                     $this->createOrder(
-                        $liquorManager,
-                        OrderType::CUSTOMER_ORDER,
+                        $procurementOfficer,
+                        OrderType::SUPPLIER_ORDER,
                         OrderStatus::cases()[array_rand(OrderStatus::cases())],
-                        ['customer_id' => $customers->random()->id],
+                        ['supplier_id' => $suppliers->random()->id],
+                        $rawMaterials->random(rand(1, 3)),
+                        $createdAt,
+                        $updatedAt
+                    );
+                    // Vendor Orders
+                    $vendor = $vendors->random();
+                    $user = $vendor->user;
+                    $this->createOrder(
+                        $user,
+                        OrderType::VENDOR_ORDER,
+                        OrderStatus::cases()[array_rand(OrderStatus::cases())],
+                        ['vendor_id' => $vendor->getKey()],
                         $finishedGoods->random(rand(1, 2)),
                         $createdAt,
                         $updatedAt
                     );
+                    // Two customer orders per day
+                    for ($j = 0; $j < 2; $j++) {
+                        $this->createOrder(
+                            $liquorManager,
+                            OrderType::CUSTOMER_ORDER,
+                            OrderStatus::cases()[array_rand(OrderStatus::cases())],
+                            ['customer_id' => $customers->random()->id],
+                            $finishedGoods->random(rand(1, 2)),
+                            $createdAt,
+                            $updatedAt
+                        );
+                    }
                 }
             }
         });
