@@ -102,9 +102,34 @@ class UserSeeder extends Seeder
             // --- 4. ASSIGN MANUFACTURERS TO FACTORIES ---
             $this->assignManufacturersToFactories();
 
+            // --- 5. SEED RANDOM MESSAGES BETWEEN USERS ---
+            $allUsers = \App\Models\User::all();
+            $userCount = $allUsers->count();
+            $messages = [
+                'Welcome to the system!',
+                'Please review your dashboard for updates.',
+                'Contact admin if you have any issues.',
+                'Your account has been activated.',
+                'Let us know if you need any help.',
+                'Check out the new features added this week.',
+                'Remember to update your profile information.',
+                'You have a new notification.',
+                'Thank you for being part of our platform.',
+                'Your feedback is valuable to us.'
+            ];
+            $messageCount = 30; // Number of messages to seed
+            for ($i = 0; $i < $messageCount; $i++) {
+                $sender = $allUsers->random();
+                $receiver = $allUsers->where('id', '!=', $sender->id)->random();
+                \App\Models\Message::create([
+                    'sender_id' => $sender->id,
+                    'receiver_id' => $receiver->id,
+                    'message' => $messages[array_rand($messages)],
+                ]);
+            }
         });
 
-        $this->command->info('All required users, including multiple suppliers and customers, seeded successfully!');
+        $this->command->info('All required users, including multiple suppliers and customers, and random messages seeded successfully!');
     }
 
     /**
